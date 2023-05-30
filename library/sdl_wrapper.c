@@ -116,9 +116,7 @@ void sdl_init(vector_t min, vector_t max) {
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 }
 
-void sdl_move_window(vector_t position) {
-  center = position;
-}
+void sdl_move_window(vector_t position) { center = position; }
 
 bool sdl_is_done(state_t *state) {
   SDL_Event *event = malloc(sizeof(*event));

@@ -1,10 +1,10 @@
-#include "sdl_wrapper.h"
 #include "body.h"
 #include "color.h"
 #include "forces.h"
 #include "list.h"
 #include "polygon.h"
 #include "scene.h"
+#include "sdl_wrapper.h"
 #include "state.h"
 #include "vector.h"
 #include <assert.h>
@@ -17,7 +17,7 @@
 const vector_t WINDOW = (vector_t){.x = 1000, .y = 500};
 const vector_t STARTING_POSITION = (vector_t){.x = 500, .y = 250};
 
-const vector_t WINDOW_VELOCITY = (vector_t) { .x = 100, .y = 0 };
+const vector_t WINDOW_VELOCITY = (vector_t){.x = 100, .y = 0};
 
 // body constants
 const size_t NUM_STARS = 200;
