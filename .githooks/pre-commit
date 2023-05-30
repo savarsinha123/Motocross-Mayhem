@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if loc="$(type -p "clang-format")" && [[ -x $loc ]]; then
+    for name in $(git diff --cached --name-only --diff-filter=ACM); do
+        if echo $name | grep -Eq "\.[ch]$"; then
+            echo "Formatting ${name}..."
+            clang-format -i $name
+        fi
+    done
+else
+    echo "You do not have clang-format installed; so, we were unable to unify the formatting in your files."
+fi
