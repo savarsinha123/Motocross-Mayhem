@@ -118,10 +118,9 @@ void body_add_impulse(body_t *body, vector_t impulse) {
   body->impulse = vec_add(body->impulse, impulse);
 }
 
-void body_set_moment_of_inertia(body_t *body, double moment) {
+void body_set_normal_moment_of_inertia(body_t *body, double moment) {
   assert(moment > 0.0);
   body->moment_of_inertia = moment;
-  body->curr_moment_of_inertia = moment;
 }
 
 void body_set_angular_velocity(body_t *body, double angular_velocity) {
@@ -130,6 +129,11 @@ void body_set_angular_velocity(body_t *body, double angular_velocity) {
 
 void body_set_angular_acceleration(body_t *body, double angular_acceleration) {
   body->angular_acceleration = angular_acceleration;
+}
+
+void body_increment_angular_velocity(body_t *body, double increment) {
+  double curr_a_v = body->angular_velocity;
+  body_set_angular_velocity(body, curr_a_v + increment);
 }
 
 void body_add_torque(body_t *body, double torque) {
