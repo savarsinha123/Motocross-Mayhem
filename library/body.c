@@ -169,7 +169,7 @@ double body_find_delta_angle(double curr_angular_vel, double new_angular_vel,
 void body_set_pivot(body_t *body, vector_t pivot) {
   body->curr_pivot_point = pivot;
   vector_t displacement = vec_subtract(body->centroid, pivot);
-  double d = norm(displacement);
+  double d = vec_magn(displacement);
   body->curr_moment_of_inertia = body->moment_of_inertia + (body->mass * d * d);
 }
 
