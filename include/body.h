@@ -171,16 +171,18 @@ void body_set_angular_velocity(body_t *body, double angular_velocity);
  * Sets the current angular acceleration of a given body
  *
  * @param body the pointer to the body to set the angular acceleration of
- * @param angular_acceleration the angular acceleration to set for the given body
+ * @param angular_acceleration the angular acceleration to set for the given
+ * body
  */
 void body_set_angular_acceleration(body_t *body, double angular_acceleration);
 
 /**
- * Increments the angular velocity of a given body in a certain direction by a certain amount
+ * Increments the angular velocity of a given body in a certain direction by a
+ * certain amount
  *
  * @param body a pointer to the body to increment the angular velocity of
- * @param increment the amount by which to increment the angular velocity (clockwise
- * is positive and counterclockwise is negative)
+ * @param increment the amount by which to increment the angular velocity
+ * (clockwise is positive and counterclockwise is negative)
  */
 void body_increment_angular_velocity(body_t *body, double increment);
 
@@ -215,7 +217,7 @@ void body_set_pivot(body_t *body, vector_t pivot);
 /**
  * Resets the pivot point of rotation back to the centroid of a body
  * Also resets the moment of inertia to its default (through the centroid)
- * 
+ *
  * @param body a pointer to the body to reset the pivot point for
  */
 void body_reset_pivot(body_t *body);

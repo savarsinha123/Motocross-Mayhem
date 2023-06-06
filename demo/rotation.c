@@ -7,8 +7,8 @@
 #include "scene.h"
 #include "sdl_wrapper.h"
 #include "state.h"
-#include "vector.h"
 #include "torques.h"
+#include "vector.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -21,7 +21,7 @@ const double BRICK_HEIGHT = 10;
 const double BRICK_WIDTH = 20;
 const double BRICK_MASS = 5;
 const double MOMENT = 0.75;
-const rgb_color_t BRICK_COLOR = (rgb_color_t) {0, 0 ,1};
+const rgb_color_t BRICK_COLOR = (rgb_color_t){0, 0, 1};
 const double INCREMENT_VALUE = 10;
 
 typedef struct state {
@@ -33,13 +33,13 @@ typedef struct state {
 
 body_t *make_brick(double height, double width) {
   vector_t *bottom_left = malloc(sizeof(vector_t));
-  *bottom_left = (vector_t) {0, 0};
+  *bottom_left = (vector_t){0, 0};
   vector_t *top_left = malloc(sizeof(vector_t));
-  *top_left = (vector_t) {0, height};
+  *top_left = (vector_t){0, height};
   vector_t *bottom_right = malloc(sizeof(vector_t));
-  *bottom_right = (vector_t) {width, 0};
+  *bottom_right = (vector_t){width, 0};
   vector_t *top_right = malloc(sizeof(vector_t));
-  *top_right = (vector_t) {width, height};
+  *top_right = (vector_t){width, height};
   list_t *brick_shape = list_init(4, free);
   list_add(brick_shape, bottom_left);
   list_add(brick_shape, top_left);
@@ -51,9 +51,9 @@ body_t *make_brick(double height, double width) {
 }
 
 void initialize_body_list(scene_t *scene) {
-    body_t *brick = make_brick(BRICK_HEIGHT, BRICK_WIDTH);
-    body_set_centroid(brick, (vector_t) {0, 0});
-    scene_add_body(scene, brick);
+  body_t *brick = make_brick(BRICK_HEIGHT, BRICK_WIDTH);
+  body_set_centroid(brick, (vector_t){0, 0});
+  scene_add_body(scene, brick);
 }
 
 void set_pivot_to_corner(body_t *body) {
