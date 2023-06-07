@@ -14,12 +14,18 @@ typedef struct body {
   double angle;
   double moment_of_inertia;
   double curr_moment_of_inertia;
+  double moment_of_inertia;
+  double curr_moment_of_inertia;
   vector_t centroid;
   vector_t velocity;
   vector_t acceleration;
   vector_t force;
   vector_t impulse;
   rgb_color_t color;
+  double angular_velocity;
+  double angular_acceleration;
+  double torque;
+  double angular_impulse;
   double angular_velocity;
   double angular_acceleration;
   double torque;
@@ -93,6 +99,10 @@ double body_get_moment_of_inertia(body_t *body) {
   return body->curr_moment_of_inertia;
 }
 
+double body_get_moment_of_inertia(body_t *body) {
+  return body->curr_moment_of_inertia;
+}
+
 rgb_color_t body_get_color(body_t *body) { return (body->color); }
 
 void *body_get_info(body_t *body) { return body->info; }
@@ -108,6 +118,7 @@ void body_set_velocity(body_t *body, vector_t v) { body->velocity = v; }
 
 void body_set_rotation(body_t *body, double angle) {
   double angle_diff = angle - body->angle;
+  polygon_rotate(body->polygon, angle_diff, body->curr_pivot_point);
   polygon_rotate(body->polygon, angle_diff, body->curr_pivot_point);
   body->angle = angle;
 }
@@ -204,6 +215,9 @@ void body_tick(body_t *body, double dt) {
   body->velocity = final_velocity;
   body->force = VEC_ZERO;
   body->impulse = VEC_ZERO;
+  body->angular_velocity = final_angular_velocity;
+  body->angular_acceleration = 0.0;
+  body->angular_impulse = 0.0;
   body->angular_velocity = final_angular_velocity;
   body->angular_acceleration = 0.0;
   body->angular_impulse = 0.0;

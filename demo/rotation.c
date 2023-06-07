@@ -137,3 +137,8 @@ void emscripten_free(state_t *state) {
   scene_free(state->scene);
   free(state);
 }
+
+void emscripten_free(state_t *state) {
+  scene_free(state->scene);
+  free(state);
+}
