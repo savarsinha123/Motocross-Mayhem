@@ -14,18 +14,12 @@ typedef struct body {
   double angle;
   double moment_of_inertia;
   double curr_moment_of_inertia;
-  double moment_of_inertia;
-  double curr_moment_of_inertia;
   vector_t centroid;
   vector_t velocity;
   vector_t acceleration;
   vector_t force;
   vector_t impulse;
   rgb_color_t color;
-  double angular_velocity;
-  double angular_acceleration;
-  double torque;
-  double angular_impulse;
   double angular_velocity;
   double angular_acceleration;
   double torque;
@@ -94,10 +88,6 @@ vector_t body_get_centroid(body_t *body) { return (body->centroid); }
 vector_t body_get_velocity(body_t *body) { return (body->velocity); }
 
 double body_get_mass(body_t *body) { return body->mass; }
-
-double body_get_moment_of_inertia(body_t *body) {
-  return body->curr_moment_of_inertia;
-}
 
 double body_get_moment_of_inertia(body_t *body) {
   return body->curr_moment_of_inertia;
@@ -205,9 +195,7 @@ void body_tick(body_t *body, double dt) {
   // body_set_pivot(body, new_pivot);
   body->angular_acceleration = body->torque / body->moment_of_inertia;
   double final_angular_velocity = body_get_final_angular_velocity(body, dt);
-  double new_angle =
-      body->angle +
-      body_find_delta_angle(body->angular_velocity, final_angular_velocity, dt);
+  //double new_angle = body->angle + body_find_delta_angle(body->angular_velocity, final_angular_velocity, dt);
   polygon_rotate(
       body->polygon,
       body_find_delta_angle(body->angular_velocity, final_angular_velocity, dt),
