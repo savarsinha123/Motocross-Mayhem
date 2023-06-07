@@ -99,7 +99,8 @@ void *body_get_info(body_t *body) { return body->info; }
 
 void body_set_centroid(body_t *body, vector_t x) {
   polygon_translate(body->polygon, vec_subtract(x, body->centroid));
-  body->curr_pivot_point = vec_add(body->curr_pivot_point, vec_subtract(x, body->centroid));
+  body->curr_pivot_point =
+      vec_add(body->curr_pivot_point, vec_subtract(x, body->centroid));
   body->centroid = x;
 }
 
@@ -115,9 +116,7 @@ void body_add_force(body_t *body, vector_t force) {
   body->force = vec_add(body->force, force);
 }
 
-vector_t body_get_force(body_t *body) {
-  return body->force;
-}
+vector_t body_get_force(body_t *body) { return body->force; }
 
 void body_add_impulse(body_t *body, vector_t impulse) {
   body->impulse = vec_add(body->impulse, impulse);
@@ -189,14 +188,19 @@ void body_tick(body_t *body, double dt) {
   vector_t new_centroid =
       vec_add(body->centroid,
               vec_multiply(dt, vec_average(body->velocity, final_velocity)));
-  vector_t new_pivot = vec_add(body->curr_pivot_point, vec_subtract(new_centroid, body->centroid));
+  vector_t new_pivot = vec_add(body->curr_pivot_point,
+                               vec_subtract(new_centroid, body->centroid));
   body_set_centroid(body, new_centroid);
-  //body_set_pivot(body, new_pivot);
+  // body_set_pivot(body, new_pivot);
   body->angular_acceleration = body->torque / body->moment_of_inertia;
   double final_angular_velocity = body_get_final_angular_velocity(body, dt);
-  double new_angle = body->angle + body_find_delta_angle(body->angular_velocity,
-                                                    final_angular_velocity, dt);
-  polygon_rotate(body->polygon, body_find_delta_angle(body->angular_velocity, final_angular_velocity, dt), new_pivot);
+  double new_angle =
+      body->angle +
+      body_find_delta_angle(body->angular_velocity, final_angular_velocity, dt);
+  polygon_rotate(
+      body->polygon,
+      body_find_delta_angle(body->angular_velocity, final_angular_velocity, dt),
+      new_pivot);
   body->velocity = final_velocity;
   body->force = VEC_ZERO;
   body->impulse = VEC_ZERO;

@@ -62,12 +62,9 @@ void newtonian_gravity_creator(void *aux) {
 }
 
 void downwards_gravity_creator(void *aux) {
-  double g = ((force_arg_t *) aux)->constant;
-  body_t *body = list_get(((force_arg_t *) aux)->bodies, 0);
-  vector_t gravity_vector = {
-    .x = 0,
-    .y = -body_get_mass(body) * g
-  };
+  double g = ((force_arg_t *)aux)->constant;
+  body_t *body = list_get(((force_arg_t *)aux)->bodies, 0);
+  vector_t gravity_vector = {.x = 0, .y = -body_get_mass(body) * g};
   body_add_force(body, gravity_vector);
 }
 
@@ -79,7 +76,10 @@ void normal_creator(void *aux) {
   list_t *surface_shape = body_get_shape(surface);
   collision_info_t collision = find_collision(body_shape, surface_shape);
   if (collision.collided) {
-    vector_t normal_force = vec_multiply(-vec_scalar_project(body_get_force(body), collision.axis) / vec_magn(collision.axis), collision.axis);
+    vector_t normal_force =
+        vec_multiply(-vec_scalar_project(body_get_force(body), collision.axis) /
+                         vec_magn(collision.axis),
+                     collision.axis);
     body_add_force(body, normal_force);
   }
   list_free(body_shape);
@@ -149,7 +149,7 @@ void collision_creator(void *aux) {
     collision_arg->handler(collision_arg->body1, collision_arg->body2,
                            collision.axis, collision_arg->aux);
     collision_arg->has_collided = true;
-  }// else if (!collision.collided) {
+  } // else if (!collision.collided) {
   //   collision_arg->has_collided = false;
   // }
   list_free(shape1);
@@ -160,11 +160,9 @@ void create_applied(scene_t *scene, vector_t force, body_t *body) {
   list_t *bodies = list_init(1, NULL);
   list_add(bodies, body);
   applied_force_arg_t *force_args = malloc(sizeof(applied_force_arg_t));
-  *force_args = (applied_force_arg_t) {
-    .force = force,
-    .bodies = bodies
-  };
-  scene_add_bodies_force_creator(scene, applied_force_creator, force_args, bodies, free);
+  *force_args = (applied_force_arg_t){.force = force, .bodies = bodies};
+  scene_add_bodies_force_creator(scene, applied_force_creator, force_args,
+                                 bodies, free);
 }
 
 void create_newtonian_gravity(scene_t *scene, double G, body_t *body1,
@@ -183,7 +181,8 @@ void create_downwards_gravity(scene_t *scene, double g, body_t *body) {
   list_add(bodies, body);
   force_arg_t *gravity_args = malloc(sizeof(force_arg_t));
   *gravity_args = (force_arg_t){.constant = g, .bodies = bodies};
-  scene_add_bodies_force_creator(scene, downwards_gravity_creator, gravity_args, bodies, free);
+  scene_add_bodies_force_creator(scene, downwards_gravity_creator, gravity_args,
+                                 bodies, free);
 }
 
 void create_normal(scene_t *scene, body_t *body, body_t *surface) {
@@ -192,7 +191,8 @@ void create_normal(scene_t *scene, body_t *body, body_t *surface) {
   list_add(bodies, surface);
   force_arg_t *normal_args = malloc(sizeof(force_arg_t));
   *normal_args = (force_arg_t){.constant = 0.0, .bodies = bodies};
-  scene_add_bodies_force_creator(scene, normal_creator, normal_args, bodies, free);
+  scene_add_bodies_force_creator(scene, normal_creator, normal_args, bodies,
+                                 free);
 }
 
 void create_spring(scene_t *scene, double k, body_t *body1, body_t *body2) {

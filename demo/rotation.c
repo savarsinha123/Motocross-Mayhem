@@ -101,10 +101,9 @@ void on_key(state_t *state, char key, key_event_type_t type, double dt) {
       }
       body_increment_angular_velocity(brick, -1 * INCREMENT_VALUE);
     }
-  }
-  else if (type == KEY_RELEASED) {
+  } else if (type == KEY_RELEASED) {
     switch (key) {
-      case RIGHT_ARROW:
+    case RIGHT_ARROW:
       if (state->curr_pivot != 0) {
         state->curr_pivot = 1;
         set_pivot_to_centroid(brick);
