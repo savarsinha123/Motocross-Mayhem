@@ -195,7 +195,8 @@ void body_tick(body_t *body, double dt) {
   // body_set_pivot(body, new_pivot);
   body->angular_acceleration = body->torque / body->moment_of_inertia;
   double final_angular_velocity = body_get_final_angular_velocity(body, dt);
-  //double new_angle = body->angle + body_find_delta_angle(body->angular_velocity, final_angular_velocity, dt);
+  // double new_angle = body->angle +
+  // body_find_delta_angle(body->angular_velocity, final_angular_velocity, dt);
   polygon_rotate(
       body->polygon,
       body_find_delta_angle(body->angular_velocity, final_angular_velocity, dt),
