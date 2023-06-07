@@ -139,6 +139,8 @@ void body_set_rotation(body_t *body, double angle);
  */
 void body_add_force(body_t *body, vector_t force);
 
+vector_t body_get_force(body_t *body);
+
 /**
  * Applies an impulse to a body.
  * An impulse causes an instantaneous change in velocity,
