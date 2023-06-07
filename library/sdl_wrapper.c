@@ -102,6 +102,10 @@ char get_keycode(SDL_Keycode key) {
   }
 }
 
+// char get_mousecode(SDL_MouseButtonEvent) {
+
+// }
+
 void sdl_init(vector_t min, vector_t max) {
   // Check parameters
   assert(min.x < max.x);

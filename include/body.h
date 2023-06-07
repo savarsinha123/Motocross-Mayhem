@@ -80,6 +80,13 @@ vector_t body_get_velocity(body_t *body);
 double body_get_mass(body_t *body);
 
 /**
+ * Returns the moment of inertia of a desired body
+ *
+ * @param body the body to get the moment of inertia for
+ */
+double body_get_moment_of_inertia(body_t *body);
+
+/**
  * Gets the display color of a body.
  *
  * @param body a pointer to a body returned from body_init()
@@ -132,6 +139,8 @@ void body_set_rotation(body_t *body, double angle);
  */
 void body_add_force(body_t *body, vector_t force);
 
+vector_t body_get_force(body_t *body);
+
 /**
  * Applies an impulse to a body.
  * An impulse causes an instantaneous change in velocity,
@@ -143,6 +152,77 @@ void body_add_force(body_t *body, vector_t force);
  * @param impulse the impulse vector to apply
  */
 void body_add_impulse(body_t *body, vector_t impulse);
+
+/**
+ * Sets the moment of inertia of a body (about the centorid)
+ *
+ * @param body a pointer to athe body to change the moment of inertia of
+ * @param moment the body's new moment of inertia
+ */
+void body_set_normal_moment_of_inertia(body_t *body, double moment);
+
+/**
+ * Sets the current angular velocity of a given body
+ *
+ * @param body the body to set the angular velocity of
+ * @param angular_velocity the angular velocity to set for the given body
+ */
+void body_set_angular_velocity(body_t *body, double angular_velocity);
+
+/**
+ * Sets the current angular acceleration of a given body
+ *
+ * @param body the pointer to the body to set the angular acceleration of
+ * @param angular_acceleration the angular acceleration to set for the given
+ * body
+ */
+void body_set_angular_acceleration(body_t *body, double angular_acceleration);
+
+/**
+ * Increments the angular velocity of a given body in a certain direction by a
+ * certain amount
+ *
+ * @param body a pointer to the body to increment the angular velocity of
+ * @param increment the amount by which to increment the angular velocity
+ * (clockwise is positive and counterclockwise is negative)
+ */
+void body_increment_angular_velocity(body_t *body, double increment);
+
+/**
+ * Applies a torque to a body over the current tick.
+ * If multiple torques are applied in the same tick, they are added.
+ * Does not change the body's position or velocity; see body_tick().
+ *
+ * @param body the body to add the torque onto
+ * @param torque the torque to apply
+ */
+void body_add_torque(body_t *body, double torque);
+
+/**
+ * Adds an angular impulse to a body over the current tick
+ *
+ * @param body a pointer to the body to apply the impulse to
+ * @param angular_impulse the impulse to apply
+ */
+void body_add_angular_impulse(body_t *body, double angular_impulse);
+
+/**
+ * Sets the pivot point for rotation for a given body (away from its centroid)
+ * Also changes the moment of inertia accordingly
+ *
+ * @param body a pointer to the body to change the current pivot of
+ * @param pivot the point to instantiate as the new pivot point
+ */
+
+void body_set_pivot(body_t *body, vector_t pivot);
+
+/**
+ * Resets the pivot point of rotation back to the centroid of a body
+ * Also resets the moment of inertia to its default (through the centroid)
+ *
+ * @param body a pointer to the body to reset the pivot point for
+ */
+void body_reset_pivot(body_t *body);
 
 /**
  * Updates the body after a given time interval has elapsed.
@@ -162,7 +242,7 @@ void body_tick(body_t *body, double dt);
  * Does not free the body.
  * If the body is already marked for removal, does nothing.
  *
- * @param body the body to mark for removal
+ * @param body a pointer to the body to mark for removal
  */
 void body_remove(body_t *body);
 
@@ -171,7 +251,7 @@ void body_remove(body_t *body);
  * This function returns false until body_remove() is called on the body,
  * and returns true afterwards.
  *
- * @param body the body to check
+ * @param body a pointer to the body to check
  * @return whether body_remove() has been called on the body
  */
 bool body_is_removed(body_t *body);

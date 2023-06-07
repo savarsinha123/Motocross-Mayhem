@@ -14,6 +14,8 @@
 typedef void (*collision_handler_t)(body_t *body1, body_t *body2, vector_t axis,
                                     void *aux);
 
+void create_applied(scene_t *scene, vector_t force, body_t *body);
+
 /**
  * Adds a force creator to a scene that applies gravity between two bodies.
  * The force creator will be called each tick
@@ -30,6 +32,19 @@ typedef void (*collision_handler_t)(body_t *body1, body_t *body2, vector_t axis,
  */
 void create_newtonian_gravity(scene_t *scene, double G, body_t *body1,
                               body_t *body2);
+
+/**
+ * Adds a force creator to a scene that applies downward gravity to a body.
+ * The force creator will be called each tick
+ * to compute the gravitational force on the body.
+ *
+ * @param scene the scene containing the bodies
+ * @param g the acceleration due to gravity
+ * @param body the body
+ */
+void create_downwards_gravity(scene_t *scene, double g, body_t *body);
+
+void create_normal(scene_t *scene, body_t *body1, body_t *body2);
 
 /**
  * Adds a force creator to a scene that acts like a spring between two bodies.

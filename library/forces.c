@@ -14,6 +14,11 @@ typedef struct force_arg {
   list_t *bodies;
 } force_arg_t;
 
+typedef struct applied_force_arg {
+  vector_t force;
+  list_t *bodies;
+} applied_force_arg_t;
+
 typedef struct collision_arg {
   body_t *body1;
   body_t *body2;
@@ -28,6 +33,12 @@ void collision_arg_free(collision_arg_t *collision_arg) {
     collision_arg->freer(collision_arg->aux);
   }
   free(collision_arg);
+}
+
+void applied_force_creator(void *aux) {
+  vector_t force = ((applied_force_arg_t *)aux)->force;
+  body_t *body = list_get(((applied_force_arg_t *)aux)->bodies, 0);
+  body_add_force(body, force);
 }
 
 void newtonian_gravity_creator(void *aux) {
@@ -48,6 +59,31 @@ void newtonian_gravity_creator(void *aux) {
     body_add_force(body1, vec_multiply(gravity_magn, direction));
     body_add_force(body2, vec_multiply(-gravity_magn, direction));
   }
+}
+
+void downwards_gravity_creator(void *aux) {
+  double g = ((force_arg_t *) aux)->constant;
+  body_t *body = list_get(((force_arg_t *) aux)->bodies, 0);
+  vector_t gravity_vector = {
+    .x = 0,
+    .y = -body_get_mass(body) * g
+  };
+  body_add_force(body, gravity_vector);
+}
+
+void normal_creator(void *aux) {
+  list_t *bodies = ((force_arg_t *)aux)->bodies;
+  body_t *body = list_get(bodies, 0);
+  body_t *surface = list_get(bodies, 1);
+  list_t *body_shape = body_get_shape(body);
+  list_t *surface_shape = body_get_shape(surface);
+  collision_info_t collision = find_collision(body_shape, surface_shape);
+  if (collision.collided) {
+    vector_t normal_force = vec_multiply(-vec_scalar_project(body_get_force(body), collision.axis) / vec_magn(collision.axis), collision.axis);
+    body_add_force(body, normal_force);
+  }
+  list_free(body_shape);
+  list_free(surface_shape);
 }
 
 void spring_creator(void *aux) {
@@ -108,15 +144,27 @@ void collision_creator(void *aux) {
   list_t *shape1 = body_get_shape(collision_arg->body1);
   list_t *shape2 = body_get_shape(collision_arg->body2);
   collision_info_t collision = find_collision(shape1, shape2);
-  if (collision.collided && !collision_arg->has_collided) {
+  // if (collision.collided && !collision_arg->has_collided) {
+  if (collision.collided) {
     collision_arg->handler(collision_arg->body1, collision_arg->body2,
                            collision.axis, collision_arg->aux);
     collision_arg->has_collided = true;
-  } else if (!collision.collided) {
-    collision_arg->has_collided = false;
-  }
+  }// else if (!collision.collided) {
+  //   collision_arg->has_collided = false;
+  // }
   list_free(shape1);
   list_free(shape2);
+}
+
+void create_applied(scene_t *scene, vector_t force, body_t *body) {
+  list_t *bodies = list_init(1, NULL);
+  list_add(bodies, body);
+  applied_force_arg_t *force_args = malloc(sizeof(applied_force_arg_t));
+  *force_args = (applied_force_arg_t) {
+    .force = force,
+    .bodies = bodies
+  };
+  scene_add_bodies_force_creator(scene, applied_force_creator, force_args, bodies, free);
 }
 
 void create_newtonian_gravity(scene_t *scene, double G, body_t *body1,
@@ -128,6 +176,23 @@ void create_newtonian_gravity(scene_t *scene, double G, body_t *body1,
   *gravity_args = (force_arg_t){.constant = G, .bodies = bodies};
   scene_add_bodies_force_creator(scene, newtonian_gravity_creator, gravity_args,
                                  bodies, (free_func_t)free);
+}
+
+void create_downwards_gravity(scene_t *scene, double g, body_t *body) {
+  list_t *bodies = list_init(1, NULL);
+  list_add(bodies, body);
+  force_arg_t *gravity_args = malloc(sizeof(force_arg_t));
+  *gravity_args = (force_arg_t){.constant = g, .bodies = bodies};
+  scene_add_bodies_force_creator(scene, downwards_gravity_creator, gravity_args, bodies, free);
+}
+
+void create_normal(scene_t *scene, body_t *body, body_t *surface) {
+  list_t *bodies = list_init(2, NULL);
+  list_add(bodies, body);
+  list_add(bodies, surface);
+  force_arg_t *normal_args = malloc(sizeof(force_arg_t));
+  *normal_args = (force_arg_t){.constant = 0.0, .bodies = bodies};
+  scene_add_bodies_force_creator(scene, normal_creator, normal_args, bodies, free);
 }
 
 void create_spring(scene_t *scene, double k, body_t *body1, body_t *body2) {
