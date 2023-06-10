@@ -154,6 +154,24 @@ vector_t body_get_force(body_t *body);
 void body_add_impulse(body_t *body, vector_t impulse);
 
 /**
+ * Gets the final angular velocity of a body after a tick of time dt
+ *
+ * @param body a pointer to a body to find the final angular velocity of
+ * @param dt the time separation between ticks
+ */
+double body_get_final_angular_velocity(body_t *body, double dt);
+
+/**
+ * Gets the change in angle of a body after a tick of time dt
+ *
+ * @param curr_angular_vel current angular velocity
+ * @param new_angular_vel the final angular velocity after the tick
+ * @param dt the time separation between ticks
+ */
+double body_find_delta_angle(double curr_angular_vel, double new_angular_vel,
+                             double dt);
+
+/**
  * Sets the moment of inertia of a body (about the centorid)
  *
  * @param body a pointer to athe body to change the moment of inertia of
