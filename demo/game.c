@@ -23,6 +23,11 @@ typedef struct state {
 
 // helper functions
 
+// basic track building
+list_t *build_track() {
+  return NULL;
+}
+
 // key handler function
 void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
   // TODO: key handlers
