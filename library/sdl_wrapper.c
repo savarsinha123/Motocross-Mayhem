@@ -105,8 +105,7 @@ char get_keycode(SDL_Keycode key) {
 }
 
 char get_mousecode(uint8_t button) {
-  switch (button)
-  {
+  switch (button) {
   case SDL_BUTTON_LEFT:
     return LEFT_CLICK;
   case SDL_BUTTON_RIGHT:
@@ -172,17 +171,22 @@ bool sdl_is_done(state_t *state) {
       // if (!event->button.padding1 ) {
       //   key_start_timestamp = timestamp;
       // }
-      mouse_event_type_t mouse_type = event->type == SDL_MOUSEBUTTONDOWN ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_RELEASED;
+      mouse_event_type_t mouse_type = event->type == SDL_MOUSEBUTTONDOWN
+                                          ? MOUSE_BUTTON_PRESSED
+                                          : MOUSE_BUTTON_RELEASED;
       // double held_time = (timestamp - key_start_timestamp) / MS_PER_S;
       vector_t window_center = get_window_center();
       double x_scale = window_center.x / max_diff.x,
-         y_scale = window_center.y / max_diff.y;
+             y_scale = window_center.y / max_diff.y;
       double scale = get_scene_scale(window_center);
       if (scale == x_scale) {
-        //mouse_handler(state, mouse_button, mouse_type, (event->button.x) / x_scale, (WINDOW_HEIGHT - event->button.y) / y_scale);
-      }
-      else {
-        mouse_handler(state, mouse_button, mouse_type, (event->button.x) / x_scale - WINDOW_WIDTH * x_scale * x_scale, (WINDOW_HEIGHT - event->button.y) / y_scale);
+        // mouse_handler(state, mouse_button, mouse_type, (event->button.x) /
+        // x_scale, (WINDOW_HEIGHT - event->button.y) / y_scale);
+      } else {
+        mouse_handler(state, mouse_button, mouse_type,
+                      (event->button.x) / x_scale -
+                          WINDOW_WIDTH * x_scale * x_scale,
+                      (WINDOW_HEIGHT - event->button.y) / y_scale);
       }
       break;
     }
@@ -192,23 +196,25 @@ bool sdl_is_done(state_t *state) {
 }
 
 void sdl_write_text() {
-  //this opens a font style and sets a size
+  // this opens a font style and sets a size
   // TTF_Font* sans = TTF_OpenFont("Sans.ttf", 24);
 
   // this is the color in rgb format,
   // maxing out all would give you the color white,
   // and it will be your text's color
-  //SDL_Color white = {255, 255, 255};
+  // SDL_Color white = {255, 255, 255};
 
   // as TTF_RenderText_Solid could only be used on
   // SDL_Surface then you have to create the surface first
-  // SDL_Surface* surface_message = TTF_RenderText_Solid(sans, "put your text here", white); 
+  // SDL_Surface* surface_message = TTF_RenderText_Solid(sans, "put your text
+  // here", white);
 
   // now you can convert it into a texture
-  // SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface_message);
+  // SDL_Texture* message = SDL_CreateTextureFromSurface(renderer,
+  // surface_message);
 
   // SDL_Rect message_rect; //create a rect
-  // message_rect.x = 0;  //controls the rect's x coordinate 
+  // message_rect.x = 0;  //controls the rect's x coordinate
   // message_rect.y = 0; // controls the rect's y coordinte
   // message_rect.w = 100; // controls the width of the rect
   // message_rect.h = 100; // controls the height of the rect

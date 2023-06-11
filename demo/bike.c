@@ -333,8 +333,7 @@ list_t *make_bike_shape() {
     } else if (i == 35) {
       section_thirty_five(shape, COORDS[i], COORDS[i + 1],
                           PROPORTIONS[j] * BIKE_NUM_POINTS);
-    } 
-    else {
+    } else {
       vector_t *coord = malloc(sizeof(vector_t));
       *coord = COORDS[i];
       list_add(shape, coord);

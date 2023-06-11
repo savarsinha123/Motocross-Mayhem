@@ -17,10 +17,7 @@ typedef enum {
   SPACE = 5
 } arrow_key_t;
 
-typedef enum {
-  LEFT_CLICK = 1,
-  RIGHT_CLICK = 2
-} mouse_button_t;
+typedef enum { LEFT_CLICK = 1, RIGHT_CLICK = 2 } mouse_button_t;
 
 /**
  * The possible types of key events.
@@ -46,7 +43,8 @@ typedef enum { MOUSE_BUTTON_PRESSED, MOUSE_BUTTON_RELEASED } mouse_event_type_t;
 typedef void (*key_handler_t)(state_t *state, char key, key_event_type_t type,
                               double held_time);
 
-typedef void (*mouse_handler_t)(state_t *state, char mouse_button, mouse_event_type_t type, double x, double y);
+typedef void (*mouse_handler_t)(state_t *state, char mouse_button,
+                                mouse_event_type_t type, double x, double y);
 
 /**
  * Initializes the SDL window and renderer.

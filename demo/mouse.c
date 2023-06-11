@@ -60,22 +60,23 @@ body_t *make_brick(double height, double width, rgb_color_t color) {
   return brick;
 }
 
-void on_mouse(state_t *state, char mouse_button, mouse_event_type_t type, double x, double y) {
-    body_t *body;
-    if (type == MOUSE_BUTTON_PRESSED) {
-        switch(mouse_button) {
-        case LEFT_CLICK:
-            body = make_brick(BRICK_HEIGHT, BRICK_WIDTH, BLUE);
-            body_set_centroid(body, (vector_t) { x, y });
-            scene_add_body(state->scene, body);
-            break;
-        case RIGHT_CLICK:
-            body = make_brick(BRICK_WIDTH, BRICK_HEIGHT, RED);
-            body_set_centroid(body, (vector_t) { x, y });
-            scene_add_body(state->scene, body);
-            break;
-        }
+void on_mouse(state_t *state, char mouse_button, mouse_event_type_t type,
+              double x, double y) {
+  body_t *body;
+  if (type == MOUSE_BUTTON_PRESSED) {
+    switch (mouse_button) {
+    case LEFT_CLICK:
+      body = make_brick(BRICK_HEIGHT, BRICK_WIDTH, BLUE);
+      body_set_centroid(body, (vector_t){x, y});
+      scene_add_body(state->scene, body);
+      break;
+    case RIGHT_CLICK:
+      body = make_brick(BRICK_WIDTH, BRICK_HEIGHT, RED);
+      body_set_centroid(body, (vector_t){x, y});
+      scene_add_body(state->scene, body);
+      break;
     }
+  }
 }
 
 state_t *emscripten_init() {
@@ -86,7 +87,7 @@ state_t *emscripten_init() {
 
   state_t *state = malloc(sizeof(state_t));
   state->scene = scene_init();
-  //initialize_body_list(state->scene);
+  // initialize_body_list(state->scene);
   return state;
 }
 

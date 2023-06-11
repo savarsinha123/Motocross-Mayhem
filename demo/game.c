@@ -86,7 +86,8 @@ const double y = 22 / 10.0;
 // track constants
 const double TRACK_HEIGHT = 20.0;
 const double TRACK_MASS = INFINITY;
-const rgb_color_t TRACK_COLOR = {0.545098039216, 0.270588235294, 0.0745098039216};
+const rgb_color_t TRACK_COLOR = {0.545098039216, 0.270588235294,
+                                 0.0745098039216};
 
 const double GRAVITATIONAL_ACCELERATION = 100.0;
 const double SUSPENSION_CONSTANT = 10000.0;
@@ -364,7 +365,7 @@ list_t *make_bike_shape() {
 
 list_t *scale_polygon(double scalar, list_t *list) {
   list_t *scaled_polygon = list_init(list_size(list), free);
-  for(size_t i = 0; i < list_size(list); i++) {
+  for (size_t i = 0; i < list_size(list); i++) {
     vector_t *new_vector = malloc(sizeof(vector_t));
     *new_vector = vec_multiply(scalar, *(vector_t *)list_get(list, i));
     list_add(scaled_polygon, new_vector);
@@ -382,8 +383,11 @@ body_t *make_bike(state_t *state) {
   state->front_anchor = list_get(scaled_shape, right_index);
   body_type_t *type = malloc(sizeof(*type));
   *type = BIKE;
-  body_t *bike = body_init_with_info(scaled_shape, BIKE_MASS, BIKE_COLOR, type, free);
-  double x = (body_get_centroid(state->back_wheel).x + body_get_centroid(state->front_wheel).x) / 2.0;
+  body_t *bike =
+      body_init_with_info(scaled_shape, BIKE_MASS, BIKE_COLOR, type, free);
+  double x = (body_get_centroid(state->back_wheel).x +
+              body_get_centroid(state->front_wheel).x) /
+             2.0;
   body_set_centroid(bike, (vector_t){x, 25});
   return bike;
 }
@@ -393,7 +397,7 @@ body_t *make_bike(state_t *state) {
 //   state->front_anchor = body_get_centroid(state->front_wheel);
 // }
 
-void initialize_bike(state_t *state) { 
+void initialize_bike(state_t *state) {
   state->back_wheel = make_wheel(x_back, y, BACK_WHEEL);
   state->front_wheel = make_wheel(x_front, y, FRONT_WHEEL);
   // set_anchors(state);
@@ -404,10 +408,14 @@ void initialize_bike(state_t *state) {
 }
 
 void move_bike(state_t *state, vector_t position) {
-  vector_t translation = vec_subtract(position, body_get_centroid(state->bike_body));
+  vector_t translation =
+      vec_subtract(position, body_get_centroid(state->bike_body));
   body_set_centroid(state->bike_body, position);
-  body_set_centroid(state->back_wheel, vec_add(body_get_centroid(state->back_wheel), translation));
-  body_set_centroid(state->front_wheel, vec_add(body_get_centroid(state->front_wheel), translation));
+  body_set_centroid(state->back_wheel,
+                    vec_add(body_get_centroid(state->back_wheel), translation));
+  body_set_centroid(
+      state->front_wheel,
+      vec_add(body_get_centroid(state->front_wheel), translation));
   // set_anchors(state);
 }
 
@@ -452,7 +460,8 @@ void initialize_body_list(scene_t *scene) {
   // body_set_centroid(body, (vector_t){WINDOW.x / 2.0, WINDOW.y});
   // scene_add_body(scene, body);
   // initialize_wheels();
-  body_t *track1 = body_init(make_actual_track(), TRACK_MASS, (rgb_color_t) { 0, 0, 0 });
+  body_t *track1 =
+      body_init(make_actual_track(), TRACK_MASS, (rgb_color_t){0, 0, 0});
   body_t *track2 = body_init(make_track(), TRACK_MASS, TRACK_COLOR);
   scene_add_body(scene, track1);
   scene_add_body(scene, track2);
@@ -471,30 +480,39 @@ typedef struct bike_rotate_args {
   double angular_velocity;
 } bike_rotate_args_t;
 
-void wheel_ground_collision(body_t *wheel, body_t *track, vector_t axis, void *aux) {
+void wheel_ground_collision(body_t *wheel, body_t *track, vector_t axis,
+                            void *aux) {
   bike_rotate_args_t *args = aux;
   list_t *wheel_shape = body_get_shape(wheel);
   list_t *track_shape = body_get_shape(track);
   collision_info_t collision = find_collision(wheel_shape, track_shape);
-  double angle_diff = body_get_rotation(args->state->bike_body) - vec_angle(axis); 
+  double angle_diff =
+      body_get_rotation(args->state->bike_body) - vec_angle(axis);
   if (!double_is_close(fabs(angle_diff), M_PI / 2, 1e-5)) {
-    //body_set_rotation(args->state->bike_body, M_PI / 2);
+    // body_set_rotation(args->state->bike_body, M_PI / 2);
     body_type_t *type = body_get_info(wheel);
     if (*type == BACK_WHEEL) {
-      body_set_pivot(args->state->bike_body, body_get_centroid(args->state->back_wheel));
-      body_set_pivot(args->state->front_wheel, body_get_centroid(args->state->back_wheel));
-      body_increment_angular_velocity(args->state->bike_body, args->angular_velocity);
-      body_increment_angular_velocity(args->state->front_wheel, args->angular_velocity);
+      body_set_pivot(args->state->bike_body,
+                     body_get_centroid(args->state->back_wheel));
+      body_set_pivot(args->state->front_wheel,
+                     body_get_centroid(args->state->back_wheel));
+      body_increment_angular_velocity(args->state->bike_body,
+                                      args->angular_velocity);
+      body_increment_angular_velocity(args->state->front_wheel,
+                                      args->angular_velocity);
       body_set_angular_velocity(args->state->back_wheel, 0.0);
     } else {
-      body_set_pivot(args->state->bike_body, body_get_centroid(args->state->front_wheel));
-      body_set_pivot(args->state->back_wheel, body_get_centroid(args->state->front_wheel));
-      body_increment_angular_velocity(args->state->bike_body, args->angular_velocity);
-      body_increment_angular_velocity(args->state->back_wheel, args->angular_velocity);
+      body_set_pivot(args->state->bike_body,
+                     body_get_centroid(args->state->front_wheel));
+      body_set_pivot(args->state->back_wheel,
+                     body_get_centroid(args->state->front_wheel));
+      body_increment_angular_velocity(args->state->bike_body,
+                                      args->angular_velocity);
+      body_increment_angular_velocity(args->state->back_wheel,
+                                      args->angular_velocity);
       body_set_angular_velocity(args->state->front_wheel, 0.0);
     }
-  }
-  else {
+  } else {
     body_set_angular_velocity(args->state->bike_body, 0.0);
     body_set_angular_velocity(args->state->back_wheel, 0.0);
     body_set_angular_velocity(args->state->front_wheel, 0.0);
@@ -510,14 +528,15 @@ void wheel_ground_collision(body_t *wheel, body_t *track, vector_t axis, void *a
   //   body_t *track_piece = scene_get_body(state->scene, i);
   //   body_type_t *type = body_get_info(track_piece);
   //   if (*type == TRACK) {
-  //     collision_info_t back_collision = find_collision(back_wheel, track_piece);
-  //     collision_info_t front_collision = find_collision(front_wheel, track_piece);
-  //     if ()
+  //     collision_info_t back_collision = find_collision(back_wheel,
+  //     track_piece); collision_info_t front_collision =
+  //     find_collision(front_wheel, track_piece); if ()
   //   }
   // }
 }
 
-void create_wheel_collision(scene_t *scene, body_t *wheel, body_t *track, state_t *state, double angular_velocity) {
+void create_wheel_collision(scene_t *scene, body_t *wheel, body_t *track,
+                            state_t *state, double angular_velocity) {
   bike_rotate_args_t *aux = malloc(sizeof(bike_rotate_args_t));
   aux->angular_velocity = angular_velocity;
   aux->state = state;
@@ -525,28 +544,55 @@ void create_wheel_collision(scene_t *scene, body_t *wheel, body_t *track, state_
 }
 
 void initialize_force_list(state_t *state) {
-  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION, state->bike_body);
-  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION, state->front_wheel);
-  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION, state->back_wheel);
-  create_suspension(state->scene, SUSPENSION_CONSTANT, vec_magn(vec_subtract(*state->back_anchor, body_get_centroid(state->back_wheel))), state->back_wheel, state->bike_body, state->back_anchor);
-  create_suspension(state->scene, SUSPENSION_CONSTANT, vec_magn(vec_subtract(*state->front_anchor, body_get_centroid(state->front_wheel))), state->front_wheel, state->bike_body, state->front_anchor);
-  create_physics_collision(state->scene, 0.0, state->bike_body, state->front_wheel);
-  create_physics_collision(state->scene, 0.0, state->bike_body, state->back_wheel);
-  create_physics_collision(state->scene, 0.0, state->bike_body, scene_get_body(state->scene, 3));
-  create_physics_collision(state->scene, 0.0, state->front_wheel, scene_get_body(state->scene, 3));
-  create_physics_collision(state->scene, 0.0, state->back_wheel, scene_get_body(state->scene, 3));
-  create_wheel_collision(state->scene, state->back_wheel, scene_get_body(state->scene, 3), state, -1);
-  create_wheel_collision(state->scene, state->front_wheel, scene_get_body(state->scene, 3), state, 1);
-  create_normal(state->scene, state->bike_body, scene_get_body(state->scene, 3));
-  create_normal(state->scene, state->front_wheel, scene_get_body(state->scene, 3));
-  create_normal(state->scene, state->back_wheel, scene_get_body(state->scene, 3));
+  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION,
+                           state->bike_body);
+  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION,
+                           state->front_wheel);
+  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION,
+                           state->back_wheel);
+  create_suspension(
+      state->scene, SUSPENSION_CONSTANT,
+      vec_magn(vec_subtract(*state->back_anchor,
+                            body_get_centroid(state->back_wheel))),
+      state->back_wheel, state->bike_body, state->back_anchor);
+  create_suspension(
+      state->scene, SUSPENSION_CONSTANT,
+      vec_magn(vec_subtract(*state->front_anchor,
+                            body_get_centroid(state->front_wheel))),
+      state->front_wheel, state->bike_body, state->front_anchor);
+  create_physics_collision(state->scene, 0.0, state->bike_body,
+                           state->front_wheel);
+  create_physics_collision(state->scene, 0.0, state->bike_body,
+                           state->back_wheel);
+  create_physics_collision(state->scene, 0.0, state->bike_body,
+                           scene_get_body(state->scene, 3));
+  create_physics_collision(state->scene, 0.0, state->front_wheel,
+                           scene_get_body(state->scene, 3));
+  create_physics_collision(state->scene, 0.0, state->back_wheel,
+                           scene_get_body(state->scene, 3));
+  create_wheel_collision(state->scene, state->back_wheel,
+                         scene_get_body(state->scene, 3), state, -1);
+  create_wheel_collision(state->scene, state->front_wheel,
+                         scene_get_body(state->scene, 3), state, 1);
+  create_normal(state->scene, state->bike_body,
+                scene_get_body(state->scene, 3));
+  create_normal(state->scene, state->front_wheel,
+                scene_get_body(state->scene, 3));
+  create_normal(state->scene, state->back_wheel,
+                scene_get_body(state->scene, 3));
 
-  create_physics_collision(state->scene, 0.0, state->bike_body, scene_get_body(state->scene, 4));
-  create_physics_collision(state->scene, 0.0, state->front_wheel, scene_get_body(state->scene, 4));
-  create_physics_collision(state->scene, 0.0, state->back_wheel, scene_get_body(state->scene, 4));
-  create_normal(state->scene, state->bike_body, scene_get_body(state->scene, 4));
-  create_normal(state->scene, state->front_wheel, scene_get_body(state->scene, 4));
-  create_normal(state->scene, state->back_wheel, scene_get_body(state->scene, 4));
+  create_physics_collision(state->scene, 0.0, state->bike_body,
+                           scene_get_body(state->scene, 4));
+  create_physics_collision(state->scene, 0.0, state->front_wheel,
+                           scene_get_body(state->scene, 4));
+  create_physics_collision(state->scene, 0.0, state->back_wheel,
+                           scene_get_body(state->scene, 4));
+  create_normal(state->scene, state->bike_body,
+                scene_get_body(state->scene, 4));
+  create_normal(state->scene, state->front_wheel,
+                scene_get_body(state->scene, 4));
+  create_normal(state->scene, state->back_wheel,
+                scene_get_body(state->scene, 4));
 }
 
 // key handler function
@@ -569,7 +615,7 @@ state_t *emscripten_init() {
   return state;
 }
 
-void emscripten_main(state_t *state) { 
+void emscripten_main(state_t *state) {
   double dt = time_since_last_tick();
   sdl_move_window(body_get_centroid(state->bike_body));
   scene_tick(state->scene, dt);

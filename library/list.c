@@ -69,7 +69,7 @@ void *list_remove(list_t *list, size_t idx) {
 }
 
 void list_append(list_t *list1, list_t *list2) {
-  for(size_t i = 0; i < list_size(list2); i++) {
+  for (size_t i = 0; i < list_size(list2); i++) {
     list_add(list1, list_get(list2, i));
   }
 }
