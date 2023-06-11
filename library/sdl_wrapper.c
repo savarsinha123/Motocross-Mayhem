@@ -1,6 +1,7 @@
 #include "sdl_wrapper.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_ttf.h>
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
@@ -31,6 +32,7 @@ SDL_Renderer *renderer;
  * The keypress handler, or NULL if none has been configured.
  */
 key_handler_t key_handler = NULL;
+mouse_handler_t mouse_handler = NULL;
 /**
  * SDL's timestamp when a key was last pressed or released.
  * Used to mesasure how long a key has been held.
@@ -102,9 +104,17 @@ char get_keycode(SDL_Keycode key) {
   }
 }
 
-// char get_mousecode(SDL_MouseButtonEvent) {
-
-// }
+char get_mousecode(uint8_t button) {
+  switch (button)
+  {
+  case SDL_BUTTON_LEFT:
+    return LEFT_CLICK;
+  case SDL_BUTTON_RIGHT:
+    return RIGHT_CLICK;
+  default:
+    return 0;
+  }
+}
 
 void sdl_init(vector_t min, vector_t max) {
   // Check parameters
@@ -114,6 +124,7 @@ void sdl_init(vector_t min, vector_t max) {
   center = vec_multiply(0.5, vec_add(min, max));
   max_diff = vec_subtract(max, center);
   SDL_Init(SDL_INIT_EVERYTHING);
+  TTF_Init();
   window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED,
                             SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
                             SDL_WINDOW_RESIZABLE);
@@ -149,10 +160,75 @@ bool sdl_is_done(state_t *state) {
       double held_time = (timestamp - key_start_timestamp) / MS_PER_S;
       key_handler(state, key, type, held_time);
       break;
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+      if (mouse_handler == NULL)
+        break;
+      char mouse_button = get_mousecode(event->button.button);
+      if (mouse_button == 0)
+        break;
+
+      // uint32_t timestamp = event->button.timestamp;
+      // if (!event->button.padding1 ) {
+      //   key_start_timestamp = timestamp;
+      // }
+      mouse_event_type_t mouse_type = event->type == SDL_MOUSEBUTTONDOWN ? MOUSE_BUTTON_PRESSED : MOUSE_BUTTON_RELEASED;
+      // double held_time = (timestamp - key_start_timestamp) / MS_PER_S;
+      vector_t window_center = get_window_center();
+      double x_scale = window_center.x / max_diff.x,
+         y_scale = window_center.y / max_diff.y;
+      double scale = get_scene_scale(window_center);
+      if (scale == x_scale) {
+        //mouse_handler(state, mouse_button, mouse_type, (event->button.x) / x_scale, (WINDOW_HEIGHT - event->button.y) / y_scale);
+      }
+      else {
+        mouse_handler(state, mouse_button, mouse_type, (event->button.x) / x_scale - WINDOW_WIDTH * x_scale * x_scale, (WINDOW_HEIGHT - event->button.y) / y_scale);
+      }
+      break;
     }
   }
   free(event);
   return false;
+}
+
+void sdl_write_text() {
+  //this opens a font style and sets a size
+  // TTF_Font* sans = TTF_OpenFont("Sans.ttf", 24);
+
+  // this is the color in rgb format,
+  // maxing out all would give you the color white,
+  // and it will be your text's color
+  //SDL_Color white = {255, 255, 255};
+
+  // as TTF_RenderText_Solid could only be used on
+  // SDL_Surface then you have to create the surface first
+  // SDL_Surface* surface_message = TTF_RenderText_Solid(sans, "put your text here", white); 
+
+  // now you can convert it into a texture
+  // SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface_message);
+
+  // SDL_Rect message_rect; //create a rect
+  // message_rect.x = 0;  //controls the rect's x coordinate 
+  // message_rect.y = 0; // controls the rect's y coordinte
+  // message_rect.w = 100; // controls the width of the rect
+  // message_rect.h = 100; // controls the height of the rect
+
+  // (0,0) is on the top left of the window/screen,
+  // think a rect as the text's box,
+  // that way it would be very simple to understand
+
+  // Now since it's a texture, you have to put RenderCopy
+  // in your game loop area, the area where the whole code executes
+
+  // you put the renderer's name first, the Message,
+  // the crop size (you can ignore this if you don't want
+  // to dabble with cropping), and the rect which is the size
+  // and coordinate of your texture
+  // SDL_RenderCopy(renderer, message, NULL, &message_rect);
+
+  // // Don't forget to free your surface and texture
+  // SDL_FreeSurface(surface_message);
+  // SDL_DestroyTexture(message);
 }
 
 void sdl_clear(void) {
@@ -221,6 +297,8 @@ void sdl_render_scene(scene_t *scene) {
 }
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
+
+void sdl_on_mouse(mouse_handler_t handler) { mouse_handler = handler; }
 
 double time_since_last_tick(void) {
   clock_t now = clock();

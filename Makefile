@@ -1,5 +1,5 @@
 # List of demo programs
-DEMOS = bike game
+DEMOS = bike game ground rotation mouse
 # List of C files in "libraries" that we provide
 STAFF_LIBS = test_util sdl_wrapper
 # List of C files in "libraries" that you will write.
@@ -58,7 +58,7 @@ LIB_MATH = -lm
 # Compiler flags that link the program with the math library
 # Note that $(...) substitutes a variable's value, so this line is equivalent to
 # LIBS = -lm
-LIBS = $(LIB_MATH) $(shell sdl2-config --libs) -lSDL2_gfx
+LIBS = $(LIB_MATH) $(shell sdl2-config --libs) -lSDL2_gfx -lSDL2_ttf
 
 # List of compiled .o files corresponding to STUDENT_LIBS, e.g. "out/vector.o".
 # Don't worry about the syntax; it's just adding "out/" to the start

@@ -113,6 +113,10 @@ void body_set_rotation(body_t *body, double angle) {
   body->angle = angle;
 }
 
+double body_get_rotation(body_t *body) {
+  return body->angle;
+}
+
 void body_add_force(body_t *body, vector_t force) {
   body->force = vec_add(body->force, force);
 }
