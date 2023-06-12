@@ -31,15 +31,31 @@ typedef enum { LEFT_CLICK = 1, RIGHT_CLICK = 2 } mouse_button_t;
  */
 typedef enum { KEY_PRESSED, KEY_RELEASED } key_event_type_t;
 
+/**
+ * The possible types of mouse events.
+ */
 typedef enum { MOUSE_BUTTON_PRESSED, MOUSE_BUTTON_RELEASED } mouse_event_type_t;
 
+/**
+ * Input data type used for sdl_write_text
+ * @param string text to be shown
+ * @param position location of top left corner
+ * @param dim dimensions of text box
+ * @param color color of text
+ */
 typedef struct text_input {
   char *string;
+  size_t font_size;
   vector_t position;
   vector_t dim;
   rgb_color_t color;
 } text_input_t;
 
+/**
+ * Data type used to render text
+ * @param string text to be shown
+ * All other parameters are produced from sdl_write_text
+ */
 typedef struct text {
   char *string;
   SDL_Rect *message_rect;
@@ -60,6 +76,15 @@ typedef struct text {
 typedef void (*key_handler_t)(state_t *state, char key, key_event_type_t type,
                               double held_time);
 
+/**
+ * A mouse button handler.
+ * When a mouse button is pressed or released, the handler is passed its char value.
+ *
+ * @param mouse_button a character indicating which mouse button was pressed
+ * @param type the type of mouse button event (MOUSE_BUTTON_PRESSED or MOUSE_BUTTON_RELEASED)
+ * @param x x coordinate of mouse click
+ * @param y y coordinate of mouse click
+ */
 typedef void (*mouse_handler_t)(state_t *state, char mouse_button,
                                 mouse_event_type_t type, double x, double y);
 
@@ -72,6 +97,10 @@ typedef void (*mouse_handler_t)(state_t *state, char mouse_button,
  */
 void sdl_init(vector_t min, vector_t max);
 
+/**
+ * Moves center of window and simulates camera.
+ * @param position new center of window 
+ */
 void sdl_move_window(vector_t position);
 
 /**
@@ -82,8 +111,14 @@ void sdl_move_window(vector_t position);
  */
 bool sdl_is_done(state_t *state);
 
+/**
+ * Adds text to list of texts to be printed in sdl_render_scene. 
+ */
 void sdl_write_text(text_input_t text_input);
 
+/**
+ * Removes text from said list. 
+ */
 void sdl_remove_text(text_input_t text_input);
 
 /**
@@ -120,7 +155,7 @@ void sdl_render_scene(scene_t *scene);
  *
  * Example:
  * ```
- * void on_key(char key, key_event_type_t type, double held_time) {
+ * void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
  *     if (type == KEY_PRESSED) {
  *         switch (key) {
  *             case 'a':
@@ -142,6 +177,32 @@ void sdl_render_scene(scene_t *scene);
  */
 void sdl_on_key(key_handler_t handler);
 
+/**
+ * Registers a function to be called every time a mouse button is pressed.
+ * Overwrites any existing handler.
+ *
+ * Example:
+ * ```
+ * void on_mouse(state_t *state, char mouse_button, mouse_event_type_t type, double x, double y) {
+ *     if (type == MOUSE_BUTTON_PRESSED) {
+ *         switch (mouse_button) {
+ *             case LEFT_CLICK:
+ *                 printf("left button pressed\n");
+ *                 break;
+ *             case RIGHT_CLICK:
+ *                 printf("right button pressed\n");
+ *                 break;
+ *         }
+ *     }
+ * }
+ * int main(void) {
+ *     sdl_on_key(on_mouse);
+ *     while (!sdl_is_done());
+ * }
+ * ```
+ *
+ * @param handler the function to call with each key press
+ */
 void sdl_on_mouse(mouse_handler_t handler);
 
 /**

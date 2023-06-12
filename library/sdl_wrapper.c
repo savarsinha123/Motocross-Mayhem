@@ -219,7 +219,7 @@ SDL_Rect *create_message_rect(vector_t position, vector_t dim) {
 
 void sdl_write_text(text_input_t text_input) {
   // font style
-  TTF_Font *sans = TTF_OpenFont("assets/OpenSans-Regular.ttf", 96);
+  TTF_Font *sans = TTF_OpenFont("assets/OpenSans-Regular.ttf", text_input.font_size);
 
   // color of text
   Uint8 r = text_input.color.r * 255;
@@ -227,12 +227,11 @@ void sdl_write_text(text_input_t text_input) {
   Uint8 b = text_input.color.b * 255;
   SDL_Color sdl_color = {r, g, b};
 
-  // as TTF_RenderText_Solid could only be used on
-  // SDL_Surface then you have to create the surface first
+  // create surface
   SDL_Surface *surface_message =
       TTF_RenderText_Solid(sans, text_input.string, sdl_color);
 
-  // now you can convert it into a texture
+  // convert to texture
   SDL_Texture *message =
       SDL_CreateTextureFromSurface(renderer, surface_message);
   SDL_Rect *message_rect =
@@ -244,6 +243,7 @@ void sdl_write_text(text_input_t text_input) {
                         .surface_message = surface_message,
                         .message = message};
 
+  // add to list of text boxes
   list_add(text_list, text_args);
 }
 

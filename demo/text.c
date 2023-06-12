@@ -21,6 +21,7 @@ const double BRICK_MASS = 5;
 const double MOMENT = 0.75;
 const rgb_color_t GRAY = (rgb_color_t){0.5, 0.5, 0.5};
 const rgb_color_t TEXT_COLOR = (rgb_color_t){0, 0, 0};
+const size_t FONT_SIZE = 96;
 #define TEXT_POSITION1                                                         \
   (vector_t) { 0.0, WINDOW.y }
 #define TEXT_POSITION2 vec_multiply(0.5, WINDOW)
@@ -99,11 +100,13 @@ state_t *emscripten_init() {
   state->texts = list_init(2, free);
   text_input_t *text_input1 = malloc(sizeof(text_input_t));
   *text_input1 = (text_input_t){.string = "Hello World!",
+                                .font_size = FONT_SIZE,
                                 .position = TEXT_POSITION1,
                                 .dim = TEXT_DIMENSIONS,
                                 .color = TEXT_COLOR};
   text_input_t *text_input2 = malloc(sizeof(text_input_t));
   *text_input2 = (text_input_t){.string = "foo bar",
+                                .font_size = FONT_SIZE,
                                 .position = TEXT_POSITION2,
                                 .dim = TEXT_DIMENSIONS,
                                 .color = TEXT_COLOR};
