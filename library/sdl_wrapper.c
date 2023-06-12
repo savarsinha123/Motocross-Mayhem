@@ -219,7 +219,8 @@ SDL_Rect *create_message_rect(vector_t position, vector_t dim) {
 
 void sdl_write_text(text_input_t text_input) {
   // font style
-  TTF_Font *sans = TTF_OpenFont("assets/OpenSans-Regular.ttf", text_input.font_size);
+  TTF_Font *sans =
+      TTF_OpenFont("assets/OpenSans-Regular.ttf", text_input.font_size);
 
   // color of text
   Uint8 r = text_input.color.r * 255;
