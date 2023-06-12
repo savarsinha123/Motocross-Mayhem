@@ -3,11 +3,11 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
 #include <assert.h>
+#include <dirent.h>
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include <dirent.h>
 
 const char WINDOW_TITLE[] = "CS 3";
 const int WINDOW_WIDTH = 1000;
@@ -86,10 +86,8 @@ vector_t get_window_position(vector_t scene_pos, vector_t window_center) {
 }
 
 vector_t get_scene_position(vector_t pixel, vector_t window_center) {
-  vector_t pixel_center_offset = {
-    .x = window_center.x - pixel.x,
-    .y = window_center.y - pixel.y
-  };
+  vector_t pixel_center_offset = {.x = window_center.x - pixel.x,
+                                  .y = window_center.y - pixel.y};
   double scale = get_scene_scale(window_center);
   vector_t scene_center_offset = vec_multiply(1 / scale, pixel_center_offset);
   vector_t scene_pos = vec_add(scene_center_offset, center);
@@ -194,10 +192,11 @@ bool sdl_is_done(state_t *state) {
                                           ? MOUSE_BUTTON_PRESSED
                                           : MOUSE_BUTTON_RELEASED;
       vector_t window_center = get_window_center();
-      vector_t pixel = (vector_t) { event->button.x, event->button.y };
+      vector_t pixel = (vector_t){event->button.x, event->button.y};
       vector_t scene_pos = get_scene_position(pixel, window_center);
       double x_scale = window_center.x / max_diff.x;
-      mouse_handler(state, mouse_button, mouse_type, WINDOW_WIDTH / x_scale - scene_pos.x, scene_pos.y);
+      mouse_handler(state, mouse_button, mouse_type,
+                    WINDOW_WIDTH / x_scale - scene_pos.x, scene_pos.y);
       break;
     }
   }
@@ -206,10 +205,10 @@ bool sdl_is_done(state_t *state) {
 }
 
 SDL_Rect *create_message_rect(vector_t position, vector_t dim) {
-  SDL_Rect *message_rect = malloc(sizeof(SDL_Rect)); //create a rect
+  SDL_Rect *message_rect = malloc(sizeof(SDL_Rect)); // create a rect
   vector_t window_center = get_window_center();
   vector_t pixel = get_window_position(position, window_center);
-  message_rect->x = pixel.x;  //controls the rect's x coordinate
+  message_rect->x = pixel.x; // controls the rect's x coordinate
   message_rect->y = pixel.y; // controls the rect's y coordinte
   double x_scale = window_center.x / max_diff.x,
          y_scale = window_center.y / max_diff.y;
@@ -220,7 +219,7 @@ SDL_Rect *create_message_rect(vector_t position, vector_t dim) {
 
 void sdl_write_text(text_input_t text_input) {
   // font style
-  TTF_Font* sans = TTF_OpenFont("assets/OpenSans-Regular.ttf", 96);
+  TTF_Font *sans = TTF_OpenFont("assets/OpenSans-Regular.ttf", 96);
 
   // color of text
   Uint8 r = text_input.color.r * 255;
@@ -230,28 +229,31 @@ void sdl_write_text(text_input_t text_input) {
 
   // as TTF_RenderText_Solid could only be used on
   // SDL_Surface then you have to create the surface first
-  SDL_Surface* surface_message = TTF_RenderText_Solid(sans, text_input.string, sdl_color);
+  SDL_Surface *surface_message =
+      TTF_RenderText_Solid(sans, text_input.string, sdl_color);
 
   // now you can convert it into a texture
-  SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface_message);
-  SDL_Rect *message_rect = create_message_rect(text_input.position, text_input.dim);
+  SDL_Texture *message =
+      SDL_CreateTextureFromSurface(renderer, surface_message);
+  SDL_Rect *message_rect =
+      create_message_rect(text_input.position, text_input.dim);
 
   text_t *text_args = malloc(sizeof(text_t));
-  *text_args = (text_t) {
-    .string = text_input.string,
-    .message_rect = message_rect,
-    .surface_message = surface_message,
-    .message = message
-  };
+  *text_args = (text_t){.string = text_input.string,
+                        .message_rect = message_rect,
+                        .surface_message = surface_message,
+                        .message = message};
 
   list_add(text_list, text_args);
 }
 
 void sdl_remove_text(text_input_t text_input) {
-  SDL_Rect *message_rect = create_message_rect(text_input.position, text_input.dim);
-  for(size_t i = 0; i < list_size(text_list); i++) {
+  SDL_Rect *message_rect =
+      create_message_rect(text_input.position, text_input.dim);
+  for (size_t i = 0; i < list_size(text_list); i++) {
     text_t *text_args = list_get(text_list, i);
-    if (!strcmp(text_input.string, text_args->string) && SDL_RectEquals(message_rect, text_args->message_rect)) {
+    if (!strcmp(text_input.string, text_args->string) &&
+        SDL_RectEquals(message_rect, text_args->message_rect)) {
       text_t *removed_arg = list_remove(text_list, i);
       free_text(removed_arg);
       break;

@@ -6,10 +6,10 @@
 #include "scene.h"
 #include "state.h"
 #include "vector.h"
-#include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
+#include <stdbool.h>
 
 // Values passed to a key handler when the given arrow key is pressed
 typedef enum {
@@ -44,7 +44,7 @@ typedef struct text {
   char *string;
   SDL_Rect *message_rect;
   SDL_Surface *surface_message;
-  SDL_Texture *message ;
+  SDL_Texture *message;
 } text_t;
 
 /**

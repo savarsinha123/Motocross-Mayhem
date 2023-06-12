@@ -21,10 +21,15 @@ const double BRICK_MASS = 5;
 const double MOMENT = 0.75;
 const rgb_color_t GRAY = (rgb_color_t){0.5, 0.5, 0.5};
 const rgb_color_t TEXT_COLOR = (rgb_color_t){0, 0, 0};
-#define TEXT_POSITION1 (vector_t) { 0.0, WINDOW.y }
+#define TEXT_POSITION1                                                         \
+  (vector_t) { 0.0, WINDOW.y }
 #define TEXT_POSITION2 vec_multiply(0.5, WINDOW)
-const vector_t TEXT_DIMENSIONS = (vector_t) { 300.0, 100.0 };
-#define BRICK_POSITION (vector_t) { TEXT_POSITION2.x + 0.5 * TEXT_DIMENSIONS.x, TEXT_POSITION2.y - 0.5 * TEXT_DIMENSIONS.y }
+const vector_t TEXT_DIMENSIONS = (vector_t){300.0, 100.0};
+#define BRICK_POSITION                                                         \
+  (vector_t) {                                                                 \
+    TEXT_POSITION2.x + 0.5 * TEXT_DIMENSIONS.x,                                \
+        TEXT_POSITION2.y - 0.5 * TEXT_DIMENSIONS.y                             \
+  }
 
 typedef struct state {
   scene_t *scene;
@@ -93,23 +98,19 @@ state_t *emscripten_init() {
   state->scene = scene_init();
   state->texts = list_init(2, free);
   text_input_t *text_input1 = malloc(sizeof(text_input_t));
-  *text_input1 = (text_input_t) {
-    .string = "Hello World!",
-    .position = TEXT_POSITION1,
-    .dim = TEXT_DIMENSIONS,
-    .color = TEXT_COLOR
-  };
+  *text_input1 = (text_input_t){.string = "Hello World!",
+                                .position = TEXT_POSITION1,
+                                .dim = TEXT_DIMENSIONS,
+                                .color = TEXT_COLOR};
   text_input_t *text_input2 = malloc(sizeof(text_input_t));
-  *text_input2 = (text_input_t) {
-    .string = "foo bar",
-    .position = TEXT_POSITION2,
-    .dim = TEXT_DIMENSIONS,
-    .color = TEXT_COLOR
-  };
+  *text_input2 = (text_input_t){.string = "foo bar",
+                                .position = TEXT_POSITION2,
+                                .dim = TEXT_DIMENSIONS,
+                                .color = TEXT_COLOR};
   sdl_write_text(*text_input1);
   sdl_write_text(*text_input2);
   list_add(state->texts, text_input1);
-  list_add(state->texts, text_input2);\
+  list_add(state->texts, text_input2);
   initialize_body_list(state->scene);
   return state;
 }
