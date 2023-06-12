@@ -6,6 +6,8 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
+#include <dirent.h>
 
 const char WINDOW_TITLE[] = "CS 3";
 const int WINDOW_WIDTH = 1000;
@@ -44,6 +46,8 @@ uint32_t key_start_timestamp;
  */
 clock_t last_clock = 0;
 
+list_t *text_list;
+
 /** Computes the center of the window in pixel coordinates */
 vector_t get_window_center(void) {
   int *width = malloc(sizeof(*width)), *height = malloc(sizeof(*height));
@@ -81,6 +85,17 @@ vector_t get_window_position(vector_t scene_pos, vector_t window_center) {
   return pixel;
 }
 
+vector_t get_scene_position(vector_t pixel, vector_t window_center) {
+  vector_t pixel_center_offset = {
+    .x = window_center.x - pixel.x,
+    .y = window_center.y - pixel.y
+  };
+  double scale = get_scene_scale(window_center);
+  vector_t scene_center_offset = vec_multiply(1 / scale, pixel_center_offset);
+  vector_t scene_pos = vec_add(scene_center_offset, center);
+  return scene_pos;
+}
+
 /**
  * Converts an SDL key code to a char.
  * 7-bit ASCII characters are just returned
@@ -115,6 +130,14 @@ char get_mousecode(uint8_t button) {
   }
 }
 
+void free_text(text_t *text_args) {
+  free(text_args->string);
+  free(text_args->message_rect);
+  SDL_FreeSurface(text_args->surface_message);
+  SDL_DestroyTexture(text_args->message);
+  free(text_args);
+}
+
 void sdl_init(vector_t min, vector_t max) {
   // Check parameters
   assert(min.x < max.x);
@@ -128,6 +151,7 @@ void sdl_init(vector_t min, vector_t max) {
                             SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
                             SDL_WINDOW_RESIZABLE);
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+  text_list = list_init(1, (free_func_t)free_text);
 }
 
 void sdl_move_window(vector_t position) { center = position; }
@@ -166,28 +190,14 @@ bool sdl_is_done(state_t *state) {
       char mouse_button = get_mousecode(event->button.button);
       if (mouse_button == 0)
         break;
-
-      // uint32_t timestamp = event->button.timestamp;
-      // if (!event->button.padding1 ) {
-      //   key_start_timestamp = timestamp;
-      // }
       mouse_event_type_t mouse_type = event->type == SDL_MOUSEBUTTONDOWN
                                           ? MOUSE_BUTTON_PRESSED
                                           : MOUSE_BUTTON_RELEASED;
-      // double held_time = (timestamp - key_start_timestamp) / MS_PER_S;
       vector_t window_center = get_window_center();
-      double x_scale = window_center.x / max_diff.x,
-             y_scale = window_center.y / max_diff.y;
-      double scale = get_scene_scale(window_center);
-      if (scale == x_scale) {
-        // mouse_handler(state, mouse_button, mouse_type, (event->button.x) /
-        // x_scale, (WINDOW_HEIGHT - event->button.y) / y_scale);
-      } else {
-        mouse_handler(state, mouse_button, mouse_type,
-                      (event->button.x) / x_scale -
-                          WINDOW_WIDTH * x_scale * x_scale,
-                      (WINDOW_HEIGHT - event->button.y) / y_scale);
-      }
+      vector_t pixel = (vector_t) { event->button.x, event->button.y };
+      vector_t scene_pos = get_scene_position(pixel, window_center);
+      double x_scale = window_center.x / max_diff.x;
+      mouse_handler(state, mouse_button, mouse_type, WINDOW_WIDTH / x_scale - scene_pos.x, scene_pos.y);
       break;
     }
   }
@@ -195,46 +205,59 @@ bool sdl_is_done(state_t *state) {
   return false;
 }
 
-void sdl_write_text() {
-  // this opens a font style and sets a size
-  // TTF_Font* sans = TTF_OpenFont("Sans.ttf", 24);
+SDL_Rect *create_message_rect(vector_t position, vector_t dim) {
+  SDL_Rect *message_rect = malloc(sizeof(SDL_Rect)); //create a rect
+  vector_t window_center = get_window_center();
+  vector_t pixel = get_window_position(position, window_center);
+  message_rect->x = pixel.x;  //controls the rect's x coordinate
+  message_rect->y = pixel.y; // controls the rect's y coordinte
+  double x_scale = window_center.x / max_diff.x,
+         y_scale = window_center.y / max_diff.y;
+  message_rect->w = round(dim.x * x_scale); // controls the width of the rect
+  message_rect->h = round(dim.y * y_scale); // controls the height of the rect
+  return message_rect;
+}
 
-  // this is the color in rgb format,
-  // maxing out all would give you the color white,
-  // and it will be your text's color
-  // SDL_Color white = {255, 255, 255};
+void sdl_write_text(text_input_t text_input) {
+  // font style
+  TTF_Font* sans = TTF_OpenFont("assets/OpenSans-Regular.ttf", 96);
+
+  // color of text
+  Uint8 r = text_input.color.r * 255;
+  Uint8 g = text_input.color.g * 255;
+  Uint8 b = text_input.color.b * 255;
+  SDL_Color sdl_color = {r, g, b};
 
   // as TTF_RenderText_Solid could only be used on
   // SDL_Surface then you have to create the surface first
-  // SDL_Surface* surface_message = TTF_RenderText_Solid(sans, "put your text
-  // here", white);
+  SDL_Surface* surface_message = TTF_RenderText_Solid(sans, text_input.string, sdl_color);
 
   // now you can convert it into a texture
-  // SDL_Texture* message = SDL_CreateTextureFromSurface(renderer,
-  // surface_message);
+  SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface_message);
+  SDL_Rect *message_rect = create_message_rect(text_input.position, text_input.dim);
 
-  // SDL_Rect message_rect; //create a rect
-  // message_rect.x = 0;  //controls the rect's x coordinate
-  // message_rect.y = 0; // controls the rect's y coordinte
-  // message_rect.w = 100; // controls the width of the rect
-  // message_rect.h = 100; // controls the height of the rect
+  text_t *text_args = malloc(sizeof(text_t));
+  *text_args = (text_t) {
+    .string = text_input.string,
+    .message_rect = message_rect,
+    .surface_message = surface_message,
+    .message = message
+  };
 
-  // (0,0) is on the top left of the window/screen,
-  // think a rect as the text's box,
-  // that way it would be very simple to understand
+  list_add(text_list, text_args);
+}
 
-  // Now since it's a texture, you have to put RenderCopy
-  // in your game loop area, the area where the whole code executes
-
-  // you put the renderer's name first, the Message,
-  // the crop size (you can ignore this if you don't want
-  // to dabble with cropping), and the rect which is the size
-  // and coordinate of your texture
-  // SDL_RenderCopy(renderer, message, NULL, &message_rect);
-
-  // // Don't forget to free your surface and texture
-  // SDL_FreeSurface(surface_message);
-  // SDL_DestroyTexture(message);
+void sdl_remove_text(text_input_t text_input) {
+  SDL_Rect *message_rect = create_message_rect(text_input.position, text_input.dim);
+  for(size_t i = 0; i < list_size(text_list); i++) {
+    text_t *text_args = list_get(text_list, i);
+    if (!strcmp(text_input.string, text_args->string) && SDL_RectEquals(message_rect, text_args->message_rect)) {
+      text_t *removed_arg = list_remove(text_list, i);
+      free_text(removed_arg);
+      break;
+    }
+  }
+  free(message_rect);
 }
 
 void sdl_clear(void) {
@@ -298,6 +321,10 @@ void sdl_render_scene(scene_t *scene) {
     list_t *shape = body_get_shape(body);
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
+  }
+  for (size_t i = 0; i < list_size(text_list); i++) {
+    text_t *text = list_get(text_list, i);
+    SDL_RenderCopy(renderer, text->message, NULL, text->message_rect);
   }
   sdl_show();
 }

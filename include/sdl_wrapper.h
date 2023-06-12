@@ -7,6 +7,9 @@
 #include "state.h"
 #include "vector.h"
 #include <stdbool.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_ttf.h>
 
 // Values passed to a key handler when the given arrow key is pressed
 typedef enum {
@@ -29,6 +32,20 @@ typedef enum { LEFT_CLICK = 1, RIGHT_CLICK = 2 } mouse_button_t;
 typedef enum { KEY_PRESSED, KEY_RELEASED } key_event_type_t;
 
 typedef enum { MOUSE_BUTTON_PRESSED, MOUSE_BUTTON_RELEASED } mouse_event_type_t;
+
+typedef struct text_input {
+  char *string;
+  vector_t position;
+  vector_t dim;
+  rgb_color_t color;
+} text_input_t;
+
+typedef struct text {
+  char *string;
+  SDL_Rect *message_rect;
+  SDL_Surface *surface_message;
+  SDL_Texture *message ;
+} text_t;
 
 /**
  * A keypress handler.
@@ -64,6 +81,10 @@ void sdl_move_window(vector_t position);
  * @return true if the window was closed, false otherwise
  */
 bool sdl_is_done(state_t *state);
+
+void sdl_write_text(text_input_t text_input);
+
+void sdl_remove_text(text_input_t text_input);
 
 /**
  * Clears the screen. Should be called before drawing polygons in each frame.

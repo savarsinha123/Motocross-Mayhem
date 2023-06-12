@@ -1,5 +1,5 @@
 # List of demo programs
-DEMOS = bike game ground rotation mouse
+DEMOS = mouse text
 # List of C files in "libraries" that we provide
 STAFF_LIBS = test_util sdl_wrapper
 # List of C files in "libraries" that you will write.
@@ -51,14 +51,14 @@ CFLAGS += -Iinclude $(shell sdl2-config --cflags) -Wall -g -fno-omit-frame-point
 # -g enables DWARF support, for debugging purposes
 # -gsource-map --source-map-base http://localhost:8000/bin/ creates a source map from the C file for debugging
 EMCC = emcc
-EMCC_FLAGS = -s EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=655360000 -s USE_SDL=2 -s USE_SDL_GFX=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_TTF=2 -s USE_SDL_MIXER=2 -s ASSERTIONS=1 -O2 -g -gsource-map --source-map-base http://labradoodle.caltech.edu:$(shell cs3-port)/bin/
+EMCC_FLAGS = -s EXIT_RUNTIME=1 -s ALLOW_MEMORY_GROWTH=1 -s INITIAL_MEMORY=655360000 -s USE_SDL=2 -s USE_SDL_GFX=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s USE_SDL_TTF=2 -s USE_SDL_MIXER=2 -s ASSERTIONS=1 -O2 -g -gsource-map --use-preload-plugins --preload-file assets --source-map-base http://labradoodle.caltech.edu:$(shell cs3-port)/bin/
 
 # Compiler flag that links the program with the math library
 LIB_MATH = -lm
 # Compiler flags that link the program with the math library
 # Note that $(...) substitutes a variable's value, so this line is equivalent to
 # LIBS = -lm
-LIBS = $(LIB_MATH) $(shell sdl2-config --libs) -lSDL2_gfx -lSDL2_ttf
+LIBS = $(LIB_MATH) $(shell sdl2-config --libs) -lSDL2_gfx
 
 # List of compiled .o files corresponding to STUDENT_LIBS, e.g. "out/vector.o".
 # Don't worry about the syntax; it's just adding "out/" to the start
@@ -121,7 +121,7 @@ bin/%.html: out/emscripten.wasm.o out/%.wasm.o out/sdl_wrapper.wasm.o $(WASM_STU
 # Builds the test suite executables from the corresponding test .o file
 # and the library .o files. The only difference from the demo build command
 # is that it doesn't link the SDL libraries.
-bin/test_suite_%: out/test_suite_%.o out/test_util.o out/sdl_wrapper.o $(STUDENT_OBJS) $(STAFF_OBJS)
+bin/test_suite_%: out/test_suite_%.o out/test_util.o $(STUDENT_OBJS) $(STAFF_OBJS)
 	$(CC) $(CFLAGS) $(LIBS) $^ -o $@
 
 # Builds the test suite executable for the student tests
