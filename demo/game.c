@@ -22,6 +22,8 @@ const vector_t WINDOW = ((vector_t){.x = 2000, .y = 1000});
 const double BUTTON_MASS = 1.0;
 #define BUTTON_DIM                                                             \
   (vector_t) { 0.2 * WINDOW.x, 0.15 * WINDOW.y }
+#define BACK_BUTTON_DIM                                                             \
+  (vector_t) { 0.1 * WINDOW.y, 0.1 * WINDOW.y }
 #define PLAY_POSITION                                                          \
   (vector_t) {                                                                 \
     (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0, WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y \
@@ -37,6 +39,48 @@ const double BUTTON_MASS = 1.0;
         WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y                                    \
   }
 const rgb_color_t BUTTON_COLOR = (rgb_color_t){0.5, 0.5, 0.5};
+#define TITLE_DIMENSIONS (vector_t) { WINDOW.x / 2.0, BUTTON_DIM.y }
+#define TITLE_POSITION (vector_t) { WINDOW.x / 4.0, WINDOW.y - BUTTON_DIM.y / 2.0 }
+#define RED_POSITION                                                          \
+  (vector_t) {                                                                 \
+    (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0, 2.0 * WINDOW.y / 3.0 + 0.5 * BUTTON_DIM.y \
+  }
+#define ORANGE_POSITION                                                     \
+  (vector_t) {                                                                 \
+    (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + WINDOW.x / 3.0,                    \
+        2.0 * WINDOW.y / 3.0 + 0.5 * BUTTON_DIM.y                                    \
+  }
+#define GREEN_POSITION                                                      \
+  (vector_t) {                                                                 \
+    (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + 2.0 * WINDOW.x / 3.0,              \
+        2.0 * WINDOW.y / 3.0 + 0.5 * BUTTON_DIM.y                                    \
+  }
+#define BLUE_POSITION                                                          \
+  (vector_t) {                                                                 \
+    (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0, WINDOW.y / 3.0 + 0.5 * BUTTON_DIM.y \
+  }
+#define PURPLE_POSITION                                                     \
+  (vector_t) {                                                                 \
+    (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + WINDOW.x / 3.0,                    \
+        WINDOW.y / 3.0 + 0.5 * BUTTON_DIM.y                                    \
+  }
+#define BLACK_POSITION                                                      \
+  (vector_t) {                                                                 \
+    (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + 2.0 * WINDOW.x / 3.0,              \
+        WINDOW.y / 3.0 + 0.5 * BUTTON_DIM.y                                    \
+  }
+#define BACK_POSITION                                                      \
+  (vector_t) {                                                                 \
+    BUTTON_DIM.y / 2,              \
+        WINDOW.y - BUTTON_DIM.y / 2                                    \
+  }
+const rgb_color_t RED = { 0.5, 0.0, 0.0 };
+const rgb_color_t ORANGE = { 0.5, 0.3, 0.0 };
+const rgb_color_t GREEN = { 0.0, 0.3, 0.0 };
+const rgb_color_t BLUE = { 0.0, 0.0, 0.7 };
+const rgb_color_t PURPLE = { 0.5, 0.0, 0.5 };
+const rgb_color_t WHITE = { 1.0, 1.0, 1.0 };
+const rgb_color_t YELLOW = { 0.5, 0.5, 0.0 };
 
 // bike constants
 const size_t BIKE_NUM_POINTS = 500;
@@ -144,12 +188,22 @@ const double EQ_DIST = 10.0;
 const double ANGULAR_VELOCITY = 1.0;
 const double BIKE_ACCELERATION = 300.0;
 
+typedef enum { MENU = 1, TIMER = 2, SCORE = 3 } game_state_t;
+
+typedef struct button {
+  text_input_t text_input;
+  body_t *body;
+} button_t;
+
 typedef struct state {
   scene_t *scene;
   double clock;
   text_input_t timer_text;
   bool pushed_down;
   game_state_t game_state;
+  list_t *button_list;
+  text_input_t title;
+  rgb_color_t bike_color;
 } state_t;
 
 typedef enum {
@@ -159,9 +213,12 @@ typedef enum {
   TRACK = 4
 } body_type_t;
 
-typedef enum { MENU = 1, TIMER = 2, SCORE = 3 } game_state_t;
-
 // helper functions
+void button_free(button_t *button) {
+  sdl_remove_text(button->text_input);
+  body_remove(button->body);
+  free(button);
+}
 
 // bike functions
 void section_two(list_t *shape, vector_t start, vector_t end,
@@ -531,14 +588,14 @@ list_t *scale_polygon(double scalar, list_t *list) {
   return scaled_polygon;
 }
 
-body_t *make_bike() {
+body_t *make_bike(rgb_color_t color) {
   list_t *shape = make_bike_shape();
   list_t *scaled_shape = scale_polygon(10, shape);
   list_free(shape);
   body_type_t *type = malloc(sizeof(*type));
   *type = BIKE;
   body_t *bike =
-      body_init_with_info(scaled_shape, BIKE_MASS, BIKE_COLOR, type, free);
+      body_init_with_info(scaled_shape, BIKE_MASS, color, type, free);
   body_set_centroid(bike, CENTER); //
   body_set_normal_moment_of_inertia(bike, BIKE_MOMENT);
   return bike;
@@ -579,13 +636,13 @@ list_t *make_actual_track() {
   return track;
 }
 
-void initialize_body_list(scene_t *scene) {
-  scene_add_body(scene, make_bike());
+void initialize_body_list(state_t *state) {
+  scene_add_body(state->scene, make_bike(state->bike_color));
   body_t *track1 =
       body_init(make_actual_track(), TRACK_MASS, (rgb_color_t){0, 0, 0});
   body_t *track2 = body_init(make_track(), TRACK_MASS, TRACK_COLOR);
-  scene_add_body(scene, track1);
-  scene_add_body(scene, track2);
+  scene_add_body(state->scene, track1);
+  scene_add_body(state->scene, track2);
 }
 
 bool double_is_close(double a, double b, double threshold) {
@@ -674,11 +731,32 @@ void initialize_force_list(state_t *state) {
                 scene_get_body(state->scene, 2));
 }
 
-// key handler function
-// void on_key(state_t *state, char key, key_event_type_t type, double
-// held_time) {
-//   // TODO: key handlers
-// }
+void clear_buttons(state_t *state) {
+  for (int16_t i = list_size(state->button_list) - 1; i >= 0; i--) {
+    button_t *button = list_remove(state->button_list, i);
+    button_free(button);
+  }
+  sdl_remove_text(state->title);
+  scene_tick(state->scene, 0.0);
+}
+
+void initialize_game(state_t *state) {
+  clear_buttons(state);
+  initialize_body_list(state);
+  initialize_force_list(state);
+  state->pushed_down = false;
+  if (state->game_state == TIMER) {
+    state->clock = START_TIME;
+    state->timer_text = (text_input_t) {
+      .string = malloc(10 * sizeof(char)),
+      .font_size = FONT_SIZE,
+      .position = TIMER_POSITION,
+      .dim = TIMER_DIMENSIONS,
+      .color = TEXT_COLOR
+    };
+    sdl_write_text(state->timer_text, "LeagueGothic", "Regular");
+  }
+}
 
 void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
   body_t *bike = scene_get_body(state->scene, 0);
@@ -742,7 +820,7 @@ body_t *make_rectangle(double width, double height, rgb_color_t color) {
   return rectangle;
 }
 
-void make_button(scene_t *scene, char *string, size_t font_size,
+void make_button(state_t *state, char *string, size_t font_size,
                  vector_t position, vector_t dim, rgb_color_t text_color,
                  rgb_color_t button_color) {
   text_input_t text_input = {.string = string,
@@ -750,21 +828,243 @@ void make_button(scene_t *scene, char *string, size_t font_size,
                              .position = position,
                              .dim = dim,
                              .color = text_color};
-  sdl_write_text(text_input);
+  sdl_write_text(text_input, "Montserrat", "SemiBold");
   body_t *button = make_rectangle(1.5 * dim.x, 1.5 * dim.y, button_color);
   vector_t centroid =
       (vector_t){position.x + dim.x / 2.0, position.y - dim.y / 2.0};
   body_set_centroid(button, centroid);
-  scene_add_body(scene, button);
+  scene_add_body(state->scene, button);
+  button_t *button_struct = malloc(sizeof(button_t));
+  button_struct->text_input = text_input;
+  button_struct->body = button;
+  list_add(state->button_list, button_struct);
 }
 
+// mouse handlers
+void on_mouse_start_menu(state_t *state, char key, key_event_type_t type, double x, double y);
+void on_mouse_color_menu(state_t *state, char key, key_event_type_t type, double x, double y);
+void on_mouse_game_menu(state_t *state, char key, key_event_type_t type, double x, double y);
+
 void create_start_menu(state_t *state) {
-  make_button(state->scene, "PLAY", FONT_SIZE, PLAY_POSITION, BUTTON_DIM,
+  clear_buttons(state);
+  text_input_t title = {.string = "MOTOCROSS MAYHEM",
+                             .font_size = FONT_SIZE,
+                             .position = TITLE_POSITION,
+                             .dim = TITLE_DIMENSIONS,
+                             .color = TEXT_COLOR};
+  state->title = title;
+  sdl_write_text(title, "ChunkFive", "Regular");
+  make_button(state, "PLAY", FONT_SIZE, PLAY_POSITION, BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
-  make_button(state->scene, "CUSTOMIZE", FONT_SIZE, CUSTOMIZE_POSITION,
+  make_button(state, "CUSTOMIZE", FONT_SIZE, CUSTOMIZE_POSITION,
               BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
-  make_button(state->scene, "SETTINGS", FONT_SIZE, SETTINGS_POSITION,
+  make_button(state, "SETTINGS", FONT_SIZE, SETTINGS_POSITION,
               BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
+}
+
+bool color_equals(rgb_color_t color1, rgb_color_t color2) {
+  return color1.r == color2.r && color1.g == color2.g && color1.b == color2.b;
+}
+
+void create_color_menu(state_t *state) {
+  clear_buttons(state);
+  text_input_t title = {.string = "BIKE COLOR MENU",
+                             .font_size = FONT_SIZE,
+                             .position = TITLE_POSITION,
+                             .dim = TITLE_DIMENSIONS,
+                             .color = TEXT_COLOR};
+  state->title = title;
+  sdl_write_text(title, "ChunkFive", "Regular");
+  rgb_color_t red_button_color, orange_button_color, green_button_color, 
+  blue_button_color, purple_button_color; 
+  red_button_color = orange_button_color = green_button_color = blue_button_color = purple_button_color = TEXT_COLOR;
+  rgb_color_t black_button_color = WHITE;
+  if (color_equals(state->bike_color, RED)) {
+    red_button_color = YELLOW;
+  }
+  else if (color_equals(state->bike_color, ORANGE)) {
+    orange_button_color = YELLOW;
+  }
+  else if (color_equals(state->bike_color, GREEN)) {
+    green_button_color = YELLOW;
+  }
+  else if (color_equals(state->bike_color, BLUE)) {
+    blue_button_color = YELLOW;
+  }
+  else if (color_equals(state->bike_color, PURPLE)) {
+    purple_button_color = YELLOW;
+  }
+  else {
+    black_button_color = YELLOW;
+  }
+  make_button(state, "RED", FONT_SIZE, RED_POSITION, BUTTON_DIM,
+              red_button_color, RED);
+  make_button(state, "ORANGE", FONT_SIZE, ORANGE_POSITION,
+              BUTTON_DIM, orange_button_color, ORANGE);
+  make_button(state, "GREEN", FONT_SIZE, GREEN_POSITION,
+              BUTTON_DIM, green_button_color, GREEN);
+  make_button(state, "BLUE", FONT_SIZE, BLUE_POSITION,
+              BUTTON_DIM, blue_button_color, BLUE);
+  make_button(state, "PURPLE", FONT_SIZE, PURPLE_POSITION,
+              BUTTON_DIM, purple_button_color, PURPLE);
+  make_button(state, "BLACK", FONT_SIZE, BLACK_POSITION,
+              BUTTON_DIM, black_button_color, TEXT_COLOR);
+  make_button(state, "<--", FONT_SIZE, BACK_POSITION, BACK_BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
+}
+
+void create_game_menu(state_t *state) {
+  clear_buttons(state);
+  text_input_t title = {.string = "GAME MODE MENU",
+                             .font_size = FONT_SIZE,
+                             .position = TITLE_POSITION,
+                             .dim = TITLE_DIMENSIONS,
+                             .color = TEXT_COLOR};
+  state->title = title;
+  sdl_write_text(title, "ChunkFive", "Regular");
+  make_button(state, "TIMED", FONT_SIZE, ORANGE_POSITION, BUTTON_DIM,
+              TEXT_COLOR, BUTTON_COLOR);
+  make_button(state, "TRICKS", FONT_SIZE, PURPLE_POSITION,
+              BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
+  make_button(state, "<--", FONT_SIZE, BACK_POSITION, BACK_BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
+}
+
+// start menu mouse handler
+void on_mouse_start_menu(state_t *state, char key, key_event_type_t type, double x, double y) {
+  list_t *collision_tester = create_collision_triangle();
+  polygon_translate(collision_tester, (vector_t) { x, y });
+  button_t *button;
+  body_t *button_box;
+  list_t *button_shape;
+  collision_info_t collision;
+  if (type == KEY_RELEASED) {
+    switch (key) {
+    case LEFT_CLICK:
+      for (size_t i = 0; i < list_size(state->button_list); i++) {
+        button = list_get(state->button_list, i);
+        button_box = button->body;
+        button_shape = body_get_shape(button_box);
+        collision = find_collision(collision_tester, button_shape);
+        if (collision.collided) {
+          switch (i) {
+          case 0:
+            create_game_menu(state);
+            sdl_on_mouse((mouse_handler_t) on_mouse_game_menu);
+            break;
+          case 1:
+            create_color_menu(state);
+            sdl_on_mouse((mouse_handler_t) on_mouse_color_menu);
+            break;
+          case 2:
+            puts("😎");
+            break;
+          }
+          break;
+        }
+      }
+      list_free(button_shape);
+    }
+  }
+  list_free(collision_tester);
+}
+
+// color menu mouse handler
+void on_mouse_color_menu(state_t *state, char key, key_event_type_t type, double x, double y) {
+  list_t *collision_tester = create_collision_triangle();
+  polygon_translate(collision_tester, (vector_t) { x, y });
+  button_t *button;
+  body_t *button_box;
+  list_t *button_shape;
+  collision_info_t collision;
+  if (type == KEY_RELEASED) {
+    switch (key) {
+    case LEFT_CLICK:
+      for (size_t i = 0; i < list_size(state->button_list); i++) {
+        button = list_get(state->button_list, i);
+        button_box = button->body;
+        button_shape = body_get_shape(button_box);
+        collision = find_collision(collision_tester, button_shape);
+        if (collision.collided) {
+          switch (i) {
+          case 0:
+            state->bike_color = RED;
+            create_color_menu(state);
+            break;
+          case 1:
+            state->bike_color = ORANGE;
+            create_color_menu(state);
+            break;
+          case 2:
+            state->bike_color = GREEN;
+            create_color_menu(state);
+            break;
+          case 3:
+            state->bike_color = BLUE;
+            create_color_menu(state);
+            break;
+          case 4:
+            state->bike_color = PURPLE;
+            create_color_menu(state);
+            break;
+          case 5:
+            state->bike_color = TEXT_COLOR;
+            create_color_menu(state);
+            break;
+          case 6:
+            create_start_menu(state);
+            sdl_on_mouse((mouse_handler_t) on_mouse_start_menu);
+            break;
+          }
+          break;
+        }
+      }
+      list_free(button_shape);
+    }
+  }
+  list_free(collision_tester);
+}
+
+// game menu mouse handler
+void on_mouse_game_menu(state_t *state, char key, key_event_type_t type, double x, double y) {
+  list_t *collision_tester = create_collision_triangle();
+  polygon_translate(collision_tester, (vector_t) { x, y });
+  button_t *button;
+  body_t *button_box;
+  list_t *button_shape;
+  collision_info_t collision;
+  if (type == KEY_RELEASED) {
+    switch (key) {
+    case LEFT_CLICK:
+      for (size_t i = 0; i < list_size(state->button_list); i++) {
+        button = list_get(state->button_list, i);
+        button_box = button->body;
+        button_shape = body_get_shape(button_box);
+        collision = find_collision(collision_tester, button_shape);
+        if (collision.collided) {
+          switch (i) {
+          case 0:
+            state->game_state = TIMER;
+            sdl_on_key(on_key);
+            sdl_on_mouse(NULL);
+            initialize_game(state);
+            puts("time");
+            break;
+          case 1:
+            state->game_state = SCORE;
+            // initialize_game(state);
+            puts("score");
+            break;
+          case 2:
+            create_start_menu(state);
+            sdl_on_mouse((mouse_handler_t) on_mouse_start_menu);
+            break;
+          }
+          break;
+        }
+      }
+      list_free(button_shape);
+    }
+  }
+  list_free(collision_tester);
 }
 
 state_t *emscripten_init() {
@@ -772,21 +1072,17 @@ state_t *emscripten_init() {
   vector_t min = VEC_ZERO;
   vector_t max = WINDOW;
   sdl_init(min, max);
-  // sdl_on_key((key_handler_t)on_key);
   state_t *state = malloc(sizeof(state_t));
   state->scene = scene_init();
-  state->clock = START_TIME;
-  // initialize_body_list(state->scene);
-  // initialize_force_list(state);
-  // state->pushed_down = false;
-  // state->timer_text = (text_input_t) {
-  //   .string = "120",
-  //   .font_size = FONT_SIZE,
-  //   .position = TIMER_POSITION,
-  //   .dim = TIMER_DIMENSIONS,
-  //   .color = TEXT_COLOR
-  // };
-  // sdl_write_text(state->timer_text);
+  state->bike_color = RED;
+  state->button_list = list_init(3, (free_func_t)button_free);
+  text_input_t title = {.string = "MOTOCROSS MAYHEM",
+                             .font_size = FONT_SIZE,
+                             .position = TITLE_POSITION,
+                             .dim = TITLE_DIMENSIONS,
+                             .color = TEXT_COLOR};
+  state->title = title;
+  sdl_on_mouse((mouse_handler_t) on_mouse_start_menu);
   sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
                 (vector_t){0, WINDOW.y});
   create_start_menu(state);
@@ -794,35 +1090,36 @@ state_t *emscripten_init() {
 }
 
 void update_timer(state_t *state) {
-  const size_t TIME_LENGTH = 4;
+  // const size_t TIME_LENGTH = 4;
   // const double MIN_TO_SEC = 60;
   // size_t minutes = state->clock / MIN_TO_SEC;
   // size_t seconds = fmod(state->clock, MIN_TO_SEC);
-  char time[TIME_LENGTH];
+  state->timer_text.string = "";
   // char sec[TIME_LENGTH];
   // sprintf(time, "0%lu", minutes);
   // strcat(time, ":");
   // sprintf(sec, "%lu", seconds);
-  sprintf(time, "%d", (int)state->clock);
+  sprintf(state->timer_text.string, "%d", (int)state->clock);
   // if (seconds / 10 < 1) {
   //   sprintf(sec, "0%lu", seconds);
   // }
   // strcat(time, sec);
 
   sdl_remove_text(state->timer_text);
-  state->timer_text.string = time;
   body_t *bike = scene_get_body(state->scene, 0);
   state->timer_text.position = vec_add(body_get_centroid(bike), CENTER);
   state->timer_text.position.x -= state->timer_text.dim.x;
-  sdl_write_text(state->timer_text);
+  sdl_write_text(state->timer_text, "Montserrat", "Regular");
 }
 
 void emscripten_main(state_t *state) {
   double dt = time_since_last_tick();
-  state->clock -= dt;
-  // body_t *bike = scene_get_body(state->scene, 0);
-  // sdl_move_window(body_get_centroid(bike));
-  // update_timer(state);
+  if (state->game_state == TIMER) {
+    state->clock -= dt;
+    body_t *bike = scene_get_body(state->scene, 0);
+    sdl_move_window(body_get_centroid(bike));
+    update_timer(state);
+  }
   scene_tick(state->scene, dt);
   sdl_render_scene(state->scene);
 }

@@ -228,10 +228,18 @@ SDL_Rect *create_rect(vector_t position, vector_t dim) {
   return rect;
 }
 
-void sdl_write_text(text_input_t text_input) {
+void sdl_write_text(text_input_t text_input, char *font_style, char *font_type) {
   // font style
-  TTF_Font *sans =
-      TTF_OpenFont("assets/OpenSans-Regular.ttf", text_input.font_size);
+  const size_t FONT_PATH_SIZE = 100;
+  char font_path[FONT_PATH_SIZE] = "assets/";
+  strcat(font_path, font_style);
+  strcat(font_path, "-");
+  strcat(font_path, font_type);
+  strcat(font_path, ".otf");
+  TTF_Font *font =
+      TTF_OpenFont(font_path, text_input.font_size);
+  sprintf(font_path, "%d", strlen(font_path));
+  assert(font != NULL);
 
   // color of text
   Uint8 r = text_input.color.r * 255;
@@ -241,7 +249,7 @@ void sdl_write_text(text_input_t text_input) {
 
   // create surface
   SDL_Surface *surface_message =
-      TTF_RenderText_Solid(sans, text_input.string, sdl_color);
+      TTF_RenderText_Solid(font, text_input.string, sdl_color);
 
   // convert to texture
   SDL_Texture *message =
