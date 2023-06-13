@@ -1,5 +1,5 @@
 #include "sdl_wrapper.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <assert.h>
 #include <math.h>

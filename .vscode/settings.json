@@ -44,7 +44,8 @@
     // User-level only... Just delete when you're done with the course.
     "terminal.integrated.defaultProfile.windows": "Visual Studio Developer Prompt",
     "files.associations": {
-        "list.h": "c"
+        "list.h": "c",
+        "sdl2_gfxprimitives.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
