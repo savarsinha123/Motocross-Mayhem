@@ -1,8 +1,8 @@
 #include "sdl_wrapper.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
-#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <assert.h>
 #include <dirent.h>
 #include <math.h>
@@ -159,8 +159,8 @@ void sdl_init(vector_t min, vector_t max) {
                             SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
                             SDL_WINDOW_RESIZABLE);
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-  text_list = list_init(1, (free_func_t) free_text);
-  image_list = list_init(1, (free_func_t) free_image);
+  text_list = list_init(1, (free_func_t)free_text);
+  image_list = list_init(1, (free_func_t)free_image);
 }
 
 void sdl_move_window(vector_t position) { center = position; }
@@ -246,8 +246,7 @@ void sdl_write_text(text_input_t text_input) {
   // convert to texture
   SDL_Texture *message =
       SDL_CreateTextureFromSurface(renderer, surface_message);
-  SDL_Rect *message_rect =
-      create_rect(text_input.position, text_input.dim);
+  SDL_Rect *message_rect = create_rect(text_input.position, text_input.dim);
 
   text_t *text_args = malloc(sizeof(text_t));
   *text_args = (text_t){.string = text_input.string,
@@ -274,11 +273,12 @@ void sdl_add_image(const char *image_path, vector_t position) {
   int w, h;
   SDL_Texture *img = IMG_LoadTexture(renderer, image_path);
   assert(img != NULL);
-	SDL_QueryTexture(img, NULL, NULL, &w, &h); // get the width and height of the texture
-	// put the location where we want the texture to be drawn into a rectangle
-	// I'm also scaling the texture 2x simply by setting the width and height
-  vector_t dim = { 2500, 1000 };
-	SDL_Rect *texr = create_rect(position, dim);
+  SDL_QueryTexture(img, NULL, NULL, &w,
+                   &h); // get the width and height of the texture
+  // put the location where we want the texture to be drawn into a rectangle
+  // I'm also scaling the texture 2x simply by setting the width and height
+  vector_t dim = {2500, 1000};
+  SDL_Rect *texr = create_rect(position, dim);
   image_t *image = malloc(sizeof(image_t));
   image->img = img;
   image->texr = texr;

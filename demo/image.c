@@ -67,7 +67,8 @@ state_t *emscripten_init() {
   sdl_init(min, max);
   state_t *state = malloc(sizeof(state_t));
   state->scene = scene_init();
-  sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg", (vector_t) {0, WINDOW.y});
+  sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
+                (vector_t){0, WINDOW.y});
   initialize_body_list(state->scene);
   return state;
 }

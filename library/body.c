@@ -52,7 +52,8 @@ body_t *body_init(list_t *shape, double mass, rgb_color_t color) {
   result->force = VEC_ZERO;
   result->impulse = VEC_ZERO;
   result->reference_pointer = list_get(shape, 0);
-  result->reference_vector = vec_subtract(*result->reference_pointer, result->centroid);
+  result->reference_vector =
+      vec_subtract(*result->reference_pointer, result->centroid);
   result->removed = 0;
   result->curr_pivot_point = polygon_centroid(shape);
   result->info = NULL;
@@ -114,14 +115,15 @@ void body_set_velocity(body_t *body, vector_t v) { body->velocity = v; }
 void body_set_rotation(body_t *body, double angle) {
   double angle_diff = angle - body->angle;
   polygon_rotate(body->polygon, angle_diff, body->centroid);
-  //polygon_rotate(body->polygon, angle_diff, body->curr_pivot_point);
+  // polygon_rotate(body->polygon, angle_diff, body->curr_pivot_point);
   body->angle = angle;
 }
 
 void body_rotate(body_t *body, double angle) {
   polygon_rotate(body->polygon, angle, body->curr_pivot_point);
-  // vector_t new_reference = vec_subtract(*body->reference_pointer, body->centroid);
-  // body->angle = vec_angle(new_reference) - vec_angle(body->reference_vector);
+  // vector_t new_reference = vec_subtract(*body->reference_pointer,
+  // body->centroid); body->angle = vec_angle(new_reference) -
+  // vec_angle(body->reference_vector);
   body->angle += angle;
 }
 
@@ -211,7 +213,8 @@ void body_tick(body_t *body, double dt) {
   double final_angular_velocity = body_get_final_angular_velocity(body, dt);
   // double new_angle = body->angle +
   // body_find_delta_angle(body->angular_velocity, final_angular_velocity, dt);
-  body_rotate(body, body_find_delta_angle(body->angular_velocity, final_angular_velocity, dt));
+  body_rotate(body, body_find_delta_angle(body->angular_velocity,
+                                          final_angular_velocity, dt));
   body->velocity = final_velocity;
   body->force = VEC_ZERO;
   body->impulse = VEC_ZERO;

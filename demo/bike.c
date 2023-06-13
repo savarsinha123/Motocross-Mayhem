@@ -25,77 +25,72 @@ const vector_t START = (vector_t){-1.45, 1.045}; // 1
 const vector_t COORDS[NUM_SECTIONS] = {
     (vector_t){-0.6, 1.0249},    // / 0
     (vector_t){-1.05, 1.191},    // / 1
-    (vector_t){-1.1, 1.412},    // 2 curve
-    (vector_t){-0.8752, 2.7991},   // / 3
-    (vector_t){-0.35, 2.336},   //  / 4 
+    (vector_t){-1.1, 1.412},     // 2 curve
+    (vector_t){-0.8752, 2.7991}, // / 3
+    (vector_t){-0.35, 2.336},    //  / 4
     (vector_t){0.417, 1.9778},   //  5 curve
-    (vector_t){0.6441, 1.9888},    // / 6
-    (vector_t){0.8, 1.8933},        // / 7
+    (vector_t){0.6441, 1.9888},  // / 6
+    (vector_t){0.8, 1.8933},     // / 7
     (vector_t){0.94, 1.5667},    // 8 curve
     (vector_t){-1.788, 0.8834},  // 9 curve
     (vector_t){-8.6, 1.0551},    // 10 curve
-    (vector_t){-4.306, -0.4199},     // / 11
-    (vector_t){-6.58, -1.2912},     // 12 curve
-    (vector_t){-6.42, -1.7088},    // / 13 
-    (vector_t){-5.611, -1.3999},      // 14 curve
-    (vector_t){-5.772, -0.9804},    // / 15 
-    (vector_t){-5.345, -0.8174},     // 16 curve
-    (vector_t){-5.185, -1.236},     // / 17 
-    (vector_t){-3.99, -0.7786},     // 18 curve
-    (vector_t){-3.752, -1.1},  // / 19
+    (vector_t){-4.306, -0.4199}, // / 11
+    (vector_t){-6.58, -1.2912},  // 12 curve
+    (vector_t){-6.42, -1.7088},  // / 13
+    (vector_t){-5.611, -1.3999}, // 14 curve
+    (vector_t){-5.772, -0.9804}, // / 15
+    (vector_t){-5.345, -0.8174}, // 16 curve
+    (vector_t){-5.185, -1.236},  // / 17
+    (vector_t){-3.99, -0.7786},  // 18 curve
+    (vector_t){-3.752, -1.1},    // / 19
     (vector_t){-1.6274, -1.1},   // 20 curve
-    (vector_t){-0.6476, -1.1},      // / 21
-    (vector_t){0.2912, -1.1},     // 22 curve
-    (vector_t){1.53, 0.1899},     // / 23
-    (vector_t){2.2932, -1.5851},    // 24 curve 
-    (vector_t){2.7068, -1.4149},     // / 25
+    (vector_t){-0.6476, -1.1},   // / 21
+    (vector_t){0.2912, -1.1},    // 22 curve
+    (vector_t){1.53, 0.1899},    // / 23
+    (vector_t){2.2932, -1.5851}, // 24 curve
+    (vector_t){2.7068, -1.4149}, // / 25
     (vector_t){2.364, -0.616},   // 26 curve
-    (vector_t){1.9514, 0.7936},     // / 27
-    (vector_t){1.771, -0.3737},     // 28 curve
-    (vector_t){2.184, -0.1961},      // / 29
-    (vector_t){1.9708, 0.3014},   // 30 curve
-    (vector_t){4.5, -0.09585},  // / 31 
-    (vector_t){3.5, 0.7268},    // 32 curve
-    (vector_t){1.69, 0.9567},  // / 33
-    (vector_t){1.22, 2.0501},  // / 34
-    (vector_t){0.741, 2.3056},    // 35 curve
-    (vector_t){0.5566, 2.4422}, // / 36
-    (vector_t){-0.2, 2.78},   // / 37
-    (vector_t){-0.83, 3.595},     // / 38
-    (vector_t){-0.86, 3.7},     // / 39
-    (vector_t){-0.9148, 3.748},    // / 40
-    (vector_t){-0.3925, 3.675},     // / 41
-    (vector_t){-0.25, 3.96},   // / 42
+    (vector_t){1.9514, 0.7936},  // / 27
+    (vector_t){1.771, -0.3737},  // 28 curve
+    (vector_t){2.184, -0.1961},  // / 29
+    (vector_t){1.9708, 0.3014},  // 30 curve
+    (vector_t){4.5, -0.09585},   // / 31
+    (vector_t){3.5, 0.7268},     // 32 curve
+    (vector_t){1.69, 0.9567},    // / 33
+    (vector_t){1.22, 2.0501},    // / 34
+    (vector_t){0.741, 2.3056},   // 35 curve
+    (vector_t){0.5566, 2.4422},  // / 36
+    (vector_t){-0.2, 2.78},      // / 37
+    (vector_t){-0.83, 3.595},    // / 38
+    (vector_t){-0.86, 3.7},      // / 39
+    (vector_t){-0.9148, 3.748},  // / 40
+    (vector_t){-0.3925, 3.675},  // / 41
+    (vector_t){-0.25, 3.96},     // / 42
     (vector_t){-0.37, 3.96},     // / 43
-    (vector_t){-0.7, 4.05},     // / 44
+    (vector_t){-0.7, 4.05},      // / 44
     (vector_t){-0.8, 4.19},      // / 45
-    (vector_t){-0.71, 4.703},   // / 46
+    (vector_t){-0.71, 4.703},    // / 46
     (vector_t){-0.5529, 4.904},  // / 47
     (vector_t){0.0861, 4.91},    // / 48
     (vector_t){-0.4122, 5.228},  // 49 curve
-    (vector_t){-1.701, 3.858},  // / 50
-    (vector_t){-1.587, 3.842},    // 51 curve
-    (vector_t){-2.125, 0.9167}, // / 52
-    (vector_t){-0.5, 0.988},   // / 53
+    (vector_t){-1.701, 3.858},   // / 50
+    (vector_t){-1.587, 3.842},   // 51 curve
+    (vector_t){-2.125, 0.9167},  // / 52
+    (vector_t){-0.5, 0.988},     // / 53
 };
 
 const double PROPORTIONS[NUM_CURVES] = {
-    3.0 / 100.0,  1.0 / 100.0,  4.5 / 100.0,  6.0 / 100.0,
-    4.5 / 100.0, 1.5 / 100.0,  4.5 / 100.0, 6.0 / 100.0,
-    1.5 / 100.0, 3.0 / 100.0,  6.5 / 100.0, 2.5 / 100.0,
-    2.0 / 100.0, 1.0 / 100.0,  4.0 / 100.0, 6.0 / 100.0,
-    2.0 / 100.0,  1.0 / 100.0, 4.5 / 100.0, 
+    3.0 / 100.0, 1.0 / 100.0, 4.5 / 100.0, 6.0 / 100.0, 4.5 / 100.0,
+    1.5 / 100.0, 4.5 / 100.0, 6.0 / 100.0, 1.5 / 100.0, 3.0 / 100.0,
+    6.5 / 100.0, 2.5 / 100.0, 2.0 / 100.0, 1.0 / 100.0, 4.0 / 100.0,
+    6.0 / 100.0, 2.0 / 100.0, 1.0 / 100.0, 4.5 / 100.0,
 };
 
 typedef struct state {
   scene_t *scene;
 } state_t;
 
-typedef enum {
-  BIKE = 1,
-  WHEEL_POWERUP = 2,
-  SPEED_POWERUP = 3
-} body_type_t;
+typedef enum { BIKE = 1, WHEEL_POWERUP = 2, SPEED_POWERUP = 3 } body_type_t;
 
 void section_two(list_t *shape, vector_t start, vector_t end,
                  size_t num_points) {
@@ -221,7 +216,8 @@ void section_sixteen(list_t *shape, vector_t start, size_t num_points) {
   }
 }
 
-void section_twenty(list_t *shape, vector_t start, vector_t end, size_t num_points) {
+void section_twenty(list_t *shape, vector_t start, vector_t end,
+                    size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -235,7 +231,8 @@ void section_twenty(list_t *shape, vector_t start, vector_t end, size_t num_poin
   }
 }
 
-void section_twenty_two(list_t *shape, vector_t start, vector_t end, size_t num_points) {
+void section_twenty_two(list_t *shape, vector_t start, vector_t end,
+                        size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -301,7 +298,7 @@ void section_twenty_eight(list_t *shape, vector_t start, size_t num_points) {
 }
 
 void section_thirty(list_t *shape, vector_t start, vector_t end,
-                      size_t num_points) {
+                    size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -316,7 +313,7 @@ void section_thirty(list_t *shape, vector_t start, vector_t end,
 }
 
 void section_thirty_two(list_t *shape, vector_t start, vector_t end,
-                     size_t num_points) {
+                        size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -331,7 +328,7 @@ void section_thirty_two(list_t *shape, vector_t start, vector_t end,
 }
 
 void section_thirty_five(list_t *shape, vector_t start, vector_t end,
-                      size_t num_points) {
+                         size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -363,7 +360,7 @@ void section_forty_nine(list_t *shape, vector_t start, size_t num_points) {
 }
 
 void section_fifty_one(list_t *shape, vector_t start, vector_t end,
-                         size_t num_points) {
+                       size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -410,33 +407,31 @@ list_t *make_bike_shape() {
       section_fourteen(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
     } else if (i == 16) {
-      section_sixteen(shape, COORDS[i],
-                      PROPORTIONS[j] * BIKE_NUM_POINTS);
+      section_sixteen(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
     } else if (i == 18) {
       section_ten(shape, COORDS[i], COORDS[i + 1],
-                       PROPORTIONS[j] * BIKE_NUM_POINTS);
+                  PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
     } else if (i == 20) {
-      section_twenty(shape, COORDS[i], COORDS[i + 1], PROPORTIONS[j] * BIKE_NUM_POINTS);
+      section_twenty(shape, COORDS[i], COORDS[i + 1],
+                     PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
     } else if (i == 22) {
       section_twenty_two(shape, COORDS[i], COORDS[i + 1],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+                         PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 24) {
-      section_twenty_four(shape, COORDS[i],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+      section_twenty_four(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 26) {
       section_twenty_six(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 28) {
-      section_twenty_eight(shape, COORDS[i],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+      section_twenty_eight(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 30) {
       section_thirty(shape, COORDS[i], COORDS[i + 1],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+                     PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 32) {
       section_thirty_two(shape, COORDS[i], COORDS[i + 1],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+                         PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 35) {
       section_thirty_five(shape, COORDS[i], COORDS[i + 1],
                           PROPORTIONS[j] * BIKE_NUM_POINTS);
@@ -444,7 +439,7 @@ list_t *make_bike_shape() {
       section_forty_nine(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 51) {
       section_fifty_one(shape, COORDS[i], COORDS[i + 1],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+                        PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else {
       vector_t *coord = malloc(sizeof(vector_t));
       *coord = COORDS[i];

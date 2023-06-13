@@ -55,15 +55,21 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
     case LEFT_ARROW:
       if (!state->pushed_down) {
         state->pushed_down = true;
-        create_applied(state->scene,
-                       (vector_t){-CIRCLE_MASS * CIRCLE_ACCELERATION * cos(angle), -sin(angle)}, ball);
+        create_applied(
+            state->scene,
+            (vector_t){-CIRCLE_MASS * CIRCLE_ACCELERATION * cos(angle),
+                       -sin(angle)},
+            ball);
       }
       break;
     case RIGHT_ARROW:
       if (!state->pushed_down) {
         state->pushed_down = true;
-        create_applied(state->scene,
-                       (vector_t){CIRCLE_MASS * CIRCLE_ACCELERATION * cos(angle), sin(angle)}, ball);
+        create_applied(
+            state->scene,
+            (vector_t){CIRCLE_MASS * CIRCLE_ACCELERATION * cos(angle),
+                       sin(angle)},
+            ball);
       }
       break;
     }
@@ -72,12 +78,16 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
     case LEFT_ARROW:
       state->pushed_down = false;
       create_applied(state->scene,
-                     (vector_t){CIRCLE_MASS * CIRCLE_ACCELERATION * cos(angle), sin(angle)}, ball);
+                     (vector_t){CIRCLE_MASS * CIRCLE_ACCELERATION * cos(angle),
+                                sin(angle)},
+                     ball);
       break;
     case RIGHT_ARROW:
       state->pushed_down = false;
       create_applied(state->scene,
-                     (vector_t){-CIRCLE_MASS * CIRCLE_ACCELERATION * cos(angle), -sin(angle)}, ball);
+                     (vector_t){-CIRCLE_MASS * CIRCLE_ACCELERATION * cos(angle),
+                                -sin(angle)},
+                     ball);
       break;
     }
   }
@@ -175,10 +185,11 @@ list_t *make_actual_track() {
 }
 
 void initialize_body_list(scene_t *scene) {
-  body_t *body = make_brick(BRICK_HEIGHT, BRICK_WIDTH);// make_star_body();
+  body_t *body = make_brick(BRICK_HEIGHT, BRICK_WIDTH); // make_star_body();
   body_set_centroid(body, (vector_t){WINDOW.x / 2.0, WINDOW.y});
   scene_add_body(scene, body);
-  body_t *actual_track = body_init(make_actual_track(), TRACK_MASS, ACTUAL_TRACK_COLOR);
+  body_t *actual_track =
+      body_init(make_actual_track(), TRACK_MASS, ACTUAL_TRACK_COLOR);
   scene_add_body(scene, actual_track);
   body_t *track = body_init(make_track(), TRACK_MASS, TRACK_COLOR);
   scene_add_body(scene, track);
@@ -191,11 +202,11 @@ bool double_is_close(double a, double b, double threshold) {
 list_t *create_collision_triangle() {
   list_t *triangle = list_init(3, free);
   vector_t *v1 = malloc(sizeof(vector_t));
-  *v1 = (vector_t) { 0.00005, -sqrt(3) / 2 * 0.0001 };
+  *v1 = (vector_t){0.00005, -sqrt(3) / 2 * 0.0001};
   vector_t *v2 = malloc(sizeof(vector_t));
-  *v2 = (vector_t) { -0.00005, -sqrt(3) / 2 * 0.0001 };
+  *v2 = (vector_t){-0.00005, -sqrt(3) / 2 * 0.0001};
   vector_t *v3 = malloc(sizeof(vector_t));
-  *v3 = (vector_t) { 0, 0.0001 };
+  *v3 = (vector_t){0, 0.0001};
   list_add(triangle, v1);
   list_add(triangle, v2);
   list_add(triangle, v3);
@@ -206,7 +217,7 @@ vector_t find_colliding_point(body_t *body1, body_t *body2) {
   list_t *body1_shape = body_get_shape(body1);
   list_t *body2_shape = body_get_shape(body2);
   for (size_t i = 0; i < list_size(body1_shape); i++) {
-    vector_t centroid = *(vector_t *) list_get(body1_shape, i);
+    vector_t centroid = *(vector_t *)list_get(body1_shape, i);
     list_t *triangle = create_collision_triangle();
     polygon_translate(triangle, centroid);
     collision_info_t collision = find_collision(triangle, body2_shape);
@@ -218,7 +229,7 @@ vector_t find_colliding_point(body_t *body1, body_t *body2) {
   }
   list_free(body1_shape);
   list_free(body2_shape);
-  return (vector_t) { INFINITY, INFINITY };
+  return (vector_t){INFINITY, INFINITY};
 }
 
 void ground_collision(body_t *body, body_t *ground, vector_t axis, void *aux) {
@@ -230,14 +241,14 @@ void ground_collision(body_t *body, body_t *ground, vector_t axis, void *aux) {
   // char str[10];
   // sprintf(str, "%.9f", angle_diff);
   // puts(str);
-  if (!double_is_close(fabs(angle_diff), M_PI / 2, 1e-5) && !double_is_close(fabs(angle_diff), 3 * M_PI / 2, 1e-5)) {
+  if (!double_is_close(fabs(angle_diff), M_PI / 2, 1e-5) &&
+      !double_is_close(fabs(angle_diff), 3 * M_PI / 2, 1e-5)) {
     vector_t intersect = find_colliding_point(body, ground);
     if (intersect.x != INFINITY) {
       body_set_pivot(body, intersect);
       if (angle_diff < M_PI / 2) {
         body_set_angular_velocity(body, state->angular_velocity);
-      }
-      else {
+      } else {
         body_set_angular_velocity(body, -state->angular_velocity);
       }
     }
@@ -258,14 +269,19 @@ void create_ground_collision(state_t *state, body_t *body, body_t *ground) {
 void initialize_force_list(state_t *state) {
   create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION,
                            scene_get_body(state->scene, 0));
-  create_ground_collision(state, scene_get_body(state->scene, 0),scene_get_body(state->scene, 1));
-  create_physics_collision(state->scene, 0.0, scene_get_body(state->scene, 0), scene_get_body(state->scene, 1));
-  create_normal(state->scene, scene_get_body(state->scene, 0), scene_get_body(state->scene, 1));
+  create_ground_collision(state, scene_get_body(state->scene, 0),
+                          scene_get_body(state->scene, 1));
+  create_physics_collision(state->scene, 0.0, scene_get_body(state->scene, 0),
+                           scene_get_body(state->scene, 1));
+  create_normal(state->scene, scene_get_body(state->scene, 0),
+                scene_get_body(state->scene, 1));
 
-  create_ground_collision(state, scene_get_body(state->scene, 0),scene_get_body(state->scene, 2));
+  create_ground_collision(state, scene_get_body(state->scene, 0),
+                          scene_get_body(state->scene, 2));
   create_physics_collision(state->scene, 0.0, scene_get_body(state->scene, 0),
                            scene_get_body(state->scene, 2));
-  create_normal(state->scene, scene_get_body(state->scene, 0), scene_get_body(state->scene, 2));
+  create_normal(state->scene, scene_get_body(state->scene, 0),
+                scene_get_body(state->scene, 2));
 }
 
 state_t *emscripten_init() {

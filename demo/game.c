@@ -20,11 +20,23 @@ const vector_t WINDOW = ((vector_t){.x = 2000, .y = 1000});
 
 // button constants
 const double BUTTON_MASS = 1.0;
-#define BUTTON_DIM (vector_t) { 0.2 * WINDOW.x, 0.15 * WINDOW.y }
-#define PLAY_POSITION (vector_t) { (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0, WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y }
-#define CUSTOMIZE_POSITION (vector_t) { (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + WINDOW.x / 3.0, WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y }
-#define SETTINGS_POSITION (vector_t) { (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + 2.0 * WINDOW.x / 3.0, WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y }
-const rgb_color_t BUTTON_COLOR = (rgb_color_t) { 0.5, 0.5, 0.5 };
+#define BUTTON_DIM                                                             \
+  (vector_t) { 0.2 * WINDOW.x, 0.15 * WINDOW.y }
+#define PLAY_POSITION                                                          \
+  (vector_t) {                                                                 \
+    (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0, WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y \
+  }
+#define CUSTOMIZE_POSITION                                                     \
+  (vector_t) {                                                                 \
+    (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + WINDOW.x / 3.0,                    \
+        WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y                                    \
+  }
+#define SETTINGS_POSITION                                                      \
+  (vector_t) {                                                                 \
+    (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + 2.0 * WINDOW.x / 3.0,              \
+        WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y                                    \
+  }
+const rgb_color_t BUTTON_COLOR = (rgb_color_t){0.5, 0.5, 0.5};
 
 // bike constants
 const size_t BIKE_NUM_POINTS = 500;
@@ -38,66 +50,65 @@ const vector_t START = (vector_t){-1.45, 1.045}; // 1
 const vector_t COORDS[NUM_SECTIONS] = {
     (vector_t){-0.6, 1.0249},    // / 0
     (vector_t){-1.05, 1.191},    // / 1
-    (vector_t){-1.1, 1.412},    // 2 curve
-    (vector_t){-0.8752, 2.7991},   // / 3
-    (vector_t){-0.35, 2.336},   //  / 4 
+    (vector_t){-1.1, 1.412},     // 2 curve
+    (vector_t){-0.8752, 2.7991}, // / 3
+    (vector_t){-0.35, 2.336},    //  / 4
     (vector_t){0.417, 1.9778},   //  5 curve
-    (vector_t){0.6441, 1.9888},    // / 6
-    (vector_t){0.8, 1.8933},        // / 7
+    (vector_t){0.6441, 1.9888},  // / 6
+    (vector_t){0.8, 1.8933},     // / 7
     (vector_t){0.94, 1.5667},    // 8 curve
     (vector_t){-1.788, 0.8834},  // 9 curve
     (vector_t){-8.6, 1.0551},    // 10 curve
-    (vector_t){-4.306, -0.4199},     // / 11
-    (vector_t){-6.58, -1.2912},     // 12 curve
-    (vector_t){-6.42, -1.7088},    // / 13 
-    (vector_t){-5.611, -1.3999},      // 14 curve
-    (vector_t){-5.772, -0.9804},    // / 15 
-    (vector_t){-5.345, -0.8174},     // 16 curve
-    (vector_t){-5.185, -1.236},     // / 17 
-    (vector_t){-3.99, -0.7786},     // 18 curve
-    (vector_t){-3.752, -1.1},  // / 19
+    (vector_t){-4.306, -0.4199}, // / 11
+    (vector_t){-6.58, -1.2912},  // 12 curve
+    (vector_t){-6.42, -1.7088},  // / 13
+    (vector_t){-5.611, -1.3999}, // 14 curve
+    (vector_t){-5.772, -0.9804}, // / 15
+    (vector_t){-5.345, -0.8174}, // 16 curve
+    (vector_t){-5.185, -1.236},  // / 17
+    (vector_t){-3.99, -0.7786},  // 18 curve
+    (vector_t){-3.752, -1.1},    // / 19
     (vector_t){-1.6274, -1.1},   // 20 curve
-    (vector_t){-0.6476, -1.1},      // / 21
-    (vector_t){0.2912, -1.1},     // 22 curve
-    (vector_t){1.53, 0.1899},     // / 23
-    (vector_t){2.2932, -1.5851},    // 24 curve 
-    (vector_t){2.7068, -1.4149},     // / 25
+    (vector_t){-0.6476, -1.1},   // / 21
+    (vector_t){0.2912, -1.1},    // 22 curve
+    (vector_t){1.53, 0.1899},    // / 23
+    (vector_t){2.2932, -1.5851}, // 24 curve
+    (vector_t){2.7068, -1.4149}, // / 25
     (vector_t){2.364, -0.616},   // 26 curve
-    (vector_t){1.9514, 0.7936},     // / 27
-    (vector_t){1.771, -0.3737},     // 28 curve
-    (vector_t){2.184, -0.1961},      // / 29
-    (vector_t){1.9708, 0.3014},   // 30 curve
-    (vector_t){4.5, -0.09585},  // / 31 
-    (vector_t){3.5, 0.7268},    // 32 curve
-    (vector_t){1.69, 0.9567},  // / 33
-    (vector_t){1.22, 2.0501},  // / 34
-    (vector_t){0.741, 2.3056},    // 35 curve
-    (vector_t){0.5566, 2.4422}, // / 36
-    (vector_t){-0.2, 2.78},   // / 37
-    (vector_t){-0.83, 3.595},     // / 38
-    (vector_t){-0.86, 3.7},     // / 39
-    (vector_t){-0.9148, 3.748},    // / 40
-    (vector_t){-0.3925, 3.675},     // / 41
-    (vector_t){-0.25, 3.96},   // / 42
+    (vector_t){1.9514, 0.7936},  // / 27
+    (vector_t){1.771, -0.3737},  // 28 curve
+    (vector_t){2.184, -0.1961},  // / 29
+    (vector_t){1.9708, 0.3014},  // 30 curve
+    (vector_t){4.5, -0.09585},   // / 31
+    (vector_t){3.5, 0.7268},     // 32 curve
+    (vector_t){1.69, 0.9567},    // / 33
+    (vector_t){1.22, 2.0501},    // / 34
+    (vector_t){0.741, 2.3056},   // 35 curve
+    (vector_t){0.5566, 2.4422},  // / 36
+    (vector_t){-0.2, 2.78},      // / 37
+    (vector_t){-0.83, 3.595},    // / 38
+    (vector_t){-0.86, 3.7},      // / 39
+    (vector_t){-0.9148, 3.748},  // / 40
+    (vector_t){-0.3925, 3.675},  // / 41
+    (vector_t){-0.25, 3.96},     // / 42
     (vector_t){-0.37, 3.96},     // / 43
-    (vector_t){-0.7, 4.05},     // / 44
+    (vector_t){-0.7, 4.05},      // / 44
     (vector_t){-0.8, 4.19},      // / 45
-    (vector_t){-0.71, 4.703},   // / 46
+    (vector_t){-0.71, 4.703},    // / 46
     (vector_t){-0.5529, 4.904},  // / 47
     (vector_t){0.0861, 4.91},    // / 48
     (vector_t){-0.4122, 5.228},  // 49 curve
-    (vector_t){-1.701, 3.858},  // / 50
-    (vector_t){-1.587, 3.842},    // 51 curve
-    (vector_t){-2.125, 0.9167}, // / 52
-    (vector_t){-0.5, 0.988},   // / 53
+    (vector_t){-1.701, 3.858},   // / 50
+    (vector_t){-1.587, 3.842},   // 51 curve
+    (vector_t){-2.125, 0.9167},  // / 52
+    (vector_t){-0.5, 0.988},     // / 53
 };
 
 const double PROPORTIONS[NUM_CURVES] = {
-    3.0 / 100.0,  1.0 / 100.0,  4.5 / 100.0,  6.0 / 100.0,
-    4.5 / 100.0, 1.5 / 100.0,  4.5 / 100.0, 6.0 / 100.0,
-    1.5 / 100.0, 3.0 / 100.0,  6.5 / 100.0, 2.5 / 100.0,
-    2.0 / 100.0, 1.0 / 100.0,  4.0 / 100.0, 6.0 / 100.0,
-    2.0 / 100.0,  1.0 / 100.0, 4.5 / 100.0, 
+    3.0 / 100.0, 1.0 / 100.0, 4.5 / 100.0, 6.0 / 100.0, 4.5 / 100.0,
+    1.5 / 100.0, 4.5 / 100.0, 6.0 / 100.0, 1.5 / 100.0, 3.0 / 100.0,
+    6.5 / 100.0, 2.5 / 100.0, 2.0 / 100.0, 1.0 / 100.0, 4.0 / 100.0,
+    6.0 / 100.0, 2.0 / 100.0, 1.0 / 100.0, 4.5 / 100.0,
 };
 
 const size_t WHEEL_NUM_POINTS = 250;
@@ -114,9 +125,11 @@ const double y = 22 / 10.0;
 // timer constants
 const double START_TIME = 120.0;
 const size_t FONT_SIZE = 96;
-#define TIMER_DIMENSIONS (vector_t) { 0.1 * WINDOW.x, 0.15 * WINDOW.y }
-#define TIMER_POSITION (vector_t) { WINDOW.x - TIMER_DIMENSIONS.x, WINDOW.y }
-const rgb_color_t TEXT_COLOR = (rgb_color_t) { 0.0, 0.0, 0.0 };
+#define TIMER_DIMENSIONS                                                       \
+  (vector_t) { 0.1 * WINDOW.x, 0.15 * WINDOW.y }
+#define TIMER_POSITION                                                         \
+  (vector_t) { WINDOW.x - TIMER_DIMENSIONS.x, WINDOW.y }
+const rgb_color_t TEXT_COLOR = (rgb_color_t){0.0, 0.0, 0.0};
 
 // track constants
 const double TRACK_HEIGHT = 20.0;
@@ -146,11 +159,7 @@ typedef enum {
   TRACK = 4
 } body_type_t;
 
-typedef enum {
-  MENU = 1,
-  TIMER = 2,
-  SCORE = 3
-} game_state_t;
+typedef enum { MENU = 1, TIMER = 2, SCORE = 3 } game_state_t;
 
 // helper functions
 
@@ -279,7 +288,8 @@ void section_sixteen(list_t *shape, vector_t start, size_t num_points) {
   }
 }
 
-void section_twenty(list_t *shape, vector_t start, vector_t end, size_t num_points) {
+void section_twenty(list_t *shape, vector_t start, vector_t end,
+                    size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -293,7 +303,8 @@ void section_twenty(list_t *shape, vector_t start, vector_t end, size_t num_poin
   }
 }
 
-void section_twenty_two(list_t *shape, vector_t start, vector_t end, size_t num_points) {
+void section_twenty_two(list_t *shape, vector_t start, vector_t end,
+                        size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -359,7 +370,7 @@ void section_twenty_eight(list_t *shape, vector_t start, size_t num_points) {
 }
 
 void section_thirty(list_t *shape, vector_t start, vector_t end,
-                      size_t num_points) {
+                    size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -374,7 +385,7 @@ void section_thirty(list_t *shape, vector_t start, vector_t end,
 }
 
 void section_thirty_two(list_t *shape, vector_t start, vector_t end,
-                     size_t num_points) {
+                        size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -389,7 +400,7 @@ void section_thirty_two(list_t *shape, vector_t start, vector_t end,
 }
 
 void section_thirty_five(list_t *shape, vector_t start, vector_t end,
-                      size_t num_points) {
+                         size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -421,7 +432,7 @@ void section_forty_nine(list_t *shape, vector_t start, size_t num_points) {
 }
 
 void section_fifty_one(list_t *shape, vector_t start, vector_t end,
-                         size_t num_points) {
+                       size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
@@ -468,33 +479,31 @@ list_t *make_bike_shape() {
       section_fourteen(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
     } else if (i == 16) {
-      section_sixteen(shape, COORDS[i],
-                      PROPORTIONS[j] * BIKE_NUM_POINTS);
+      section_sixteen(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
     } else if (i == 18) {
       section_ten(shape, COORDS[i], COORDS[i + 1],
-                       PROPORTIONS[j] * BIKE_NUM_POINTS);
+                  PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
     } else if (i == 20) {
-      section_twenty(shape, COORDS[i], COORDS[i + 1], PROPORTIONS[j] * BIKE_NUM_POINTS);
+      section_twenty(shape, COORDS[i], COORDS[i + 1],
+                     PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
     } else if (i == 22) {
       section_twenty_two(shape, COORDS[i], COORDS[i + 1],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+                         PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 24) {
-      section_twenty_four(shape, COORDS[i],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+      section_twenty_four(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 26) {
       section_twenty_six(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 28) {
-      section_twenty_eight(shape, COORDS[i],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+      section_twenty_eight(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 30) {
       section_thirty(shape, COORDS[i], COORDS[i + 1],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+                     PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 32) {
       section_thirty_two(shape, COORDS[i], COORDS[i + 1],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+                         PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 35) {
       section_thirty_five(shape, COORDS[i], COORDS[i + 1],
                           PROPORTIONS[j] * BIKE_NUM_POINTS);
@@ -502,7 +511,7 @@ list_t *make_bike_shape() {
       section_forty_nine(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 51) {
       section_fifty_one(shape, COORDS[i], COORDS[i + 1],
-                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+                        PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else {
       vector_t *coord = malloc(sizeof(vector_t));
       *coord = COORDS[i];
@@ -528,7 +537,8 @@ body_t *make_bike() {
   list_free(shape);
   body_type_t *type = malloc(sizeof(*type));
   *type = BIKE;
-  body_t *bike = body_init_with_info(scaled_shape, BIKE_MASS, BIKE_COLOR, type, free);
+  body_t *bike =
+      body_init_with_info(scaled_shape, BIKE_MASS, BIKE_COLOR, type, free);
   body_set_centroid(bike, CENTER); //
   body_set_normal_moment_of_inertia(bike, BIKE_MOMENT);
   return bike;
@@ -571,7 +581,8 @@ list_t *make_actual_track() {
 
 void initialize_body_list(scene_t *scene) {
   scene_add_body(scene, make_bike());
-  body_t *track1 = body_init(make_actual_track(), TRACK_MASS, (rgb_color_t){0, 0, 0});
+  body_t *track1 =
+      body_init(make_actual_track(), TRACK_MASS, (rgb_color_t){0, 0, 0});
   body_t *track2 = body_init(make_track(), TRACK_MASS, TRACK_COLOR);
   scene_add_body(scene, track1);
   scene_add_body(scene, track2);
@@ -584,11 +595,11 @@ bool double_is_close(double a, double b, double threshold) {
 list_t *create_collision_triangle() {
   list_t *triangle = list_init(3, free);
   vector_t *v1 = malloc(sizeof(vector_t));
-  *v1 = (vector_t) { 0.00005, -sqrt(3) / 2 * 0.0001 };
+  *v1 = (vector_t){0.00005, -sqrt(3) / 2 * 0.0001};
   vector_t *v2 = malloc(sizeof(vector_t));
-  *v2 = (vector_t) { -0.00005, -sqrt(3) / 2 * 0.0001 };
+  *v2 = (vector_t){-0.00005, -sqrt(3) / 2 * 0.0001};
   vector_t *v3 = malloc(sizeof(vector_t));
-  *v3 = (vector_t) { 0, 0.0001 };
+  *v3 = (vector_t){0, 0.0001};
   list_add(triangle, v1);
   list_add(triangle, v2);
   list_add(triangle, v3);
@@ -599,7 +610,7 @@ vector_t find_colliding_point(body_t *body1, body_t *body2) {
   list_t *body1_shape = body_get_shape(body1);
   list_t *body2_shape = body_get_shape(body2);
   for (size_t i = 0; i < list_size(body1_shape); i++) {
-    vector_t centroid = *(vector_t *) list_get(body1_shape, i);
+    vector_t centroid = *(vector_t *)list_get(body1_shape, i);
     list_t *triangle = create_collision_triangle();
     polygon_translate(triangle, centroid);
     collision_info_t collision = find_collision(triangle, body2_shape);
@@ -623,16 +634,16 @@ void ground_collision(body_t *body, body_t *ground, vector_t axis, void *aux) {
   // char str[10];
   // sprintf(str, "%.9f", angle_diff);
   // puts(str);
-  // if (!double_is_close(fabs(angle_diff), M_PI / 2, 1e-5) && !double_is_close(fabs(angle_diff), 3 * M_PI / 2, 1e-5)) {
-    vector_t intersect = find_colliding_point(body, ground);
-    if (!double_is_close(intersect.x, -WINDOW.x, 1e-5)) {
-      body_set_pivot(body, intersect);
-      if (angle_diff < M_PI / 2) {
-        body_set_angular_velocity(body, ANGULAR_VELOCITY);
-      }
-      else {
-        body_set_angular_velocity(body, -ANGULAR_VELOCITY);
-      }
+  // if (!double_is_close(fabs(angle_diff), M_PI / 2, 1e-5) &&
+  // !double_is_close(fabs(angle_diff), 3 * M_PI / 2, 1e-5)) {
+  vector_t intersect = find_colliding_point(body, ground);
+  if (!double_is_close(intersect.x, -WINDOW.x, 1e-5)) {
+    body_set_pivot(body, intersect);
+    if (angle_diff < M_PI / 2) {
+      body_set_angular_velocity(body, ANGULAR_VELOCITY);
+    } else {
+      body_set_angular_velocity(body, -ANGULAR_VELOCITY);
+    }
     // }
   } else {
     body_set_angular_velocity(body, 0.0);
@@ -646,19 +657,26 @@ void create_ground_collision(state_t *state, body_t *body, body_t *ground) {
 }
 
 void initialize_force_list(state_t *state) {
-  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION, scene_get_body(state->scene, 0));
-  create_ground_collision(state, scene_get_body(state->scene, 0), scene_get_body(state->scene, 1));
-  create_physics_collision(state->scene, 0.0, scene_get_body(state->scene, 0), scene_get_body(state->scene, 1));
-  create_normal(state->scene, scene_get_body(state->scene, 0), scene_get_body(state->scene, 1));
+  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION,
+                           scene_get_body(state->scene, 0));
+  create_ground_collision(state, scene_get_body(state->scene, 0),
+                          scene_get_body(state->scene, 1));
+  create_physics_collision(state->scene, 0.0, scene_get_body(state->scene, 0),
+                           scene_get_body(state->scene, 1));
+  create_normal(state->scene, scene_get_body(state->scene, 0),
+                scene_get_body(state->scene, 1));
 
-  create_ground_collision(state, scene_get_body(state->scene, 0), scene_get_body(state->scene, 2));
+  create_ground_collision(state, scene_get_body(state->scene, 0),
+                          scene_get_body(state->scene, 2));
   create_physics_collision(state->scene, 0.0, scene_get_body(state->scene, 0),
                            scene_get_body(state->scene, 2));
-  create_normal(state->scene, scene_get_body(state->scene, 0), scene_get_body(state->scene, 2));
+  create_normal(state->scene, scene_get_body(state->scene, 0),
+                scene_get_body(state->scene, 2));
 }
 
 // key handler function
-// void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
+// void on_key(state_t *state, char key, key_event_type_t type, double
+// held_time) {
 //   // TODO: key handlers
 // }
 
@@ -671,14 +689,18 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
       if (!state->pushed_down) {
         state->pushed_down = true;
         create_applied(state->scene,
-                       (vector_t){-BIKE_MASS * BIKE_ACCELERATION * cos(angle), -sin(angle)}, bike);
+                       (vector_t){-BIKE_MASS * BIKE_ACCELERATION * cos(angle),
+                                  -sin(angle)},
+                       bike);
       }
       break;
     case RIGHT_ARROW:
       if (!state->pushed_down) {
         state->pushed_down = true;
-        create_applied(state->scene,
-                       (vector_t){BIKE_MASS * BIKE_ACCELERATION * cos(angle), sin(angle)}, bike);
+        create_applied(
+            state->scene,
+            (vector_t){BIKE_MASS * BIKE_ACCELERATION * cos(angle), sin(angle)},
+            bike);
       }
       break;
     }
@@ -686,13 +708,17 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
     switch (key) {
     case LEFT_ARROW:
       state->pushed_down = false;
-      create_applied(state->scene,
-                     (vector_t){BIKE_MASS * BIKE_ACCELERATION * cos(angle), sin(angle)}, bike);
+      create_applied(
+          state->scene,
+          (vector_t){BIKE_MASS * BIKE_ACCELERATION * cos(angle), sin(angle)},
+          bike);
       break;
     case RIGHT_ARROW:
       state->pushed_down = false;
-      create_applied(state->scene,
-                     (vector_t){-BIKE_MASS * BIKE_ACCELERATION * cos(angle), -sin(angle)}, bike);
+      create_applied(
+          state->scene,
+          (vector_t){-BIKE_MASS * BIKE_ACCELERATION * cos(angle), -sin(angle)},
+          bike);
       break;
     }
   }
@@ -716,25 +742,29 @@ body_t *make_rectangle(double width, double height, rgb_color_t color) {
   return rectangle;
 }
 
-void make_button(scene_t *scene, char *string, size_t font_size, vector_t position, vector_t dim, rgb_color_t text_color, rgb_color_t button_color) {
-  text_input_t text_input = {
-    .string = string,
-    .font_size = font_size,
-    .position = position,
-    .dim = dim,
-    .color = text_color
-  };
+void make_button(scene_t *scene, char *string, size_t font_size,
+                 vector_t position, vector_t dim, rgb_color_t text_color,
+                 rgb_color_t button_color) {
+  text_input_t text_input = {.string = string,
+                             .font_size = font_size,
+                             .position = position,
+                             .dim = dim,
+                             .color = text_color};
   sdl_write_text(text_input);
   body_t *button = make_rectangle(1.5 * dim.x, 1.5 * dim.y, button_color);
-  vector_t centroid = (vector_t) { position.x + dim.x / 2.0, position.y - dim.y / 2.0 };
+  vector_t centroid =
+      (vector_t){position.x + dim.x / 2.0, position.y - dim.y / 2.0};
   body_set_centroid(button, centroid);
   scene_add_body(scene, button);
 }
 
 void create_start_menu(state_t *state) {
-  make_button(state->scene, "PLAY", FONT_SIZE, PLAY_POSITION, BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
-  make_button(state->scene, "CUSTOMIZE", FONT_SIZE, CUSTOMIZE_POSITION, BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
-  make_button(state->scene, "SETTINGS", FONT_SIZE, SETTINGS_POSITION, BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
+  make_button(state->scene, "PLAY", FONT_SIZE, PLAY_POSITION, BUTTON_DIM,
+              TEXT_COLOR, BUTTON_COLOR);
+  make_button(state->scene, "CUSTOMIZE", FONT_SIZE, CUSTOMIZE_POSITION,
+              BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
+  make_button(state->scene, "SETTINGS", FONT_SIZE, SETTINGS_POSITION,
+              BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
 }
 
 state_t *emscripten_init() {
@@ -757,7 +787,8 @@ state_t *emscripten_init() {
   //   .color = TEXT_COLOR
   // };
   // sdl_write_text(state->timer_text);
-  sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg", (vector_t) {0, WINDOW.y});
+  sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
+                (vector_t){0, WINDOW.y});
   create_start_menu(state);
   return state;
 }
@@ -772,7 +803,7 @@ void update_timer(state_t *state) {
   // sprintf(time, "0%lu", minutes);
   // strcat(time, ":");
   // sprintf(sec, "%lu", seconds);
-  sprintf(time, "%d", (int) state->clock);
+  sprintf(time, "%d", (int)state->clock);
   // if (seconds / 10 < 1) {
   //   sprintf(sec, "0%lu", seconds);
   // }
