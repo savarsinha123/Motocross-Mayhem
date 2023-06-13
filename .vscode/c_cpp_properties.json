@@ -36,7 +36,8 @@
             "cStandard": "c11",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/local/include"
+                "/usr/local/include",
+                "/home/ssinha/.emscripten_cache/sysroot/include"
             ]
         }
     ],

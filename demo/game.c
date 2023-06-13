@@ -15,61 +15,89 @@
 #include <time.h>
 
 // constants
-const vector_t WINDOW = ((vector_t){.x = 1500, .y = 1000});
+const vector_t WINDOW = ((vector_t){.x = 2000, .y = 1000});
+#define CENTER vec_multiply(0.5, WINDOW)
+
+// button constants
+const double BUTTON_MASS = 1.0;
+#define BUTTON_DIM (vector_t) { 0.2 * WINDOW.x, 0.15 * WINDOW.y }
+#define PLAY_POSITION (vector_t) { (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0, WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y }
+#define CUSTOMIZE_POSITION (vector_t) { (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + WINDOW.x / 3.0, WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y }
+#define SETTINGS_POSITION (vector_t) { (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + 2.0 * WINDOW.x / 3.0, WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y }
+const rgb_color_t BUTTON_COLOR = (rgb_color_t) { 0.5, 0.5, 0.5 };
 
 // bike constants
-const size_t BIKE_NUM_POINTS = 1000;
-const double BIKE_MASS = 10000.0;
-const rgb_color_t BIKE_COLOR = (rgb_color_t){1, 0, 0};
+const size_t BIKE_NUM_POINTS = 500;
+const double BIKE_MASS = 1.0;
+const double BIKE_MOMENT = 0.75;
+const rgb_color_t BIKE_COLOR = (rgb_color_t){0.5, 0, 0};
 const vector_t START = (vector_t){-1.45, 1.045}; // 1
 // each section's end point becomes the next section's start point.
-#define NUM_SECTIONS 38
-#define NUM_CURVES 11
+#define NUM_SECTIONS 54
+#define NUM_CURVES 19
 const vector_t COORDS[NUM_SECTIONS] = {
-    (vector_t){-1.5, 1.052},    // 0
-    (vector_t){-1.85, 1.18},    // 1 1
-    (vector_t){-1.9, 1.412},    // 1 2
-    (vector_t){-1.67, 2.795},   // 5 3
-    (vector_t){-1.16, 2.343},   // 1 4
-    (vector_t){-0.43, 2.032},   // 1 5
-    (vector_t){-0.1, 1.997},    // 2.5 6
-    (vector_t){0, 1.94},        // 1 7
-    (vector_t){0.14, 1.473},    // 1 8
-    (vector_t){-1.788, 0.878},  // 10 9
-    (vector_t){-8.5, 1.058},    // 5 11
-    (vector_t){-3.8, -1.1},     // 11 12
-    (vector_t){-2.1, -1.1},     // 1 13
-    (vector_t){-1.15, -1.1},    // 5 14
-    (vector_t){0.3, -1.1},      // 1 15
-    (vector_t){4.5, -0.096},    // 11 16
-    (vector_t){3.5, 0.727},     // 1 17
-    (vector_t){0.8, 1.013},     // 5 18
-    (vector_t){0.4, 2.117},     // 1 19
-    (vector_t){-0.05, 2.3485},  // 1 20
-    (vector_t){-0.25, 2.445},   // 2.5 21
-    (vector_t){-1, 2.765},      // 1 22
-    (vector_t){-1.63, 3.6},     // 1 23
-    (vector_t){-1.66, 3.7},     // 1 24
-    (vector_t){-1.7, 3.735},    // 1 25
-    (vector_t){-1.2, 3.66},     // 1 26
-    (vector_t){-1.057, 3.96},   // 1 27 jhj
-    (vector_t){-1.2, 3.96},     // 1 28
-    (vector_t){-1.5, 4.04},     // 1 29
-    (vector_t){-1.6, 4.4},      // 1 30
-    (vector_t){-1.44, 4.703},   // 1 31
-    (vector_t){-1.262, 4.895},  // 1 32
-    (vector_t){-0.7, 4.901},    // 1 33
-    (vector_t){-1.212, 5.228},  // 34
-    (vector_t){-2.496, 3.854},  // 10 35
-    (vector_t){-2.4, 3.833},    // 1 36
-    (vector_t){-2.924, 0.9605}, // 10 37
-    (vector_t){-1.25, 0.967},   // 1 38
+    (vector_t){-0.6, 1.0249},    // / 0
+    (vector_t){-1.05, 1.191},    // / 1
+    (vector_t){-1.1, 1.412},    // 2 curve
+    (vector_t){-0.8752, 2.7991},   // / 3
+    (vector_t){-0.35, 2.336},   //  / 4 
+    (vector_t){0.417, 1.9778},   //  5 curve
+    (vector_t){0.6441, 1.9888},    // / 6
+    (vector_t){0.8, 1.8933},        // / 7
+    (vector_t){0.94, 1.5667},    // 8 curve
+    (vector_t){-1.788, 0.8834},  // 9 curve
+    (vector_t){-8.6, 1.0551},    // 10 curve
+    (vector_t){-4.306, -0.4199},     // / 11
+    (vector_t){-6.58, -1.2912},     // 12 curve
+    (vector_t){-6.42, -1.7088},    // / 13 
+    (vector_t){-5.611, -1.3999},      // 14 curve
+    (vector_t){-5.772, -0.9804},    // / 15 
+    (vector_t){-5.345, -0.8174},     // 16 curve
+    (vector_t){-5.185, -1.236},     // / 17 
+    (vector_t){-3.99, -0.7786},     // 18 curve
+    (vector_t){-3.752, -1.1},  // / 19
+    (vector_t){-1.6274, -1.1},   // 20 curve
+    (vector_t){-0.6476, -1.1},      // / 21
+    (vector_t){0.2912, -1.1},     // 22 curve
+    (vector_t){1.53, 0.1899},     // / 23
+    (vector_t){2.2932, -1.5851},    // 24 curve 
+    (vector_t){2.7068, -1.4149},     // / 25
+    (vector_t){2.364, -0.616},   // 26 curve
+    (vector_t){1.9514, 0.7936},     // / 27
+    (vector_t){1.771, -0.3737},     // 28 curve
+    (vector_t){2.184, -0.1961},      // / 29
+    (vector_t){1.9708, 0.3014},   // 30 curve
+    (vector_t){4.5, -0.09585},  // / 31 
+    (vector_t){3.5, 0.7268},    // 32 curve
+    (vector_t){1.69, 0.9567},  // / 33
+    (vector_t){1.22, 2.0501},  // / 34
+    (vector_t){0.741, 2.3056},    // 35 curve
+    (vector_t){0.5566, 2.4422}, // / 36
+    (vector_t){-0.2, 2.78},   // / 37
+    (vector_t){-0.83, 3.595},     // / 38
+    (vector_t){-0.86, 3.7},     // / 39
+    (vector_t){-0.9148, 3.748},    // / 40
+    (vector_t){-0.3925, 3.675},     // / 41
+    (vector_t){-0.25, 3.96},   // / 42
+    (vector_t){-0.37, 3.96},     // / 43
+    (vector_t){-0.7, 4.05},     // / 44
+    (vector_t){-0.8, 4.19},      // / 45
+    (vector_t){-0.71, 4.703},   // / 46
+    (vector_t){-0.5529, 4.904},  // / 47
+    (vector_t){0.0861, 4.91},    // / 48
+    (vector_t){-0.4122, 5.228},  // 49 curve
+    (vector_t){-1.701, 3.858},  // / 50
+    (vector_t){-1.587, 3.842},    // 51 curve
+    (vector_t){-2.125, 0.9167}, // / 52
+    (vector_t){-0.5, 0.988},   // / 53
 };
 
 const double PROPORTIONS[NUM_CURVES] = {
-    5.0 / 100.0,  2.5 / 100.0,  5.0 / 100.0,  7.0 / 100.0,
-    10.0 / 100.0, 5.0 / 100.0,  11.0 / 100.0, 5.0 / 100.0,
-    2.5 / 100.0,  10.0 / 100.0, 10.0 / 100.0,
+    3.0 / 100.0,  1.0 / 100.0,  4.5 / 100.0,  6.0 / 100.0,
+    4.5 / 100.0, 1.5 / 100.0,  4.5 / 100.0, 6.0 / 100.0,
+    1.5 / 100.0, 3.0 / 100.0,  6.5 / 100.0, 2.5 / 100.0,
+    2.0 / 100.0, 1.0 / 100.0,  4.0 / 100.0, 6.0 / 100.0,
+    2.0 / 100.0,  1.0 / 100.0, 4.5 / 100.0, 
 };
 
 const size_t WHEEL_NUM_POINTS = 250;
@@ -83,6 +111,13 @@ const double x_back = 12 * 10;
 const double x_front = 20.5 * 10;
 const double y = 22 / 10.0;
 
+// timer constants
+const double START_TIME = 120.0;
+const size_t FONT_SIZE = 96;
+#define TIMER_DIMENSIONS (vector_t) { 0.1 * WINDOW.x, 0.15 * WINDOW.y }
+#define TIMER_POSITION (vector_t) { WINDOW.x - TIMER_DIMENSIONS.x, WINDOW.y }
+const rgb_color_t TEXT_COLOR = (rgb_color_t) { 0.0, 0.0, 0.0 };
+
 // track constants
 const double TRACK_HEIGHT = 20.0;
 const double TRACK_MASS = INFINITY;
@@ -93,54 +128,33 @@ const double GRAVITATIONAL_ACCELERATION = 100.0;
 const double SUSPENSION_CONSTANT = 10000.0;
 const double EQ_DIST = 10.0;
 
+const double ANGULAR_VELOCITY = 1.0;
+const double BIKE_ACCELERATION = 300.0;
+
 typedef struct state {
   scene_t *scene;
-  body_t *bike_body;
-  body_t *back_wheel;
-  body_t *front_wheel;
-  vector_t *back_anchor;
-  vector_t *front_anchor;
+  double clock;
+  text_input_t timer_text;
+  bool pushed_down;
+  game_state_t game_state;
 } state_t;
 
 typedef enum {
   BIKE = 1,
-  BACK_WHEEL = 2,
-  FRONT_WHEEL = 3,
-  WHEEL_POWERUP = 4,
-  SPEED_POWERUP = 5,
-  TRACK = 6
+  WHEEL_POWERUP = 2,
+  SPEED_POWERUP = 3,
+  TRACK = 4
 } body_type_t;
+
+typedef enum {
+  MENU = 1,
+  TIMER = 2,
+  SCORE = 3
+} game_state_t;
 
 // helper functions
 
 // bike functions
-body_t *make_wheel(double x, double y, body_type_t type) {
-  list_t *shape = list_init(1, free);
-  for (int t = 0; t < WHEEL_NUM_POINTS; t++) {
-    vector_t *coord = malloc(sizeof(vector_t));
-    if (t < WHEEL_NUM_POINTS / 2) {
-      *coord =
-          (vector_t){WHEEL_INNER_RAD * cos((8.0 * t - WHEEL_NUM_POINTS) /
-                                           (2.0 * WHEEL_NUM_POINTS) * M_PI),
-                     WHEEL_INNER_RAD * sin((8.0 * t - WHEEL_NUM_POINTS) /
-                                           (2.0 * WHEEL_NUM_POINTS) * M_PI)};
-    } else {
-      *coord = (vector_t){
-          WHEEL_OUTER_RAD * cos((200.0 * t - 127 * WHEEL_NUM_POINTS) /
-                                (50.0 * WHEEL_NUM_POINTS) * M_PI),
-          WHEEL_OUTER_RAD * sin((200.0 * t - 127 * WHEEL_NUM_POINTS) /
-                                (50.0 * WHEEL_NUM_POINTS) * M_PI)};
-    }
-    list_add(shape, coord);
-  }
-  body_type_t *info = malloc(sizeof(*info));
-  *info = type;
-  body_t *wheel =
-      body_init_with_info(shape, WHEEL_MASS, WHEEL_COLOR, info, free);
-  body_set_centroid(wheel, (vector_t){x, y}); //
-  return wheel;
-}
-
 void section_two(list_t *shape, vector_t start, vector_t end,
                  size_t num_points) {
   double dx = (end.x - start.x) / num_points;
@@ -149,7 +163,7 @@ void section_two(list_t *shape, vector_t start, vector_t end,
   list_add(shape, coord_zero);
   for (size_t t = 1; t < num_points; t++) {
     double x = start.x + dx * t;
-    double y = 2 + 0.5 * sinh(10 * (x + 1.8));
+    double y = 2 + 0.5 * sinh(10 * (x + 1));
     vector_t *coord = malloc(sizeof(vector_t));
     *coord = (vector_t){x, y};
     list_add(shape, coord);
@@ -164,7 +178,7 @@ void section_five(list_t *shape, vector_t start, vector_t end,
   list_add(shape, coord_zero);
   for (size_t t = 1; t < num_points; t++) {
     double x = start.x + dx * t;
-    double y = 2.2 - sqrt(0.06 - (x + 0.25) * (x + 0.25));
+    double y = 2.2 - sqrt(0.06 - (x - 0.52) * (x - 0.52));
     vector_t *coord = malloc(sizeof(vector_t));
     *coord = (vector_t){x, y};
     list_add(shape, coord);
@@ -179,7 +193,7 @@ void section_eight(list_t *shape, vector_t start, vector_t end,
   list_add(shape, coord_zero);
   for (size_t t = 1; t < num_points; t++) {
     double x = start.x + dx * t;
-    double y = 1 - 0.5 * cos(0.7 * x - 1) / (x - 0.8);
+    double y = 0.95 - 0.34 * cos(0.7 * x - 1) / (x - 1.46);
     vector_t *coord = malloc(sizeof(vector_t));
     *coord = (vector_t){x, y};
     list_add(shape, coord);
@@ -194,7 +208,7 @@ void section_nine(list_t *shape, vector_t start, vector_t end,
   list_add(shape, coord_zero);
   for (size_t t = 1; t < num_points; t++) {
     double x = start.x + dx * t;
-    double y = 1 + 0.15 * cos(0.55 * x + 3.5);
+    double y = 1.005 + 0.15 * cos(0.55 * x + 3.5);
     vector_t *coord = malloc(sizeof(vector_t));
     *coord = (vector_t){x, y};
     list_add(shape, coord);
@@ -216,22 +230,135 @@ void section_ten(list_t *shape, vector_t start, vector_t end,
   }
 }
 
-void section_twelve(list_t *shape, vector_t start, vector_t end,
-                    size_t num_points) {
-  double dx = (end.x - start.x) / num_points;
+void section_twelve(list_t *shape, vector_t start, size_t num_points) {
   vector_t *coord_zero = malloc(sizeof(vector_t));
   *coord_zero = start;
   list_add(shape, coord_zero);
-  for (size_t t = 1; t < num_points; t++) {
-    double x = start.x + dx * t;
-    double y = -1.4 - 1.0 / (24 * (x + 1.7) * (x + 1.7) - 3 * (x + 1.7) - 9);
+  double dt = M_PI / num_points;
+  for (size_t i = 1; i < num_points; i++) {
+    double t = 0.61646 * M_PI + dt * i;
+    double x = 0.22361 * cos(t) - 6.5;
+    double y = 0.22361 * sin(t) - 1.5;
     vector_t *coord = malloc(sizeof(vector_t));
     *coord = (vector_t){x, y};
     list_add(shape, coord);
   }
 }
 
-void section_fourteen(list_t *shape, vector_t start, vector_t end,
+void section_fourteen(list_t *shape, vector_t start, size_t num_points) {
+  double interval_length = 5.7735;
+  double interval_start = 1.4606;
+  vector_t *coord_zero = malloc(sizeof(vector_t));
+  *coord_zero = start;
+  list_add(shape, coord_zero);
+  double dt = interval_length / num_points;
+  for (size_t i = 1; i < num_points; i++) {
+    double t = interval_start + dt * i;
+    double x = 0.89443 * sin(t) - 6.5;
+    double y = 0.89443 * cos(t) - 1.5;
+    vector_t *coord = malloc(sizeof(vector_t));
+    *coord = (vector_t){x, y};
+    list_add(shape, coord);
+  }
+}
+
+void section_sixteen(list_t *shape, vector_t start, size_t num_points) {
+  double interval_length = 5.946;
+  double interval_start = 0.534;
+  vector_t *coord_zero = malloc(sizeof(vector_t));
+  *coord_zero = start;
+  list_add(shape, coord_zero);
+  double dt = interval_length / num_points;
+  for (size_t i = 1; i < num_points; i++) {
+    double t = interval_start + dt * i;
+    double x = 1.3416 * cos(t) - 6.5;
+    double y = 1.3416 * sin(t) - 1.5;
+    vector_t *coord = malloc(sizeof(vector_t));
+    *coord = (vector_t){x, y};
+    list_add(shape, coord);
+  }
+}
+
+void section_twenty(list_t *shape, vector_t start, vector_t end, size_t num_points) {
+  double dx = (end.x - start.x) / num_points;
+  vector_t *coord_zero = malloc(sizeof(vector_t));
+  *coord_zero = start;
+  list_add(shape, coord_zero);
+  for (size_t t = 1; t < num_points; t++) {
+    double x = start.x + dx * t;
+    double y = -1.4 - 1.0 / (24 * (x + 1.2) * (x + 1.2) - 3 * (x + 1.2) - 9);
+    vector_t *coord = malloc(sizeof(vector_t));
+    *coord = (vector_t){x, y};
+    list_add(shape, coord);
+  }
+}
+
+void section_twenty_two(list_t *shape, vector_t start, vector_t end, size_t num_points) {
+  double dx = (end.x - start.x) / num_points;
+  vector_t *coord_zero = malloc(sizeof(vector_t));
+  *coord_zero = start;
+  list_add(shape, coord_zero);
+  for (size_t t = 1; t < num_points; t++) {
+    double x = start.x + dx * t;
+    double y = 2.0 - 4.0 * cosh(0.4 * (x - 0.2)) / (x + 1);
+    vector_t *coord = malloc(sizeof(vector_t));
+    *coord = (vector_t){x, y};
+    list_add(shape, coord);
+  }
+}
+
+void section_twenty_four(list_t *shape, vector_t start, size_t num_points) {
+  double interval_length = 3.141;
+  double interval_start = 3.532;
+  vector_t *coord_zero = malloc(sizeof(vector_t));
+  *coord_zero = start;
+  list_add(shape, coord_zero);
+  double dt = interval_length / num_points;
+  for (size_t i = 1; i < num_points; i++) {
+    double t = interval_start + dt * i;
+    double x = 0.22361 * cos(t) + 2.5;
+    double y = 0.22361 * sin(t) - 1.5;
+    vector_t *coord = malloc(sizeof(vector_t));
+    *coord = (vector_t){x, y};
+    list_add(shape, coord);
+  }
+}
+
+void section_twenty_six(list_t *shape, vector_t start, size_t num_points) {
+  double interval_length = 5.47;
+  double interval_start = -0.1525;
+  vector_t *coord_zero = malloc(sizeof(vector_t));
+  *coord_zero = start;
+  list_add(shape, coord_zero);
+  double dt = interval_length / num_points;
+  for (size_t i = 1; i < num_points; i++) {
+    double t = interval_start + dt * i;
+    double x = 0.89443 * sin(t) + 2.5;
+    double y = 0.89443 * cos(t) - 1.5;
+    vector_t *coord = malloc(sizeof(vector_t));
+    *coord = (vector_t){x, y};
+    list_add(shape, coord);
+  }
+}
+
+void section_twenty_eight(list_t *shape, vector_t start, size_t num_points) {
+  double interval_length = 5.94;
+  double interval_start = 2.15;
+  vector_t *coord_zero = malloc(sizeof(vector_t));
+  *coord_zero = start;
+  list_add(shape, coord_zero);
+  double dt = interval_length / num_points;
+  for (size_t i = 1; i < num_points; i++) {
+    double t = interval_start + dt * i;
+    double x = 1.3416 * cos(t) + 2.5;
+    double y = 1.3416 * sin(t) - 1.5;
+    vector_t *coord = malloc(sizeof(vector_t));
+    *coord = (vector_t){x, y};
+    list_add(shape, coord);
+  }
+}
+
+void section_thirty(list_t *shape, vector_t start, vector_t end,
                       size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
@@ -246,7 +373,7 @@ void section_fourteen(list_t *shape, vector_t start, vector_t end,
   }
 }
 
-void section_sixteen(list_t *shape, vector_t start, vector_t end,
+void section_thirty_two(list_t *shape, vector_t start, vector_t end,
                      size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
@@ -261,7 +388,7 @@ void section_sixteen(list_t *shape, vector_t start, vector_t end,
   }
 }
 
-void section_nineteen(list_t *shape, vector_t start, vector_t end,
+void section_thirty_five(list_t *shape, vector_t start, vector_t end,
                       size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
@@ -269,21 +396,23 @@ void section_nineteen(list_t *shape, vector_t start, vector_t end,
   list_add(shape, coord_zero);
   for (size_t t = 1; t < num_points; t++) {
     double x = start.x + dx * t;
-    double y = 2.2 + sqrt(0.06 - (x + 0.25) * (x + 0.25));
+    double y = 2.2 + sqrt(0.06 - (x - 0.52) * (x - 0.52));
     vector_t *coord = malloc(sizeof(vector_t));
     *coord = (vector_t){x, y};
     list_add(shape, coord);
   }
 }
 
-void section_thirty_three(list_t *shape, vector_t start, size_t num_points) {
+void section_forty_nine(list_t *shape, vector_t start, size_t num_points) {
   vector_t *coord_zero = malloc(sizeof(vector_t));
+  double interval_length = 0.9526 * M_PI;
+  double interval_start = 0.3 * M_PI;
   *coord_zero = start;
   list_add(shape, coord_zero);
-  double dt = ((1.254 - 0.3) * M_PI) / num_points;
+  double dt = interval_length / num_points;
   for (size_t i = 1; i < num_points; i++) {
-    double t = 0.3 * M_PI + dt * i;
-    double x = cos(t) - 1.8;
+    double t = interval_start + dt * i;
+    double x = cos(t) - 1;
     double y = 0.9 * sin(t) + 4.5;
     vector_t *coord = malloc(sizeof(vector_t));
     *coord = (vector_t){x, y};
@@ -291,7 +420,7 @@ void section_thirty_three(list_t *shape, vector_t start, size_t num_points) {
   }
 }
 
-void section_thirty_five(list_t *shape, vector_t start, vector_t end,
+void section_fifty_one(list_t *shape, vector_t start, vector_t end,
                          size_t num_points) {
   double dx = (end.x - start.x) / num_points;
   vector_t *coord_zero = malloc(sizeof(vector_t));
@@ -300,7 +429,7 @@ void section_thirty_five(list_t *shape, vector_t start, vector_t end,
   list_add(shape, coord_zero);
   for (size_t t = 1; t < num_points; t++) {
     double x = start.x + dx * t;
-    double y = 4.0 + (x + 2.0) / (4.0 * (x + 3));
+    double y = 4.0 + (x + 1.2) / (4.0 * (x + 2.2));
     vector_t *coord = malloc(sizeof(vector_t));
     *coord = (vector_t){x, y};
     list_add(shape, coord);
@@ -333,26 +462,46 @@ list_t *make_bike_shape() {
                   PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
     } else if (i == 12) {
-      section_twelve(shape, COORDS[i], COORDS[i + 1],
-                     PROPORTIONS[j] * BIKE_NUM_POINTS);
+      section_twelve(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
     } else if (i == 14) {
-      section_fourteen(shape, COORDS[i], COORDS[i + 1],
-                       PROPORTIONS[j] * BIKE_NUM_POINTS);
+      section_fourteen(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
     } else if (i == 16) {
-      section_sixteen(shape, COORDS[i], COORDS[i + 1],
+      section_sixteen(shape, COORDS[i],
                       PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
-    } else if (i == 19) {
-      section_nineteen(shape, COORDS[i], COORDS[i + 1],
+    } else if (i == 18) {
+      section_ten(shape, COORDS[i], COORDS[i + 1],
                        PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
-    } else if (i == 33) {
-      section_thirty_three(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
+    } else if (i == 20) {
+      section_twenty(shape, COORDS[i], COORDS[i + 1], PROPORTIONS[j] * BIKE_NUM_POINTS);
       j++;
+    } else if (i == 22) {
+      section_twenty_two(shape, COORDS[i], COORDS[i + 1],
+                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+    } else if (i == 24) {
+      section_twenty_four(shape, COORDS[i],
+                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+    } else if (i == 26) {
+      section_twenty_six(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
+    } else if (i == 28) {
+      section_twenty_eight(shape, COORDS[i],
+                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+    } else if (i == 30) {
+      section_thirty(shape, COORDS[i], COORDS[i + 1],
+                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+    } else if (i == 32) {
+      section_thirty_two(shape, COORDS[i], COORDS[i + 1],
+                          PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else if (i == 35) {
       section_thirty_five(shape, COORDS[i], COORDS[i + 1],
+                          PROPORTIONS[j] * BIKE_NUM_POINTS);
+    } else if (i == 49) {
+      section_forty_nine(shape, COORDS[i], PROPORTIONS[j] * BIKE_NUM_POINTS);
+    } else if (i == 51) {
+      section_fifty_one(shape, COORDS[i], COORDS[i + 1],
                           PROPORTIONS[j] * BIKE_NUM_POINTS);
     } else {
       vector_t *coord = malloc(sizeof(vector_t));
@@ -373,50 +522,16 @@ list_t *scale_polygon(double scalar, list_t *list) {
   return scaled_polygon;
 }
 
-body_t *make_bike(state_t *state) {
+body_t *make_bike() {
   list_t *shape = make_bike_shape();
   list_t *scaled_shape = scale_polygon(10, shape);
   list_free(shape);
-  size_t left_index = list_size(scaled_shape) * 7 / 20;
-  size_t right_index = list_size(scaled_shape) / 2;
-  state->back_anchor = list_get(scaled_shape, left_index);
-  state->front_anchor = list_get(scaled_shape, right_index);
   body_type_t *type = malloc(sizeof(*type));
   *type = BIKE;
-  body_t *bike =
-      body_init_with_info(scaled_shape, BIKE_MASS, BIKE_COLOR, type, free);
-  double x = (body_get_centroid(state->back_wheel).x +
-              body_get_centroid(state->front_wheel).x) /
-             2.0;
-  body_set_centroid(bike, (vector_t){x, 25});
+  body_t *bike = body_init_with_info(scaled_shape, BIKE_MASS, BIKE_COLOR, type, free);
+  body_set_centroid(bike, CENTER); //
+  body_set_normal_moment_of_inertia(bike, BIKE_MOMENT);
   return bike;
-}
-
-// void set_anchors(state_t *state) {
-//   state->back_anchor = body_get_centroid(state->back_wheel);
-//   state->front_anchor = body_get_centroid(state->front_wheel);
-// }
-
-void initialize_bike(state_t *state) {
-  state->back_wheel = make_wheel(x_back, y, BACK_WHEEL);
-  state->front_wheel = make_wheel(x_front, y, FRONT_WHEEL);
-  // set_anchors(state);
-  state->bike_body = make_bike(state);
-  scene_add_body(state->scene, state->bike_body);
-  scene_add_body(state->scene, state->back_wheel);
-  scene_add_body(state->scene, state->front_wheel);
-}
-
-void move_bike(state_t *state, vector_t position) {
-  vector_t translation =
-      vec_subtract(position, body_get_centroid(state->bike_body));
-  body_set_centroid(state->bike_body, position);
-  body_set_centroid(state->back_wheel,
-                    vec_add(body_get_centroid(state->back_wheel), translation));
-  body_set_centroid(
-      state->front_wheel,
-      vec_add(body_get_centroid(state->front_wheel), translation));
-  // set_anchors(state);
 }
 
 // basic track building
@@ -455,13 +570,8 @@ list_t *make_actual_track() {
 }
 
 void initialize_body_list(scene_t *scene) {
-  // body_t *body =
-  //     body_init(make_circle(CIRCLE_RADIUS), CIRCLE_MASS, CIRCLE_COLOR);
-  // body_set_centroid(body, (vector_t){WINDOW.x / 2.0, WINDOW.y});
-  // scene_add_body(scene, body);
-  // initialize_wheels();
-  body_t *track1 =
-      body_init(make_actual_track(), TRACK_MASS, (rgb_color_t){0, 0, 0});
+  scene_add_body(scene, make_bike());
+  body_t *track1 = body_init(make_actual_track(), TRACK_MASS, (rgb_color_t){0, 0, 0});
   body_t *track2 = body_init(make_track(), TRACK_MASS, TRACK_COLOR);
   scene_add_body(scene, track1);
   scene_add_body(scene, track2);
@@ -471,133 +581,160 @@ bool double_is_close(double a, double b, double threshold) {
   return fabs(a - b) < threshold;
 }
 
-bool is_zero_vector(vector_t v) {
-  return double_is_close(v.x, 0.0, 1e-5) && double_is_close(v.y, 0.0, 1e-5);
+list_t *create_collision_triangle() {
+  list_t *triangle = list_init(3, free);
+  vector_t *v1 = malloc(sizeof(vector_t));
+  *v1 = (vector_t) { 0.00005, -sqrt(3) / 2 * 0.0001 };
+  vector_t *v2 = malloc(sizeof(vector_t));
+  *v2 = (vector_t) { -0.00005, -sqrt(3) / 2 * 0.0001 };
+  vector_t *v3 = malloc(sizeof(vector_t));
+  *v3 = (vector_t) { 0, 0.0001 };
+  list_add(triangle, v1);
+  list_add(triangle, v2);
+  list_add(triangle, v3);
+  return triangle;
 }
 
-typedef struct bike_rotate_args {
-  state_t *state;
-  double angular_velocity;
-} bike_rotate_args_t;
-
-void wheel_ground_collision(body_t *wheel, body_t *track, vector_t axis,
-                            void *aux) {
-  bike_rotate_args_t *args = aux;
-  list_t *wheel_shape = body_get_shape(wheel);
-  list_t *track_shape = body_get_shape(track);
-  collision_info_t collision = find_collision(wheel_shape, track_shape);
-  double angle_diff =
-      body_get_rotation(args->state->bike_body) - vec_angle(axis);
-  if (!double_is_close(fabs(angle_diff), M_PI / 2, 1e-5)) {
-    // body_set_rotation(args->state->bike_body, M_PI / 2);
-    body_type_t *type = body_get_info(wheel);
-    if (*type == BACK_WHEEL) {
-      body_set_pivot(args->state->bike_body,
-                     body_get_centroid(args->state->back_wheel));
-      body_set_pivot(args->state->front_wheel,
-                     body_get_centroid(args->state->back_wheel));
-      body_increment_angular_velocity(args->state->bike_body,
-                                      args->angular_velocity);
-      body_increment_angular_velocity(args->state->front_wheel,
-                                      args->angular_velocity);
-      body_set_angular_velocity(args->state->back_wheel, 0.0);
-    } else {
-      body_set_pivot(args->state->bike_body,
-                     body_get_centroid(args->state->front_wheel));
-      body_set_pivot(args->state->back_wheel,
-                     body_get_centroid(args->state->front_wheel));
-      body_increment_angular_velocity(args->state->bike_body,
-                                      args->angular_velocity);
-      body_increment_angular_velocity(args->state->back_wheel,
-                                      args->angular_velocity);
-      body_set_angular_velocity(args->state->front_wheel, 0.0);
+vector_t find_colliding_point(body_t *body1, body_t *body2) {
+  list_t *body1_shape = body_get_shape(body1);
+  list_t *body2_shape = body_get_shape(body2);
+  for (size_t i = 0; i < list_size(body1_shape); i++) {
+    vector_t centroid = *(vector_t *) list_get(body1_shape, i);
+    list_t *triangle = create_collision_triangle();
+    polygon_translate(triangle, centroid);
+    collision_info_t collision = find_collision(triangle, body2_shape);
+    if (collision.collided) {
+      list_free(body1_shape);
+      list_free(body2_shape);
+      return centroid;
     }
+  }
+  list_free(body1_shape);
+  list_free(body2_shape);
+  return vec_negate(WINDOW);
+}
+
+void ground_collision(body_t *body, body_t *ground, vector_t axis, void *aux) {
+  // state_t *state = aux;
+  list_t *wheel_shape = body_get_shape(body);
+  list_t *track_shape = body_get_shape(ground);
+  // collision_info_t collision = find_collision(wheel_shape, track_shape);
+  double angle_diff = body_get_rotation(body) - vec_angle(axis);
+  // char str[10];
+  // sprintf(str, "%.9f", angle_diff);
+  // puts(str);
+  // if (!double_is_close(fabs(angle_diff), M_PI / 2, 1e-5) && !double_is_close(fabs(angle_diff), 3 * M_PI / 2, 1e-5)) {
+    vector_t intersect = find_colliding_point(body, ground);
+    if (!double_is_close(intersect.x, -WINDOW.x, 1e-5)) {
+      body_set_pivot(body, intersect);
+      if (angle_diff < M_PI / 2) {
+        body_set_angular_velocity(body, ANGULAR_VELOCITY);
+      }
+      else {
+        body_set_angular_velocity(body, -ANGULAR_VELOCITY);
+      }
+    // }
   } else {
-    body_set_angular_velocity(args->state->bike_body, 0.0);
-    body_set_angular_velocity(args->state->back_wheel, 0.0);
-    body_set_angular_velocity(args->state->front_wheel, 0.0);
+    body_set_angular_velocity(body, 0.0);
   }
   list_free(wheel_shape);
   list_free(track_shape);
-  // else {
-  //   body_set_angular_velocity(args->state->bike_body, 0.0);
-  // }
-  // list_t *back_shape = body_get_shape(back_wheel);
-  // list_t *front_shape = body_get_shape(front_wheel);
-  // for(size_t i = 0; i < scene_bodies(state->scene); i++) {
-  //   body_t *track_piece = scene_get_body(state->scene, i);
-  //   body_type_t *type = body_get_info(track_piece);
-  //   if (*type == TRACK) {
-  //     collision_info_t back_collision = find_collision(back_wheel,
-  //     track_piece); collision_info_t front_collision =
-  //     find_collision(front_wheel, track_piece); if ()
-  //   }
-  // }
 }
 
-void create_wheel_collision(scene_t *scene, body_t *wheel, body_t *track,
-                            state_t *state, double angular_velocity) {
-  bike_rotate_args_t *aux = malloc(sizeof(bike_rotate_args_t));
-  aux->angular_velocity = angular_velocity;
-  aux->state = state;
-  create_collision(scene, wheel, track, wheel_ground_collision, aux, free);
+void create_ground_collision(state_t *state, body_t *body, body_t *ground) {
+  create_collision(state->scene, body, ground, ground_collision, state, free);
 }
 
 void initialize_force_list(state_t *state) {
-  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION,
-                           state->bike_body);
-  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION,
-                           state->front_wheel);
-  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION,
-                           state->back_wheel);
-  create_suspension(
-      state->scene, SUSPENSION_CONSTANT,
-      vec_magn(vec_subtract(*state->back_anchor,
-                            body_get_centroid(state->back_wheel))),
-      state->back_wheel, state->bike_body, state->back_anchor);
-  create_suspension(
-      state->scene, SUSPENSION_CONSTANT,
-      vec_magn(vec_subtract(*state->front_anchor,
-                            body_get_centroid(state->front_wheel))),
-      state->front_wheel, state->bike_body, state->front_anchor);
-  create_physics_collision(state->scene, 0.0, state->bike_body,
-                           state->front_wheel);
-  create_physics_collision(state->scene, 0.0, state->bike_body,
-                           state->back_wheel);
-  create_physics_collision(state->scene, 0.0, state->bike_body,
-                           scene_get_body(state->scene, 3));
-  create_physics_collision(state->scene, 0.0, state->front_wheel,
-                           scene_get_body(state->scene, 3));
-  create_physics_collision(state->scene, 0.0, state->back_wheel,
-                           scene_get_body(state->scene, 3));
-  create_wheel_collision(state->scene, state->back_wheel,
-                         scene_get_body(state->scene, 3), state, -1);
-  create_wheel_collision(state->scene, state->front_wheel,
-                         scene_get_body(state->scene, 3), state, 1);
-  create_normal(state->scene, state->bike_body,
-                scene_get_body(state->scene, 3));
-  create_normal(state->scene, state->front_wheel,
-                scene_get_body(state->scene, 3));
-  create_normal(state->scene, state->back_wheel,
-                scene_get_body(state->scene, 3));
+  create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION, scene_get_body(state->scene, 0));
+  create_ground_collision(state, scene_get_body(state->scene, 0), scene_get_body(state->scene, 1));
+  create_physics_collision(state->scene, 0.0, scene_get_body(state->scene, 0), scene_get_body(state->scene, 1));
+  create_normal(state->scene, scene_get_body(state->scene, 0), scene_get_body(state->scene, 1));
 
-  create_physics_collision(state->scene, 0.0, state->bike_body,
-                           scene_get_body(state->scene, 4));
-  create_physics_collision(state->scene, 0.0, state->front_wheel,
-                           scene_get_body(state->scene, 4));
-  create_physics_collision(state->scene, 0.0, state->back_wheel,
-                           scene_get_body(state->scene, 4));
-  create_normal(state->scene, state->bike_body,
-                scene_get_body(state->scene, 4));
-  create_normal(state->scene, state->front_wheel,
-                scene_get_body(state->scene, 4));
-  create_normal(state->scene, state->back_wheel,
-                scene_get_body(state->scene, 4));
+  create_ground_collision(state, scene_get_body(state->scene, 0), scene_get_body(state->scene, 2));
+  create_physics_collision(state->scene, 0.0, scene_get_body(state->scene, 0),
+                           scene_get_body(state->scene, 2));
+  create_normal(state->scene, scene_get_body(state->scene, 0), scene_get_body(state->scene, 2));
 }
 
 // key handler function
+// void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
+//   // TODO: key handlers
+// }
+
 void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
-  // TODO: key handlers
+  body_t *bike = scene_get_body(state->scene, 0);
+  double angle = body_get_rotation(bike);
+  if (type == KEY_PRESSED) {
+    switch (key) {
+    case LEFT_ARROW:
+      if (!state->pushed_down) {
+        state->pushed_down = true;
+        create_applied(state->scene,
+                       (vector_t){-BIKE_MASS * BIKE_ACCELERATION * cos(angle), -sin(angle)}, bike);
+      }
+      break;
+    case RIGHT_ARROW:
+      if (!state->pushed_down) {
+        state->pushed_down = true;
+        create_applied(state->scene,
+                       (vector_t){BIKE_MASS * BIKE_ACCELERATION * cos(angle), sin(angle)}, bike);
+      }
+      break;
+    }
+  } else if (type == KEY_RELEASED) {
+    switch (key) {
+    case LEFT_ARROW:
+      state->pushed_down = false;
+      create_applied(state->scene,
+                     (vector_t){BIKE_MASS * BIKE_ACCELERATION * cos(angle), sin(angle)}, bike);
+      break;
+    case RIGHT_ARROW:
+      state->pushed_down = false;
+      create_applied(state->scene,
+                     (vector_t){-BIKE_MASS * BIKE_ACCELERATION * cos(angle), -sin(angle)}, bike);
+      break;
+    }
+  }
+}
+
+body_t *make_rectangle(double width, double height, rgb_color_t color) {
+  vector_t *bottom_left = malloc(sizeof(vector_t));
+  *bottom_left = (vector_t){0, 0};
+  vector_t *top_left = malloc(sizeof(vector_t));
+  *top_left = (vector_t){0, height};
+  vector_t *bottom_right = malloc(sizeof(vector_t));
+  *bottom_right = (vector_t){width, 0};
+  vector_t *top_right = malloc(sizeof(vector_t));
+  *top_right = (vector_t){width, height};
+  list_t *rectangle_shape = list_init(4, free);
+  list_add(rectangle_shape, bottom_left);
+  list_add(rectangle_shape, top_left);
+  list_add(rectangle_shape, top_right);
+  list_add(rectangle_shape, bottom_right);
+  body_t *rectangle = body_init(rectangle_shape, BUTTON_MASS, color);
+  return rectangle;
+}
+
+void make_button(scene_t *scene, char *string, size_t font_size, vector_t position, vector_t dim, rgb_color_t text_color, rgb_color_t button_color) {
+  text_input_t text_input = {
+    .string = string,
+    .font_size = font_size,
+    .position = position,
+    .dim = dim,
+    .color = text_color
+  };
+  sdl_write_text(text_input);
+  body_t *button = make_rectangle(1.5 * dim.x, 1.5 * dim.y, button_color);
+  vector_t centroid = (vector_t) { position.x + dim.x / 2.0, position.y - dim.y / 2.0 };
+  body_set_centroid(button, centroid);
+  scene_add_body(scene, button);
+}
+
+void create_start_menu(state_t *state) {
+  make_button(state->scene, "PLAY", FONT_SIZE, PLAY_POSITION, BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
+  make_button(state->scene, "CUSTOMIZE", FONT_SIZE, CUSTOMIZE_POSITION, BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
+  make_button(state->scene, "SETTINGS", FONT_SIZE, SETTINGS_POSITION, BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
 }
 
 state_t *emscripten_init() {
@@ -605,19 +742,56 @@ state_t *emscripten_init() {
   vector_t min = VEC_ZERO;
   vector_t max = WINDOW;
   sdl_init(min, max);
-  sdl_on_key((key_handler_t)on_key);
+  // sdl_on_key((key_handler_t)on_key);
   state_t *state = malloc(sizeof(state_t));
   state->scene = scene_init();
-  initialize_bike(state);
-  initialize_body_list(state->scene);
-  initialize_force_list(state);
-  move_bike(state, vec_multiply(0.5, WINDOW));
+  state->clock = START_TIME;
+  // initialize_body_list(state->scene);
+  // initialize_force_list(state);
+  // state->pushed_down = false;
+  // state->timer_text = (text_input_t) {
+  //   .string = "120",
+  //   .font_size = FONT_SIZE,
+  //   .position = TIMER_POSITION,
+  //   .dim = TIMER_DIMENSIONS,
+  //   .color = TEXT_COLOR
+  // };
+  // sdl_write_text(state->timer_text);
+  sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg", (vector_t) {0, WINDOW.y});
+  create_start_menu(state);
   return state;
+}
+
+void update_timer(state_t *state) {
+  const size_t TIME_LENGTH = 4;
+  // const double MIN_TO_SEC = 60;
+  // size_t minutes = state->clock / MIN_TO_SEC;
+  // size_t seconds = fmod(state->clock, MIN_TO_SEC);
+  char time[TIME_LENGTH];
+  // char sec[TIME_LENGTH];
+  // sprintf(time, "0%lu", minutes);
+  // strcat(time, ":");
+  // sprintf(sec, "%lu", seconds);
+  sprintf(time, "%d", (int) state->clock);
+  // if (seconds / 10 < 1) {
+  //   sprintf(sec, "0%lu", seconds);
+  // }
+  // strcat(time, sec);
+
+  sdl_remove_text(state->timer_text);
+  state->timer_text.string = time;
+  body_t *bike = scene_get_body(state->scene, 0);
+  state->timer_text.position = vec_add(body_get_centroid(bike), CENTER);
+  state->timer_text.position.x -= state->timer_text.dim.x;
+  sdl_write_text(state->timer_text);
 }
 
 void emscripten_main(state_t *state) {
   double dt = time_since_last_tick();
-  sdl_move_window(body_get_centroid(state->bike_body));
+  state->clock -= dt;
+  // body_t *bike = scene_get_body(state->scene, 0);
+  // sdl_move_window(body_get_centroid(bike));
+  // update_timer(state);
   scene_tick(state->scene, dt);
   sdl_render_scene(state->scene);
 }

@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include <assert.h>
 #include <dirent.h>
 #include <math.h>
@@ -34,6 +35,9 @@ SDL_Renderer *renderer;
  * The keypress handler, or NULL if none has been configured.
  */
 key_handler_t key_handler = NULL;
+/**
+ * The keypress handler, or NULL if none has been configured.
+ */
 mouse_handler_t mouse_handler = NULL;
 /**
  * SDL's timestamp when a key was last pressed or released.
@@ -47,6 +51,7 @@ uint32_t key_start_timestamp;
 clock_t last_clock = 0;
 
 list_t *text_list;
+list_t *image_list;
 
 /** Computes the center of the window in pixel coordinates */
 vector_t get_window_center(void) {
@@ -129,11 +134,16 @@ char get_mousecode(uint8_t button) {
 }
 
 void free_text(text_t *text_args) {
-  free(text_args->string);
   free(text_args->message_rect);
   SDL_FreeSurface(text_args->surface_message);
   SDL_DestroyTexture(text_args->message);
   free(text_args);
+}
+
+void free_image(image_t *image) {
+  SDL_DestroyTexture(image->img);
+  free(image->texr);
+  free(image);
 }
 
 void sdl_init(vector_t min, vector_t max) {
@@ -149,7 +159,8 @@ void sdl_init(vector_t min, vector_t max) {
                             SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
                             SDL_WINDOW_RESIZABLE);
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-  text_list = list_init(1, (free_func_t)free_text);
+  text_list = list_init(1, (free_func_t) free_text);
+  image_list = list_init(1, (free_func_t) free_image);
 }
 
 void sdl_move_window(vector_t position) { center = position; }
@@ -204,17 +215,17 @@ bool sdl_is_done(state_t *state) {
   return false;
 }
 
-SDL_Rect *create_message_rect(vector_t position, vector_t dim) {
-  SDL_Rect *message_rect = malloc(sizeof(SDL_Rect)); // create a rect
+SDL_Rect *create_rect(vector_t position, vector_t dim) {
+  SDL_Rect *rect = malloc(sizeof(SDL_Rect)); // create a rect
   vector_t window_center = get_window_center();
   vector_t pixel = get_window_position(position, window_center);
-  message_rect->x = pixel.x; // controls the rect's x coordinate
-  message_rect->y = pixel.y; // controls the rect's y coordinte
+  rect->x = pixel.x; // controls the rect's x coordinate
+  rect->y = pixel.y; // controls the rect's y coordinte
   double x_scale = window_center.x / max_diff.x,
          y_scale = window_center.y / max_diff.y;
-  message_rect->w = round(dim.x * x_scale); // controls the width of the rect
-  message_rect->h = round(dim.y * y_scale); // controls the height of the rect
-  return message_rect;
+  rect->w = round(dim.x * x_scale); // controls the width of the rect
+  rect->h = round(dim.y * y_scale); // controls the height of the rect
+  return rect;
 }
 
 void sdl_write_text(text_input_t text_input) {
@@ -236,7 +247,7 @@ void sdl_write_text(text_input_t text_input) {
   SDL_Texture *message =
       SDL_CreateTextureFromSurface(renderer, surface_message);
   SDL_Rect *message_rect =
-      create_message_rect(text_input.position, text_input.dim);
+      create_rect(text_input.position, text_input.dim);
 
   text_t *text_args = malloc(sizeof(text_t));
   *text_args = (text_t){.string = text_input.string,
@@ -249,18 +260,29 @@ void sdl_write_text(text_input_t text_input) {
 }
 
 void sdl_remove_text(text_input_t text_input) {
-  SDL_Rect *message_rect =
-      create_message_rect(text_input.position, text_input.dim);
-  for (size_t i = 0; i < list_size(text_list); i++) {
+  for (int16_t i = list_size(text_list) - 1; i >= 0; i--) {
     text_t *text_args = list_get(text_list, i);
-    if (!strcmp(text_input.string, text_args->string) &&
-        SDL_RectEquals(message_rect, text_args->message_rect)) {
+    if (!strcmp(text_input.string, text_args->string)) {
       text_t *removed_arg = list_remove(text_list, i);
       free_text(removed_arg);
       break;
     }
   }
-  free(message_rect);
+}
+
+void sdl_add_image(const char *image_path, vector_t position) {
+  int w, h;
+  SDL_Texture *img = IMG_LoadTexture(renderer, image_path);
+  assert(img != NULL);
+	SDL_QueryTexture(img, NULL, NULL, &w, &h); // get the width and height of the texture
+	// put the location where we want the texture to be drawn into a rectangle
+	// I'm also scaling the texture 2x simply by setting the width and height
+  vector_t dim = { 2500, 1000 };
+	SDL_Rect *texr = create_rect(position, dim);
+  image_t *image = malloc(sizeof(image_t));
+  image->img = img;
+  image->texr = texr;
+  list_add(image_list, image);
 }
 
 void sdl_clear(void) {
@@ -319,6 +341,10 @@ void sdl_show(void) {
 void sdl_render_scene(scene_t *scene) {
   sdl_clear();
   size_t body_count = scene_bodies(scene);
+  for (size_t i = 0; i < list_size(image_list); i++) {
+    image_t *image = list_get(image_list, i);
+    SDL_RenderCopy(renderer, image->img, NULL, image->texr);
+  }
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
     list_t *shape = body_get_shape(body);

@@ -7,6 +7,7 @@
 #include "vector.h"
 #include <assert.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 typedef struct force_arg {
@@ -27,6 +28,10 @@ typedef struct collision_arg {
   free_func_t freer;
   bool has_collided;
 } collision_arg_t;
+
+bool is_close(double a, double b, double threshold) {
+  return fabs(a - b) < threshold;
+}
 
 void collision_arg_free(collision_arg_t *collision_arg) {
   if (collision_arg->freer != NULL) {
@@ -80,7 +85,37 @@ void normal_creator(void *aux) {
         vec_multiply(-vec_scalar_project(body_get_force(body), collision.axis) /
                          vec_magn(collision.axis),
                      collision.axis);
+    if (normal_force.y < 0) {
+      normal_force = vec_negate(normal_force);
+    }
     body_add_force(body, normal_force);
+    double angle_diff = 2 * M_PI - (body_get_rotation(body) - vec_angle(collision.axis));
+    if (is_close(2 * fabs(angle_diff) / M_PI, round(2 * fabs(angle_diff) / M_PI), 0.01)) {
+      body_set_angular_velocity(body, 0.0);
+    }
+    list_t *edges = polygon_edges(body_shape);
+    for (size_t i = 0; i < list_size(edges); i++) {
+      vector_t *edge = list_get(edges, i);
+      if (is_close(vec_dot(*edge, collision.axis), 0, 1e-5)) {
+        vector_t surface_vector = vec_rotate(collision.axis, M_PI / 2);
+        if (surface_vector.x < 0) {
+          surface_vector = vec_negate(surface_vector);
+        }
+        vector_t new_velocity =
+            vec_multiply(vec_scalar_project(body_get_velocity(body), surface_vector) / vec_magn(surface_vector), surface_vector);
+        // if (velocity_change.y < 0) {
+        //   velocity_change = vec_negate(velocity_change);
+        // }
+        // body_set_velocity(body, new_velocity);
+        break;
+      }
+    }
+    vector_t displacement = collision.axis;
+    if (displacement.y < 0) {
+      displacement = vec_negate(displacement);
+    }
+    body_set_centroid(body, vec_add(body_get_centroid(body), vec_multiply(fabs(0.01 * vec_scalar_project(body_get_velocity(body), displacement) / vec_magn(displacement)), displacement)));
+    list_free(edges);
   }
   list_free(body_shape);
   list_free(surface_shape);
@@ -252,10 +287,6 @@ typedef struct suspension_args {
   body_t *body2;
   vector_t *anchor;
 } suspension_args_t;
-
-bool is_close(double a, double b, double threshold) {
-  return fabs(a - b) < threshold;
-}
 
 void suspension_creator(void *aux) {
   suspension_args_t *suspension_args = aux;

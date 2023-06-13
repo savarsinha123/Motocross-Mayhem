@@ -50,7 +50,8 @@
         "assert.h": "c",
         "sdl2_gfxprimitives.h": "c",
         "sdl_ttf.h": "c",
-        "collision.h": "c"
+        "collision.h": "c",
+        "torques.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

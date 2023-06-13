@@ -63,6 +63,11 @@ typedef struct text {
   SDL_Texture *message;
 } text_t;
 
+typedef struct image {
+  SDL_Texture *img;
+  SDL_Rect *texr;
+} image_t;
+
 /**
  * A keypress handler.
  * When a key is pressed or released, the handler is passed its char value.
@@ -122,6 +127,8 @@ void sdl_write_text(text_input_t text_input);
  * Removes text from said list.
  */
 void sdl_remove_text(text_input_t text_input);
+
+void sdl_add_image(const char *image_path, vector_t position);
 
 /**
  * Clears the screen. Should be called before drawing polygons in each frame.
