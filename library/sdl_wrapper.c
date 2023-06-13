@@ -228,7 +228,8 @@ SDL_Rect *create_rect(vector_t position, vector_t dim) {
   return rect;
 }
 
-void sdl_write_text(text_input_t text_input, char *font_style, char *font_type) {
+void sdl_write_text(text_input_t text_input, char *font_style,
+                    char *font_type) {
   // font style
   const size_t FONT_PATH_SIZE = 100;
   char font_path[FONT_PATH_SIZE] = "assets/";
@@ -236,8 +237,7 @@ void sdl_write_text(text_input_t text_input, char *font_style, char *font_type) 
   strcat(font_path, "-");
   strcat(font_path, font_type);
   strcat(font_path, ".otf");
-  TTF_Font *font =
-      TTF_OpenFont(font_path, text_input.font_size);
+  TTF_Font *font = TTF_OpenFont(font_path, text_input.font_size);
   sprintf(font_path, "%d", strlen(font_path));
   assert(font != NULL);
 
