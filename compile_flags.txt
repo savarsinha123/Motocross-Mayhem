@@ -1,0 +1,5 @@
+-Iinclude $(shell sdl2-config --cflags) 
+-Wall 
+-g 
+-fno-omit-frame-pointer
+-I/home/ssinha/.emscripten_cache/sysroot/include

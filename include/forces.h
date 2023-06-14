@@ -123,4 +123,8 @@ void create_destructive_collision(scene_t *scene, body_t *body1, body_t *body2);
 void create_physics_collision(scene_t *scene, double elasticity, body_t *body1,
                               body_t *body2);
 
+void create_suspension(scene_t *scene, double suspension_constant,
+                       double eq_dist, body_t *body1, body_t *body2,
+                       vector_t *anchor);
+
 #endif // #ifndef __FORCES_H__

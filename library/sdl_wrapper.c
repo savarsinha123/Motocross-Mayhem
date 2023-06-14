@@ -1,10 +1,14 @@
 #include "sdl_wrapper.h"
 #include <SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <assert.h>
+#include <dirent.h>
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 const char WINDOW_TITLE[] = "CS 3";
 const int WINDOW_WIDTH = 1000;
@@ -32,6 +36,10 @@ SDL_Renderer *renderer;
  */
 key_handler_t key_handler = NULL;
 /**
+ * The keypress handler, or NULL if none has been configured.
+ */
+mouse_handler_t mouse_handler = NULL;
+/**
  * SDL's timestamp when a key was last pressed or released.
  * Used to mesasure how long a key has been held.
  */
@@ -41,6 +49,9 @@ uint32_t key_start_timestamp;
  * Initially 0.
  */
 clock_t last_clock = 0;
+
+list_t *text_list;
+list_t *image_list;
 
 /** Computes the center of the window in pixel coordinates */
 vector_t get_window_center(void) {
@@ -79,6 +90,15 @@ vector_t get_window_position(vector_t scene_pos, vector_t window_center) {
   return pixel;
 }
 
+vector_t get_scene_position(vector_t pixel, vector_t window_center) {
+  vector_t pixel_center_offset = {.x = window_center.x - pixel.x,
+                                  .y = window_center.y - pixel.y};
+  double scale = get_scene_scale(window_center);
+  vector_t scene_center_offset = vec_multiply(1 / scale, pixel_center_offset);
+  vector_t scene_pos = vec_add(scene_center_offset, center);
+  return scene_pos;
+}
+
 /**
  * Converts an SDL key code to a char.
  * 7-bit ASCII characters are just returned
@@ -102,9 +122,29 @@ char get_keycode(SDL_Keycode key) {
   }
 }
 
-// char get_mousecode(SDL_MouseButtonEvent) {
+char get_mousecode(uint8_t button) {
+  switch (button) {
+  case SDL_BUTTON_LEFT:
+    return LEFT_CLICK;
+  case SDL_BUTTON_RIGHT:
+    return RIGHT_CLICK;
+  default:
+    return 0;
+  }
+}
 
-// }
+void free_text(text_t *text_args) {
+  free(text_args->message_rect);
+  SDL_FreeSurface(text_args->surface_message);
+  SDL_DestroyTexture(text_args->message);
+  free(text_args);
+}
+
+void free_image(image_t *image) {
+  SDL_DestroyTexture(image->img);
+  free(image->texr);
+  free(image);
+}
 
 void sdl_init(vector_t min, vector_t max) {
   // Check parameters
@@ -114,10 +154,13 @@ void sdl_init(vector_t min, vector_t max) {
   center = vec_multiply(0.5, vec_add(min, max));
   max_diff = vec_subtract(max, center);
   SDL_Init(SDL_INIT_EVERYTHING);
+  TTF_Init();
   window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED,
                             SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT,
                             SDL_WINDOW_RESIZABLE);
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+  text_list = list_init(1, (free_func_t)free_text);
+  image_list = list_init(1, (free_func_t)free_image);
 }
 
 void sdl_move_window(vector_t position) { center = position; }
@@ -149,10 +192,97 @@ bool sdl_is_done(state_t *state) {
       double held_time = (timestamp - key_start_timestamp) / MS_PER_S;
       key_handler(state, key, type, held_time);
       break;
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+      if (mouse_handler == NULL)
+        break;
+      char mouse_button = get_mousecode(event->button.button);
+      if (mouse_button == 0)
+        break;
+      mouse_event_type_t mouse_type = event->type == SDL_MOUSEBUTTONDOWN
+                                          ? MOUSE_BUTTON_PRESSED
+                                          : MOUSE_BUTTON_RELEASED;
+      vector_t window_center = get_window_center();
+      vector_t pixel = (vector_t){event->button.x, event->button.y};
+      vector_t scene_pos = get_scene_position(pixel, window_center);
+      double x_scale = window_center.x / max_diff.x;
+      mouse_handler(state, mouse_button, mouse_type,
+                    WINDOW_WIDTH / x_scale - scene_pos.x, scene_pos.y);
+      break;
     }
   }
   free(event);
   return false;
+}
+
+SDL_Rect *create_rect(vector_t position, vector_t dim) {
+  SDL_Rect *rect = malloc(sizeof(SDL_Rect)); // create a rect
+  vector_t window_center = get_window_center();
+  vector_t pixel = get_window_position(position, window_center);
+  rect->x = pixel.x; // controls the rect's x coordinate
+  rect->y = pixel.y; // controls the rect's y coordinte
+  double x_scale = window_center.x / max_diff.x,
+         y_scale = window_center.y / max_diff.y;
+  rect->w = round(dim.x * x_scale); // controls the width of the rect
+  rect->h = round(dim.y * y_scale); // controls the height of the rect
+  return rect;
+}
+
+void sdl_write_text(text_input_t text_input) {
+  // font style
+  TTF_Font *sans =
+      TTF_OpenFont("assets/OpenSans-Regular.ttf", text_input.font_size);
+
+  // color of text
+  Uint8 r = text_input.color.r * 255;
+  Uint8 g = text_input.color.g * 255;
+  Uint8 b = text_input.color.b * 255;
+  SDL_Color sdl_color = {r, g, b};
+
+  // create surface
+  SDL_Surface *surface_message =
+      TTF_RenderText_Solid(sans, text_input.string, sdl_color);
+
+  // convert to texture
+  SDL_Texture *message =
+      SDL_CreateTextureFromSurface(renderer, surface_message);
+  SDL_Rect *message_rect = create_rect(text_input.position, text_input.dim);
+
+  text_t *text_args = malloc(sizeof(text_t));
+  *text_args = (text_t){.string = text_input.string,
+                        .message_rect = message_rect,
+                        .surface_message = surface_message,
+                        .message = message};
+
+  // add to list of text boxes
+  list_add(text_list, text_args);
+}
+
+void sdl_remove_text(text_input_t text_input) {
+  for (int16_t i = list_size(text_list) - 1; i >= 0; i--) {
+    text_t *text_args = list_get(text_list, i);
+    if (!strcmp(text_input.string, text_args->string)) {
+      text_t *removed_arg = list_remove(text_list, i);
+      free_text(removed_arg);
+      break;
+    }
+  }
+}
+
+void sdl_add_image(const char *image_path, vector_t position) {
+  int w, h;
+  SDL_Texture *img = IMG_LoadTexture(renderer, image_path);
+  assert(img != NULL);
+  SDL_QueryTexture(img, NULL, NULL, &w,
+                   &h); // get the width and height of the texture
+  // put the location where we want the texture to be drawn into a rectangle
+  // I'm also scaling the texture 2x simply by setting the width and height
+  vector_t dim = {2500, 1000};
+  SDL_Rect *texr = create_rect(position, dim);
+  image_t *image = malloc(sizeof(image_t));
+  image->img = img;
+  image->texr = texr;
+  list_add(image_list, image);
 }
 
 void sdl_clear(void) {
@@ -211,16 +341,26 @@ void sdl_show(void) {
 void sdl_render_scene(scene_t *scene) {
   sdl_clear();
   size_t body_count = scene_bodies(scene);
+  for (size_t i = 0; i < list_size(image_list); i++) {
+    image_t *image = list_get(image_list, i);
+    SDL_RenderCopy(renderer, image->img, NULL, image->texr);
+  }
   for (size_t i = 0; i < body_count; i++) {
     body_t *body = scene_get_body(scene, i);
     list_t *shape = body_get_shape(body);
     sdl_draw_polygon(shape, body_get_color(body));
     list_free(shape);
   }
+  for (size_t i = 0; i < list_size(text_list); i++) {
+    text_t *text = list_get(text_list, i);
+    SDL_RenderCopy(renderer, text->message, NULL, text->message_rect);
+  }
   sdl_show();
 }
 
 void sdl_on_key(key_handler_t handler) { key_handler = handler; }
+
+void sdl_on_mouse(mouse_handler_t handler) { mouse_handler = handler; }
 
 double time_since_last_tick(void) {
   clock_t now = clock();

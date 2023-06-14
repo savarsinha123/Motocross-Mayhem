@@ -75,4 +75,6 @@ void *list_remove(list_t *list, size_t index);
  */
 void list_add(list_t *list, void *value);
 
+void list_append(list_t *list1, list_t *list2);
+
 #endif // #ifndef __LIST_H__

@@ -45,7 +45,17 @@
     "terminal.integrated.defaultProfile.windows": "Visual Studio Developer Prompt",
     "files.associations": {
         "list.h": "c",
+<<<<<<< HEAD
         "sdl2_gfxprimitives.h": "c"
+=======
+        "sdl.h": "c",
+        "sdl_wrapper.h": "c",
+        "assert.h": "c",
+        "sdl2_gfxprimitives.h": "c",
+        "sdl_ttf.h": "c",
+        "collision.h": "c",
+        "torques.h": "c"
+>>>>>>> 433174ee2f34a642dfeba6adf4b2eb8efa4fb823
     },
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "enabled"
 }

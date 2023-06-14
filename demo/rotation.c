@@ -82,24 +82,28 @@ void on_key(state_t *state, char key, key_event_type_t type, double dt) {
         set_pivot_to_centroid(brick);
       }
       body_increment_angular_velocity(brick, INCREMENT_VALUE);
+      break;
     case DOWN_ARROW:
       if (state->curr_pivot != 1) {
         state->curr_pivot = 0;
         set_pivot_to_centroid(brick);
       }
       body_increment_angular_velocity(brick, -1 * INCREMENT_VALUE);
+      break;
     case LEFT_ARROW:
       if (state->curr_pivot != 0) {
         state->curr_pivot = 1;
         set_pivot_to_corner(brick);
       }
       body_increment_angular_velocity(brick, INCREMENT_VALUE);
+      break;
     case RIGHT_ARROW:
       if (state->curr_pivot != 0) {
         state->curr_pivot = 1;
         set_pivot_to_corner(brick);
       }
       body_increment_angular_velocity(brick, -1 * INCREMENT_VALUE);
+      break;
     }
   } else if (type == KEY_RELEASED) {
     switch (key) {
