@@ -1532,19 +1532,19 @@ void check_loss(state_t *state) {
 
 void emscripten_main(state_t *state) {
   state->dt = time_since_last_tick();
-  if (state->lost) {
-    body_t *bike = scene_get_body(state->scene, 0);
-    state->lost = false;
-    sdl_on_key(NULL);
-    // state->game_state = MENU;
-    body_set_centroid(bike, STARTING_POSITION);
-    sdl_move_window(STARTING_POSITION);
-    body_set_rotation(bike, 0.0);
-    body_set_angular_velocity(bike, 0.0);
-    body_set_velocity(bike, VEC_ZERO);
-    sdl_on_key(on_key);
-    // initialize_game(state);
-  }
+  // if (state->lost) {
+  //   body_t *bike = scene_get_body(state->scene, 0);
+  //   state->lost = false;
+  //   sdl_on_key(NULL);
+  //   // state->game_state = MENU;
+  //   body_set_centroid(bike, STARTING_POSITION);
+  //   sdl_move_window(STARTING_POSITION);
+  //   body_set_rotation(bike, 0.0);
+  //   body_set_angular_velocity(bike, 0.0);
+  //   body_set_velocity(bike, VEC_ZERO);
+  //   sdl_on_key(on_key);
+  //   // initialize_game(state);
+  // }
   if (state->game_state == TIMER && state->level != 0) {
     state->clock -= state->dt;
     body_t *bike = scene_get_body(state->scene, 0);
