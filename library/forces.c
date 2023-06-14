@@ -88,11 +88,13 @@ void normal_creator(void *aux) {
     if (normal_force.y < 0) {
       normal_force = vec_negate(normal_force);
     }
-    body_add_force(body, normal_force);
+    // body_add_force(body, normal_force);
     double angle_diff =
         2 * M_PI - (body_get_rotation(body) - vec_angle(collision.axis));
-    if (is_close(2 * fabs(angle_diff) / M_PI,
-                 round(2 * fabs(angle_diff) / M_PI), 0.01)) {
+    // char str[10];
+    // sprintf(str, "%.9f", fmod(2 * angle_diff / M_PI, 2.0));
+    // puts(str);
+    if (is_close(fmod(2 * fabs(angle_diff) / M_PI, 2), 0.0, 0.1)) {
       body_set_angular_velocity(body, 0.0);
     }
     list_t *edges = polygon_edges(body_shape);
@@ -110,7 +112,7 @@ void normal_creator(void *aux) {
         // if (velocity_change.y < 0) {
         //   velocity_change = vec_negate(velocity_change);
         // }
-        // body_set_velocity(body, new_velocity);
+        //body_set_velocity(body, new_velocity);
         break;
       }
     }
@@ -121,7 +123,7 @@ void normal_creator(void *aux) {
     body_set_centroid(
         body,
         vec_add(body_get_centroid(body),
-                vec_multiply(fabs(0.01 *
+                vec_multiply(fabs(0.05 *
                                   vec_scalar_project(body_get_velocity(body),
                                                      displacement) /
                                   vec_magn(displacement)),

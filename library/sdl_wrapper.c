@@ -135,8 +135,8 @@ char get_mousecode(uint8_t button) {
 
 void free_text(text_t *text_args) {
   free(text_args->message_rect);
-  SDL_FreeSurface(text_args->surface_message);
   SDL_DestroyTexture(text_args->message);
+  SDL_FreeSurface(text_args->surface_message);
   free(text_args);
 }
 
@@ -231,14 +231,13 @@ SDL_Rect *create_rect(vector_t position, vector_t dim) {
 void sdl_write_text(text_input_t text_input, char *font_style,
                     char *font_type) {
   // font style
-  const size_t FONT_PATH_SIZE = 100;
-  char font_path[FONT_PATH_SIZE] = "assets/";
+  const size_t FONT_PATH_SIZE = 60;
+  char font_path[60] = "assets/";
   strcat(font_path, font_style);
   strcat(font_path, "-");
   strcat(font_path, font_type);
   strcat(font_path, ".otf");
   TTF_Font *font = TTF_OpenFont(font_path, text_input.font_size);
-  sprintf(font_path, "%d", strlen(font_path));
   assert(font != NULL);
 
   // color of text
@@ -264,6 +263,7 @@ void sdl_write_text(text_input_t text_input, char *font_style,
 
   // add to list of text boxes
   list_add(text_list, text_args);
+  TTF_CloseFont(font);
 }
 
 void sdl_remove_text(text_input_t text_input) {
@@ -274,6 +274,13 @@ void sdl_remove_text(text_input_t text_input) {
       free_text(removed_arg);
       break;
     }
+  }
+}
+
+void sdl_clear_text() {
+  for (int16_t i = list_size(text_list) - 1; i >= 0; i--) {
+    text_t *removed_arg = list_remove(text_list, i);
+    free_text(removed_arg);
   }
 }
 

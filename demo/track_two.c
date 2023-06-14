@@ -14,7 +14,7 @@
 const double TRACK_MASS = INFINITY;
 const rgb_color_t TRACK_COLOR = (rgb_color_t){0.05, 0.4, 0};
 
-const vector_t WINDOW = (vector_t){.x = 1000, .y = 300};
+const vector_t WINDOW = (vector_t){.x = 2000, .y = 1000};
 
 const size_t NUM_BODIES = 60;
 #define NUM_COORDS 240
@@ -250,6 +250,16 @@ typedef struct state {
   scene_t *scene;
 } state_t;
 
+list_t *scale_polygon(double scalar, list_t *list) {
+  list_t *scaled_polygon = list_init(list_size(list), free);
+  for (size_t i = 0; i < list_size(list); i++) {
+    vector_t *new_vector = malloc(sizeof(vector_t));
+    *new_vector = vec_multiply(scalar, *(vector_t *)list_get(list, i));
+    list_add(scaled_polygon, new_vector);
+  }
+  return scaled_polygon;
+}
+
 list_t *make_track_two() {
   list_t *bodies = list_init(NUM_BODIES, free);
   size_t i = 0;
@@ -260,8 +270,10 @@ list_t *make_track_two() {
       *coord = COORDS[i + k];
       list_add(shape, coord);
     }
+    list_t *new_shape = scale_polygon(100.0, shape);
+    list_free(shape);
     i += 4;
-    body_t *body = body_init(shape, TRACK_MASS, TRACK_COLOR);
+    body_t *body = body_init(new_shape, TRACK_MASS, TRACK_COLOR);
     list_add(bodies, body);
   }
   return bodies;
