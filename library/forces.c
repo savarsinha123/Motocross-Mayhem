@@ -112,7 +112,7 @@ void normal_creator(void *aux) {
         // if (velocity_change.y < 0) {
         //   velocity_change = vec_negate(velocity_change);
         // }
-        //body_set_velocity(body, new_velocity);
+        // body_set_velocity(body, new_velocity);
         break;
       }
     }

@@ -17,7 +17,8 @@
 // constants
 const vector_t WINDOW = ((vector_t){.x = 2000, .y = 1000});
 #define CENTER vec_multiply(0.5, WINDOW)
-#define STARTING_POSITION (vector_t) { WINDOW.x / 2.0, WINDOW.y }
+#define STARTING_POSITION                                                      \
+  (vector_t) { WINDOW.x / 2.0, WINDOW.y }
 
 // button constants
 const double BUTTON_MASS = 1.0;
@@ -442,7 +443,7 @@ typedef struct state {
   size_t level;
 } state_t;
 
-typedef list_t *(*track_t)(); 
+typedef list_t *(*track_t)();
 
 typedef enum {
   BIKE = 1,
@@ -838,13 +839,15 @@ list_t *make_track_one() {
     }
     list_t *new_shape1 = scale_polygon(90.0, shape);
     list_t *new_shape2 = scale_polygon(90.0, shape);
-    polygon_translate(new_shape2, (vector_t) { 0, 30.0 });
+    polygon_translate(new_shape2, (vector_t){0, 30.0});
     list_free(shape);
     i += 4;
     body_type_t *type = malloc(sizeof(*type));
-    *type = TRACK; 
-    body_t *body1 = body_init_with_info(new_shape1, TRACK_MASS, TRACK_COLOR, type, free);
-    body_t *body2 = body_init_with_info(new_shape2, TRACK_MASS, GREEN, type, free);
+    *type = TRACK;
+    body_t *body1 =
+        body_init_with_info(new_shape1, TRACK_MASS, TRACK_COLOR, type, free);
+    body_t *body2 =
+        body_init_with_info(new_shape2, TRACK_MASS, GREEN, type, free);
     list_add(bodies, body2);
     list_add(bodies, body1);
   }
@@ -927,9 +930,7 @@ list_t *create_triangle(double side) {
   return triangle;
 }
 
-list_t *create_collision_triangle() {
-  return create_triangle(0.0001);
-}
+list_t *create_collision_triangle() { return create_triangle(0.0001); }
 
 vector_t find_colliding_point(body_t *body1, body_t *body2) {
   list_t *body1_shape = body_get_shape(body1);
@@ -957,14 +958,14 @@ void ground_collision(body_t *body, body_t *ground, vector_t axis, void *aux) {
   // char str[10];
   // sprintf(str, "%.9f", angle_diff);
   // puts(str);
-  if (!double_is_close(fabs(angle_diff), M_PI / 2, 0.02) && !double_is_close(fabs(angle_diff), 3 * M_PI / 2, 0.02)) {
+  if (!double_is_close(fabs(angle_diff), M_PI / 2, 0.02) &&
+      !double_is_close(fabs(angle_diff), 3 * M_PI / 2, 0.02)) {
     vector_t intersect = find_colliding_point(body, ground);
     if (!double_is_close(intersect.x, -WINDOW.x, 1e-5)) {
       body_set_pivot(body, intersect);
       if (angle_diff > -M_PI / 2) {
         body_set_angular_velocity(body, -0.2);
-      }
-      else if (angle_diff < M_PI / 2) {
+      } else if (angle_diff < M_PI / 2) {
         body_set_angular_velocity(body, 0.2);
       } else {
         body_set_angular_velocity(body, -0.2);
@@ -972,8 +973,7 @@ void ground_collision(body_t *body, body_t *ground, vector_t axis, void *aux) {
     } else {
       body_set_angular_velocity(body, 0.0);
     }
-  }
-  else {
+  } else {
     body_set_angular_velocity(body, 0.0);
   }
   list_free(wheel_shape);
@@ -990,7 +990,8 @@ void initialize_force_list(state_t *state) {
   create_drag(state->scene, DRAG, bike);
   for (size_t i = 1; i < scene_bodies(state->scene); i++) {
     create_ground_collision(state, bike, scene_get_body(state->scene, i));
-    create_physics_collision(state->scene, 0.0, bike, scene_get_body(state->scene, i));
+    create_physics_collision(state->scene, 0.0, bike,
+                             scene_get_body(state->scene, i));
     create_normal(state->scene, bike, scene_get_body(state->scene, i));
   }
 }
@@ -1008,7 +1009,7 @@ void initialize_game(state_t *state) {
   clear_buttons(state);
   state->pushed_down = false;
   track_t track_function;
-  switch(state->level) {
+  switch (state->level) {
   case 1:
     track_function = make_track_one;
     break;
@@ -1027,9 +1028,7 @@ void initialize_game(state_t *state) {
                                        .dim = TIMER_DIMENSIONS,
                                        .color = TEXT_COLOR};
     sdl_write_text(state->timer_text, "LeagueGothic", "Regular");
-  }
-  else if (state->game_state == SCORE) {
-
+  } else if (state->game_state == SCORE) {
   }
 }
 
@@ -1123,7 +1122,7 @@ void on_mouse_color_menu(state_t *state, char key, key_event_type_t type,
 void on_mouse_game_menu(state_t *state, char key, key_event_type_t type,
                         double x, double y);
 void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
-                        double x, double y);
+                         double x, double y);
 
 void create_start_menu(state_t *state) {
   clear_buttons(state);
@@ -1215,11 +1214,12 @@ void create_level_menu(state_t *state) {
                         .color = TEXT_COLOR};
   state->title = title;
   sdl_write_text(title, "ChunkFive", "Regular");
-  make_button(state, "1", FONT_SIZE, PLAY_POSITION, BUTTON_DIM, TEXT_COLOR, BUTTON_COLOR);
-  make_button(state, "2", FONT_SIZE, CUSTOMIZE_POSITION, BUTTON_DIM,
-              TEXT_COLOR, BUTTON_COLOR);
-  make_button(state, "3", FONT_SIZE, SETTINGS_POSITION, BUTTON_DIM,
-              TEXT_COLOR, BUTTON_COLOR);
+  make_button(state, "1", FONT_SIZE, PLAY_POSITION, BUTTON_DIM, TEXT_COLOR,
+              BUTTON_COLOR);
+  make_button(state, "2", FONT_SIZE, CUSTOMIZE_POSITION, BUTTON_DIM, TEXT_COLOR,
+              BUTTON_COLOR);
+  make_button(state, "3", FONT_SIZE, SETTINGS_POSITION, BUTTON_DIM, TEXT_COLOR,
+              BUTTON_COLOR);
   make_button(state, "<--", FONT_SIZE, BACK_POSITION, BACK_BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
 }
@@ -1367,7 +1367,7 @@ void on_mouse_game_menu(state_t *state, char key, key_event_type_t type,
 
 // game menu mouse handler
 void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
-                        double x, double y) {
+                         double x, double y) {
   list_t *collision_tester = create_collision_triangle();
   polygon_translate(collision_tester, (vector_t){x, y});
   button_t *button;
@@ -1468,7 +1468,7 @@ bool check_track_collision(state_t *state) {
   body_t *bike = scene_get_body(state->scene, 0);
   list_t *bike_triangle = create_triangle(20.0);
   polygon_translate(bike_triangle, body_get_centroid(bike));
-  for(size_t i = 1; i < scene_bodies(state->scene); i++) {
+  for (size_t i = 1; i < scene_bodies(state->scene); i++) {
     body_t *track = scene_get_body(state->scene, i);
     list_t *track_shape = body_get_shape(track);
     collision_info_t collision = find_collision(bike_triangle, track_shape);
