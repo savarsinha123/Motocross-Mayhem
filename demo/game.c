@@ -18,7 +18,7 @@
 const vector_t WINDOW = ((vector_t){.x = 2000, .y = 1000});
 #define CENTER vec_multiply(0.5, WINDOW)
 #define STARTING_POSITION                                                      \
-  (vector_t) { WINDOW.x / 2.0, WINDOW.y }
+  (vector_t) { WINDOW.x / 2.0, WINDOW.y / 3.0 }
 
 // button constants
 const double BUTTON_MASS = 1.0;
@@ -420,8 +420,8 @@ const double DRAG = 0.2;
 const double SUSPENSION_CONSTANT = 10000.0;
 const double EQ_DIST = 10.0;
 
-const double ANGULAR_VELOCITY = 1.0;
-const double BIKE_ACCELERATION = 100.0;
+const double AIR_ANGULAR_VELOCITY = 1.0;
+const double BIKE_ACCELERATION = 200.0;
 
 typedef enum { MENU = 1, TIMER = 2, SCORE = 3 } game_state_t;
 
@@ -433,8 +433,11 @@ typedef struct button {
 typedef struct state {
   scene_t *scene;
   double clock;
+  double dt;
   text_input_t timer_text;
   bool pushed_down;
+  bool in_air;
+  bool lost;
   game_state_t game_state;
   list_t *button_list;
   text_input_t title;
@@ -985,7 +988,11 @@ void create_ground_collision(state_t *state, body_t *body, body_t *ground) {
 }
 
 void initialize_force_list(state_t *state) {
+  char str[10];
+  sprintf(str, "%d", scene_bodies(state->scene));
+  puts(str);
   body_t *bike = scene_get_body(state->scene, 0);
+  assert(*(body_type_t *)body_get_info(bike) == BIKE);
   create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION, bike);
   create_drag(state->scene, DRAG, bike);
   for (size_t i = 1; i < scene_bodies(state->scene); i++) {
@@ -1005,9 +1012,22 @@ void clear_buttons(state_t *state) {
   scene_tick(state->scene, 0.0);
 }
 
+void clear_scene(state_t *state) {
+  for(size_t i = 0; i < scene_bodies(state->scene); i++) {
+    body_t *body = scene_get_body(state->scene, i);
+    body_remove(body);
+  }
+  scene_tick(state->scene, 0.0);
+  free(state->timer_text.string);
+}
+
 void initialize_game(state_t *state) {
   clear_buttons(state);
+  // clear_scene(state);
   state->pushed_down = false;
+  state->dt = 0.0;
+  state->in_air = false;
+  state->lost = false;
   track_t track_function;
   switch (state->level) {
   case 1:
@@ -1018,16 +1038,14 @@ void initialize_game(state_t *state) {
     break;
   }
   if (state->game_state == TIMER) {
+    scene_free(state->scene);
+    state->scene = scene_init();
+    sdl_clear_text();
     initialize_body_list(state, track_function);
     initialize_force_list(state);
     state->clock = START_TIME;
     state->past_second = START_TIME;
-    state->timer_text = (text_input_t){.string = malloc(10 * sizeof(char)),
-                                       .font_size = FONT_SIZE,
-                                       .position = TIMER_POSITION,
-                                       .dim = TIMER_DIMENSIONS,
-                                       .color = TEXT_COLOR};
-    sdl_write_text(state->timer_text, "LeagueGothic", "Regular");
+    // sdl_write_text(state->timer_text, "LeagueGothic", "Regular");
   } else if (state->game_state == SCORE) {
   }
 }
@@ -1054,6 +1072,19 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
             (vector_t){BIKE_MASS * BIKE_ACCELERATION * cos(angle), sin(angle)},
             bike);
       }
+      break;
+    case UP_ARROW:
+      if (state->in_air) {
+         body_increment_angular_velocity(bike, 2.0 * state->dt);
+      }
+      break;
+    case DOWN_ARROW:
+      if (state->in_air) {
+        body_increment_angular_velocity(bike, -2.0 * state->dt);
+      }
+      break;
+    case SPACE:
+      state->lost = true;
       break;
     }
   } else if (type == KEY_RELEASED) {
@@ -1426,6 +1457,11 @@ state_t *emscripten_init() {
   state->bike_color = RED;
   state->button_list = list_init(3, (free_func_t)button_free);
   state->level = 0;
+  state->timer_text = (text_input_t){.string = "02:00",
+                                       .font_size = FONT_SIZE,
+                                       .position = TIMER_POSITION,
+                                       .dim = TIMER_DIMENSIONS,
+                                       .color = TEXT_COLOR};
   text_input_t title = {.string = "MOTOCROSS MAYHEM",
                         .font_size = FONT_SIZE,
                         .position = TITLE_POSITION,
@@ -1466,7 +1502,7 @@ void update_timer(state_t *state) {
 
 bool check_track_collision(state_t *state) {
   body_t *bike = scene_get_body(state->scene, 0);
-  list_t *bike_triangle = create_triangle(20.0);
+  list_t *bike_triangle = create_triangle(100.0);
   polygon_translate(bike_triangle, body_get_centroid(bike));
   for (size_t i = 1; i < scene_bodies(state->scene); i++) {
     body_t *track = scene_get_body(state->scene, i);
@@ -1482,18 +1518,53 @@ bool check_track_collision(state_t *state) {
   return false;
 }
 
+void check_loss(state_t *state) {
+  body_t *bike = scene_get_body(state->scene, 0);
+  double angle = body_get_rotation(bike);
+  if (fabs(fmod(angle, 2 * M_PI)) > M_PI / 2 && fabs(fmod(angle, 2 * M_PI)) < 3 * M_PI / 2) {
+    state->lost = true;
+  }
+  // char str[10];
+  // sprintf(str, "%.9f", body_get_rotation(bike));
+  // puts(str);
+}
+
 void emscripten_main(state_t *state) {
-  double dt = time_since_last_tick();
+  state->dt = time_since_last_tick();
+  if (state->lost) {
+    body_t *bike = scene_get_body(state->scene, 0);
+    state->lost = false;
+    sdl_on_key(NULL);
+    // state->game_state = MENU;
+    body_set_centroid(bike, STARTING_POSITION);
+    sdl_move_window(STARTING_POSITION);
+    body_set_rotation(bike, 0.0);
+    body_set_angular_velocity(bike, 0.0);
+    body_set_velocity(bike, VEC_ZERO);
+    sdl_on_key(on_key);
+    // initialize_game(state);
+  }
   if (state->game_state == TIMER && state->level != 0) {
-    state->clock -= dt;
+    state->clock -= state->dt;
     body_t *bike = scene_get_body(state->scene, 0);
     sdl_move_window(body_get_centroid(bike));
     update_timer(state);
-    if (!check_track_collision(state)) {
-      body_set_angular_velocity(bike, 1.0);
+    bool collision_checker = check_track_collision(state);
+    if (!state->in_air && !collision_checker) {
+      if (body_get_velocity(bike).x > 0) {
+        body_increment_angular_velocity(bike, AIR_ANGULAR_VELOCITY);
+      }
+      else {
+        body_increment_angular_velocity(bike, -AIR_ANGULAR_VELOCITY);
+      }
+      state->in_air = true;
+    }
+    else if(collision_checker) {
+      check_loss(state);
+      state->in_air = false;
     }
   }
-  scene_tick(state->scene, dt);
+  scene_tick(state->scene, state->dt);
   sdl_render_scene(state->scene);
 }
 
