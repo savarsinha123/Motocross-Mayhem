@@ -1013,7 +1013,7 @@ void clear_buttons(state_t *state) {
 }
 
 void clear_scene(state_t *state) {
-  for(size_t i = 0; i < scene_bodies(state->scene); i++) {
+  for (size_t i = 0; i < scene_bodies(state->scene); i++) {
     body_t *body = scene_get_body(state->scene, i);
     body_remove(body);
   }
@@ -1075,7 +1075,7 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
       break;
     case UP_ARROW:
       if (state->in_air) {
-         body_increment_angular_velocity(bike, 2.0 * state->dt);
+        body_increment_angular_velocity(bike, 2.0 * state->dt);
       }
       break;
     case DOWN_ARROW:
@@ -1458,10 +1458,10 @@ state_t *emscripten_init() {
   state->button_list = list_init(3, (free_func_t)button_free);
   state->level = 0;
   state->timer_text = (text_input_t){.string = "02:00",
-                                       .font_size = FONT_SIZE,
-                                       .position = TIMER_POSITION,
-                                       .dim = TIMER_DIMENSIONS,
-                                       .color = TEXT_COLOR};
+                                     .font_size = FONT_SIZE,
+                                     .position = TIMER_POSITION,
+                                     .dim = TIMER_DIMENSIONS,
+                                     .color = TEXT_COLOR};
   text_input_t title = {.string = "MOTOCROSS MAYHEM",
                         .font_size = FONT_SIZE,
                         .position = TITLE_POSITION,
@@ -1521,7 +1521,8 @@ bool check_track_collision(state_t *state) {
 void check_loss(state_t *state) {
   body_t *bike = scene_get_body(state->scene, 0);
   double angle = body_get_rotation(bike);
-  if (fabs(fmod(angle, 2 * M_PI)) > M_PI / 2 && fabs(fmod(angle, 2 * M_PI)) < 3 * M_PI / 2) {
+  if (fabs(fmod(angle, 2 * M_PI)) > M_PI / 2 &&
+      fabs(fmod(angle, 2 * M_PI)) < 3 * M_PI / 2) {
     state->lost = true;
   }
   // char str[10];
@@ -1553,13 +1554,11 @@ void emscripten_main(state_t *state) {
     if (!state->in_air && !collision_checker) {
       if (body_get_velocity(bike).x > 0) {
         body_increment_angular_velocity(bike, AIR_ANGULAR_VELOCITY);
-      }
-      else {
+      } else {
         body_increment_angular_velocity(bike, -AIR_ANGULAR_VELOCITY);
       }
       state->in_air = true;
-    }
-    else if(collision_checker) {
+    } else if (collision_checker) {
       check_loss(state);
       state->in_air = false;
     }
