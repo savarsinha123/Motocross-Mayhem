@@ -129,6 +129,8 @@ void body_set_velocity(body_t *body, vector_t v);
  */
 void body_set_rotation(body_t *body, double angle);
 
+void body_rotate(body_t *body, double angle);
+
 double body_get_rotation(body_t *body);
 
 /**
