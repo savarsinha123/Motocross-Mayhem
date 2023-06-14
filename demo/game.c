@@ -636,10 +636,7 @@ typedef struct state {
 
 typedef list_t *(*track_t)();
 
-typedef enum {
-  BIKE = 1,
-  TRACK = 2
-} body_type_t;
+typedef enum { BIKE = 1, TRACK = 2 } body_type_t;
 
 // helper functions
 void button_free(button_t *button) {
@@ -1073,12 +1070,14 @@ list_t *make_track_two() {
 list_t *make_track_three() {
   list_t *bodies1 = make_track_one();
   list_t *bodies2 = make_track_two();
-  list_t *last_shape = body_get_shape(list_get(bodies1, list_size(bodies1) - 1));
-  double last_x = ((vector_t *) list_get(last_shape, list_size(last_shape) - 1))->x;
+  list_t *last_shape =
+      body_get_shape(list_get(bodies1, list_size(bodies1) - 1));
+  double last_x =
+      ((vector_t *)list_get(last_shape, list_size(last_shape) - 1))->x;
   for (size_t i = 0; i < list_size(bodies2); i++) {
     body_t *body = list_get(bodies2, i);
     vector_t centroid = body_get_centroid(body);
-    body_set_centroid(body, (vector_t) { centroid.x + last_x, centroid.y });
+    body_set_centroid(body, (vector_t){centroid.x + last_x, centroid.y});
   }
   list_free(last_shape);
   list_append(bodies1, bodies2);
