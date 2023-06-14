@@ -19,9 +19,9 @@ const rgb_color_t TRACK_COLOR = (rgb_color_t){0.05, 0.4, 0};
 
 const vector_t WINDOW = (vector_t){.x = 1000, .y = 300};
 
-const size_t NUM_BODIES = 60;
-#define NUM_COORDS 240
-const vector_t COORDS[NUM_COORDS] = {
+const size_t NUM_BODIES2 = 60;
+#define NUM_COORDS2 240
+const vector_t COORDS[NUM_COORDS2] = {
     (vector_t){0, 0},                              // 0 new line
     (vector_t){0, 5},                              // 1
     (vector_t){16, 5},                             // 2
@@ -212,10 +212,10 @@ typedef struct state {
 } state_t;
 
 list_t *make_track_one() {
-  list_t *bodies = list_init(NUM_BODIES, free);
+  list_t *bodies = list_init(NUM_BODIES2, free);
   size_t i = 0;
   bool t = 0;
-  for (size_t j = 0; j < NUM_BODIES; j++) {
+  for (size_t j = 0; j < NUM_BODIES2; j++) {
     list_t *shape = list_init(4, free);
     for (size_t k = 0; k < 4; k++) {
       vector_t *coord = malloc(sizeof(vector_t));

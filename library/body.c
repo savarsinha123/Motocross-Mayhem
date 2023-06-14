@@ -82,7 +82,8 @@ list_t *body_get_shape(body_t *body) {
   list_t *shape = list_init(list_size(body->polygon), free);
   for (size_t i = 0; i < list_size(body->polygon); i++) {
     vector_t vector = *((vector_t *)list_get(body->polygon, i));
-    vector_t *added_vector = malloc(sizeof(*added_vector));
+    vector_t *added_vector = malloc(sizeof(vector_t));
+    assert(added_vector != NULL);
     *added_vector = vector;
     list_add(shape, added_vector);
   }
