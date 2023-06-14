@@ -1,5 +1,5 @@
 # List of demo programs
-DEMOS = image game
+DEMOS = image game track_one track_two
 # List of C files in "libraries" that we provide
 STAFF_LIBS = test_util sdl_wrapper
 # List of C files in "libraries" that you will write.

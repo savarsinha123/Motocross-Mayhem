@@ -121,12 +121,14 @@ bool sdl_is_done(state_t *state);
 /**
  * Adds text to list of texts to be printed in sdl_render_scene.
  */
-void sdl_write_text(text_input_t text_input);
+void sdl_write_text(text_input_t text_input, char *font_style, char *font_type);
 
 /**
  * Removes text from said list.
  */
 void sdl_remove_text(text_input_t text_input);
+
+void sdl_clear_text();
 
 void sdl_add_image(const char *image_path, vector_t position);
 
