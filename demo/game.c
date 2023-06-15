@@ -35,7 +35,7 @@ const double BUTTON_MASS = 1.0;
     (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + WINDOW.x / 3.0,                    \
         WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y                                    \
   }
-#define HOW_POSITION                                                      \
+#define HOW_POSITION                                                           \
   (vector_t) {                                                                 \
     (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + 2.0 * WINDOW.x / 3.0,              \
         WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y                                    \
@@ -603,9 +603,9 @@ const rgb_color_t TEXT_COLOR = (rgb_color_t){0.0, 0.0, 0.0};
 const double TRACK_HEIGHT = 20.0;
 const double TRACK_MASS = INFINITY;
 const rgb_color_t TRACK_ONE_COLOR = {0.545098039216, 0.270588235294,
-                                 0.0745098039216};
+                                     0.0745098039216};
 
-const rgb_color_t TRACK_TWO_COLOR = { 0.0, 0.2, 0.4 };
+const rgb_color_t TRACK_TWO_COLOR = {0.0, 0.2, 0.4};
 
 const double GRAVITATIONAL_ACCELERATION = 100.0;
 const double DRAG = 0.2;
@@ -1043,8 +1043,8 @@ list_t *make_track_one() {
     i += 4;
     body_type_t *type = malloc(sizeof(*type));
     *type = TRACK;
-    body_t *body1 =
-        body_init_with_info(new_shape1, TRACK_MASS, TRACK_ONE_COLOR, type, free);
+    body_t *body1 = body_init_with_info(new_shape1, TRACK_MASS, TRACK_ONE_COLOR,
+                                        type, free);
     body_t *body2 =
         body_init_with_info(new_shape2, TRACK_MASS, GREEN, type, free);
     list_add(bodies, body2);
@@ -1070,8 +1070,8 @@ list_t *make_track_two() {
     i += 4;
     body_type_t *type = malloc(sizeof(*type));
     *type = TRACK;
-    body_t *body1 =
-        body_init_with_info(new_shape1, TRACK_MASS, TRACK_TWO_COLOR, type, free);
+    body_t *body1 = body_init_with_info(new_shape1, TRACK_MASS, TRACK_TWO_COLOR,
+                                        type, free);
     body_t *body2 =
         body_init_with_info(new_shape2, TRACK_MASS, BLUE, type, free);
     list_add(bodies, body2);
@@ -1097,8 +1097,8 @@ list_t *make_track_three() {
     i += 4;
     body_type_t *type = malloc(sizeof(*type));
     *type = TRACK;
-    body_t *body1 =
-        body_init_with_info(new_shape1, TRACK_MASS, TRACK_ONE_COLOR, type, free);
+    body_t *body1 = body_init_with_info(new_shape1, TRACK_MASS, TRACK_ONE_COLOR,
+                                        type, free);
     body_t *body2 =
         body_init_with_info(new_shape2, TRACK_MASS, GREEN, type, free);
     list_add(bodies, body2);
@@ -1121,8 +1121,8 @@ list_t *make_track_three() {
     i += 4;
     body_type_t *type = malloc(sizeof(*type));
     *type = TRACK;
-    body_t *body1 =
-        body_init_with_info(new_shape1, TRACK_MASS, TRACK_TWO_COLOR, type, free);
+    body_t *body1 = body_init_with_info(new_shape1, TRACK_MASS, TRACK_TWO_COLOR,
+                                        type, free);
     body_t *body2 =
         body_init_with_info(new_shape2, TRACK_MASS, BLUE, type, free);
     list_add(bodies, body2);
@@ -1138,7 +1138,8 @@ list_t *make_track_three() {
   // for (size_t i = 0; i < list_size(bodies2); i++) {
   //   body_t *body = list_get(bodies2, i);
   //   vector_t centroid = body_get_centroid(body);
-  //   body_set_centroid(body, (vector_t){centroid.x + 10 * last_x, centroid.y});
+  //   body_set_centroid(body, (vector_t){centroid.x + 10 * last_x,
+  //   centroid.y});
   // }
   // list_free(last_shape);
   // // list_append(bodies1, bodies2);
@@ -1284,14 +1285,16 @@ void initialize_game(state_t *state) {
     track_function = make_track_one;
     state->goal = 372.041 * 90.0;
     sdl_clear_images();
-    sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg", (vector_t){0, WINDOW.y});
+    sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
+                  (vector_t){0, WINDOW.y});
     state->timer_text.color = TEXT_COLOR;
     break;
   case 2:
     track_function = make_track_two;
     state->goal = 600 * 90.0;
     sdl_clear_images();
-    sdl_add_image("assets/photo-1419242902214-272b3f66ee7a.jpg", (vector_t){0, WINDOW.y});
+    sdl_add_image("assets/photo-1419242902214-272b3f66ee7a.jpg",
+                  (vector_t){0, WINDOW.y});
     state->timer_text.color = WHITE;
     break;
   case 3:
@@ -1303,8 +1306,7 @@ void initialize_game(state_t *state) {
   if (scene_bodies(state->scene) == 0) {
     initialize_body_list(state, track_function);
     initialize_force_list(state);
-  }
-  else {
+  } else {
     scene_load_bodies(state->scene, state->bodies, state->forces);
   }
   if (state->game_state == TIMER) {
@@ -1428,7 +1430,7 @@ void on_mouse_start_menu(state_t *state, char key, key_event_type_t type,
 void on_mouse_color_menu(state_t *state, char key, key_event_type_t type,
                          double x, double y);
 void on_mouse_controls_menu(state_t *state, char key, key_event_type_t type,
-                         double x, double y);
+                            double x, double y);
 void on_mouse_game_menu(state_t *state, char key, key_event_type_t type,
                         double x, double y);
 void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
@@ -1451,7 +1453,8 @@ void reset_scene(state_t *state) {
 void create_start_menu(state_t *state) {
   clear_buttons(state);
   sdl_clear_images();
-  sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg", (vector_t){0, WINDOW.y});
+  sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
+                (vector_t){0, WINDOW.y});
   sdl_move_window(CENTER);
   state->game_state = MENU;
   state->level = 0;
@@ -1557,8 +1560,8 @@ void create_level_menu(state_t *state) {
               TEXT_COLOR, BUTTON_COLOR);
   make_button(state, "2", FONT_SIZE, PURPLE_POSITION, BACK_BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
-  make_button(state, "3", FONT_SIZE, HOW_POSITION, BACK_BUTTON_DIM,
-              TEXT_COLOR, BUTTON_COLOR);
+  make_button(state, "3", FONT_SIZE, HOW_POSITION, BACK_BUTTON_DIM, TEXT_COLOR,
+              BUTTON_COLOR);
   make_button(state, "<--", FONT_SIZE, BACK_POSITION, BACK_BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
 }
@@ -1622,7 +1625,7 @@ void on_mouse_start_menu(state_t *state, char key, key_event_type_t type,
             break;
           case 2:
             clear_buttons(state);
-            sdl_on_mouse((mouse_handler_t) on_mouse_controls_menu);
+            sdl_on_mouse((mouse_handler_t)on_mouse_controls_menu);
             sdl_add_image("assets/controls.png", (vector_t){0, WINDOW.y});
             break;
           }
@@ -1848,13 +1851,13 @@ void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type,
 }
 
 void on_mouse_controls_menu(state_t *state, char key, key_event_type_t type,
-                             double x, double y) {
+                            double x, double y) {
   if (type == MOUSE_BUTTON_RELEASED) {
     sdl_clear_images();
     sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
-                (vector_t){0, WINDOW.y});
+                  (vector_t){0, WINDOW.y});
     create_start_menu(state);
-    sdl_on_mouse((mouse_handler_t) on_mouse_start_menu);
+    sdl_on_mouse((mouse_handler_t)on_mouse_start_menu);
   }
 }
 
