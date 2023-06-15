@@ -1332,7 +1332,7 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
       break;
     case SPACE:
       state->game_over = true;
-      state->win  = true;
+      state->win = true;
       break;
     }
   } else if (type == KEY_RELEASED) {
@@ -1418,7 +1418,7 @@ void reset_scene(state_t *state) {
   scene_free(state->scene);
   state->scene = scene_init();
   sdl_clear_text();
-  sdl_render_scene(state->scene); 
+  sdl_render_scene(state->scene);
 }
 
 void create_start_menu(state_t *state) {
@@ -1513,10 +1513,10 @@ void create_level_menu(state_t *state) {
   sdl_write_text(title, "ChunkFive", "Regular");
   make_button(state, "1", FONT_SIZE, PLAY_POSITION, BACK_BUTTON_DIM, TEXT_COLOR,
               BUTTON_COLOR);
-  make_button(state, "2", FONT_SIZE, CUSTOMIZE_POSITION, BACK_BUTTON_DIM, TEXT_COLOR,
-              BUTTON_COLOR);
-  make_button(state, "3", FONT_SIZE, SETTINGS_POSITION, BACK_BUTTON_DIM, TEXT_COLOR,
-              BUTTON_COLOR);
+  make_button(state, "2", FONT_SIZE, CUSTOMIZE_POSITION, BACK_BUTTON_DIM,
+              TEXT_COLOR, BUTTON_COLOR);
+  make_button(state, "3", FONT_SIZE, SETTINGS_POSITION, BACK_BUTTON_DIM,
+              TEXT_COLOR, BUTTON_COLOR);
   make_button(state, "<--", FONT_SIZE, BACK_POSITION, BACK_BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
 }
@@ -1920,7 +1920,7 @@ void emscripten_main(state_t *state) {
     sound_play(state->sound);
     state->sound_changed = false;
     state->sound_timer = 10.0;
-  } 
+  }
   if (state->game_over) {
     state->clock = 0.0;
     state->score = 0.0;
@@ -1934,8 +1934,7 @@ void emscripten_main(state_t *state) {
     body_set_angular_velocity(bike, 0.0);
     if (state->win) {
       create_win_menu(state);
-    }
-    else {
+    } else {
       create_game_over_menu(state);
     }
     // emscripten_free(state);
@@ -1974,8 +1973,7 @@ void emscripten_main(state_t *state) {
     }
     scene_tick(state->scene, state->dt);
     // sdl_render_scene(state->scene);
-  }
-  else if (state->game_state == SCORE && state->level != 0) {
+  } else if (state->game_state == SCORE && state->level != 0) {
     if (!state->win) {
       state->win = check_win(state);
     }
