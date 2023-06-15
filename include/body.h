@@ -238,6 +238,8 @@ void body_add_angular_impulse(body_t *body, double angular_impulse);
 
 void body_set_pivot(body_t *body, vector_t pivot);
 
+vector_t body_get_pivot(body_t *body);
+
 /**
  * Resets the pivot point of rotation back to the centroid of a body
  * Also resets the moment of inertia to its default (through the centroid)

@@ -18,7 +18,7 @@
 const vector_t WINDOW = ((vector_t){.x = 2000, .y = 1000});
 #define CENTER vec_multiply(0.5, WINDOW)
 #define STARTING_POSITION                                                      \
-  (vector_t) { WINDOW.x / 2.0, WINDOW.y / 3.0 }
+  (vector_t) { WINDOW.x / 2.0, 0.4 * WINDOW.y }
 
 // button constants
 const double BUTTON_MASS = 1.0;
@@ -589,7 +589,7 @@ const double y = 22 / 10.0;
 // timer constants
 #define TIME_LENGTH 10
 const double MIN_TO_SEC = 60;
-const double START_TIME = 120.0;
+const double START_TIME = 10.0;
 const size_t FONT_SIZE = 96;
 #define TIMER_DIMENSIONS                                                       \
   (vector_t) { 0.1 * WINDOW.x, 0.15 * WINDOW.y }
@@ -625,13 +625,16 @@ typedef struct state {
   text_input_t timer_text;
   bool pushed_down;
   bool in_air;
-  bool lost;
+  bool game_over;
   game_state_t game_state;
   list_t *button_list;
   text_input_t title;
   rgb_color_t bike_color;
   int16_t past_second;
   size_t level;
+  sound_t sound;
+  bool sound_changed;
+  double sound_timer;
 } state_t;
 
 typedef list_t *(*track_t)();
@@ -1014,7 +1017,7 @@ list_t *scale_polygon(double scalar, list_t *list) {
 }
 
 list_t *make_track_one() {
-  list_t *bodies = list_init(NUM_BODIES, NULL);
+  list_t *bodies = list_init(NUM_BODIES - 4, NULL);
   size_t i = 0;
   for (size_t j = 0; j < NUM_BODIES - 4; j++) {
     list_t *shape = list_init(4, free);
@@ -1069,7 +1072,7 @@ list_t *make_track_two() {
 
 list_t *make_track_three() {
   list_t *bodies1 = make_track_one();
-  list_t *bodies2 = make_track_two();
+  list_t *bodies2 = make_track_one();
   list_t *last_shape =
       body_get_shape(list_get(bodies1, list_size(bodies1) - 1));
   double last_x =
@@ -1077,12 +1080,12 @@ list_t *make_track_three() {
   for (size_t i = 0; i < list_size(bodies2); i++) {
     body_t *body = list_get(bodies2, i);
     vector_t centroid = body_get_centroid(body);
-    body_set_centroid(body, (vector_t){centroid.x + last_x, centroid.y});
+    body_set_centroid(body, (vector_t){centroid.x + 10 * last_x, centroid.y});
   }
   list_free(last_shape);
-  list_append(bodies1, bodies2);
-  list_free(bodies2);
-  return bodies1;
+  // list_append(bodies1, bodies2);
+  list_free(bodies1);
+  return bodies2;
 }
 
 body_t *make_bike(rgb_color_t color) {
@@ -1255,7 +1258,7 @@ void initialize_game(state_t *state) {
   state->pushed_down = false;
   state->dt = 0.0;
   state->in_air = false;
-  state->lost = false;
+  state->game_over = false;
   track_t track_function;
   switch (state->level) {
   case 1:
@@ -1293,6 +1296,11 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
                        (vector_t){-BIKE_MASS * BIKE_ACCELERATION * cos(angle),
                                   -sin(angle)},
                        bike);
+        state->sound = DEC;
+        state->sound_changed = true;
+      }
+      else {
+        state->sound_changed = false;
       }
       break;
     case RIGHT_ARROW:
@@ -1302,6 +1310,11 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
             state->scene,
             (vector_t){BIKE_MASS * BIKE_ACCELERATION * cos(angle), sin(angle)},
             bike);
+        state->sound = ACC;
+        state->sound_changed = true;
+      }
+      else {
+        state->sound_changed = false;
       }
       break;
     case UP_ARROW:
@@ -1315,7 +1328,7 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
       }
       break;
     case SPACE:
-      state->lost = true;
+      state->game_over = true;
       break;
     }
   } else if (type == KEY_RELEASED) {
@@ -1326,6 +1339,8 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
           state->scene,
           (vector_t){BIKE_MASS * BIKE_ACCELERATION * cos(angle), sin(angle)},
           bike);
+      state->sound = IDLE;
+      state->sound_changed = true;
       break;
     case RIGHT_ARROW:
       state->pushed_down = false;
@@ -1333,6 +1348,8 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
           state->scene,
           (vector_t){-BIKE_MASS * BIKE_ACCELERATION * cos(angle), -sin(angle)},
           bike);
+      state->sound = IDLE;
+      state->sound_changed = true;
       break;
     }
   }
@@ -1384,6 +1401,8 @@ void on_mouse_color_menu(state_t *state, char key, key_event_type_t type,
 void on_mouse_game_menu(state_t *state, char key, key_event_type_t type,
                         double x, double y);
 void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
+                         double x, double y);
+void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type,
                          double x, double y);
 
 void create_start_menu(state_t *state) {
@@ -1486,6 +1505,21 @@ void create_level_menu(state_t *state) {
               TEXT_COLOR, BUTTON_COLOR);
 }
 
+void create_game_over_menu(state_t *state) {
+  clear_buttons(state);
+  text_input_t title = {.string = "GAME OVER :(",
+                        .font_size = FONT_SIZE,
+                        .position = TITLE_POSITION,
+                        .dim = TITLE_DIMENSIONS,
+                        .color = TEXT_COLOR};
+  state->title = title;
+  sdl_write_text(title, "ChunkFive", "Regular");
+  make_button(state, "RESTART", FONT_SIZE, ORANGE_POSITION, BUTTON_DIM, TEXT_COLOR,
+              BUTTON_COLOR);
+  make_button(state, "EXIT", FONT_SIZE, PURPLE_POSITION, BUTTON_DIM, TEXT_COLOR,
+              BUTTON_COLOR);
+}
+
 // start menu mouse handler
 void on_mouse_start_menu(state_t *state, char key, key_event_type_t type,
                          double x, double y) {
@@ -1495,7 +1529,7 @@ void on_mouse_start_menu(state_t *state, char key, key_event_type_t type,
   body_t *button_box;
   list_t *button_shape;
   collision_info_t collision;
-  if (type == KEY_RELEASED) {
+  if (type == MOUSE_BUTTON_RELEASED) {
     switch (key) {
     case LEFT_CLICK:
       for (size_t i = 0; i < list_size(state->button_list); i++) {
@@ -1535,7 +1569,7 @@ void on_mouse_color_menu(state_t *state, char key, key_event_type_t type,
   body_t *button_box;
   list_t *button_shape;
   collision_info_t collision;
-  if (type == KEY_RELEASED) {
+  if (type == MOUSE_BUTTON_RELEASED) {
     switch (key) {
     case LEFT_CLICK:
       for (size_t i = 0; i < list_size(state->button_list); i++) {
@@ -1592,7 +1626,7 @@ void on_mouse_game_menu(state_t *state, char key, key_event_type_t type,
   body_t *button_box;
   list_t *button_shape;
   collision_info_t collision;
-  if (type == KEY_RELEASED) {
+  if (type == MOUSE_BUTTON_RELEASED) {
     switch (key) {
     case LEFT_CLICK:
       for (size_t i = 0; i < list_size(state->button_list); i++) {
@@ -1628,15 +1662,14 @@ void on_mouse_game_menu(state_t *state, char key, key_event_type_t type,
 }
 
 // game menu mouse handler
-void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
-                         double x, double y) {
+void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,double x, double y) {
   list_t *collision_tester = create_collision_triangle();
   polygon_translate(collision_tester, (vector_t){x, y});
   button_t *button;
   body_t *button_box;
   list_t *button_shape;
   collision_info_t collision;
-  if (type == KEY_RELEASED) {
+  if (type == MOUSE_BUTTON_RELEASED) {
     switch (key) {
     case LEFT_CLICK:
       for (size_t i = 0; i < list_size(state->button_list); i++) {
@@ -1678,6 +1711,42 @@ void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
   list_free(collision_tester);
 }
 
+void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type, double x, double y) {
+  list_t *collision_tester = create_collision_triangle();
+  polygon_translate(collision_tester, (vector_t){x, y});
+  button_t *button;
+  body_t *button_box;
+  list_t *button_shape;
+  collision_info_t collision;
+  if (type == MOUSE_BUTTON_RELEASED) {
+    switch (key) {
+    case LEFT_CLICK:
+      for (size_t i = 0; i < list_size(state->button_list); i++) {
+        button = list_get(state->button_list, i);
+        button_box = button->body;
+        button_shape = body_get_shape(button_box);
+        collision = find_collision(collision_tester, button_shape);
+        if (collision.collided) {
+          switch (i) {
+          case 0:
+            initialize_game(state);
+            break;
+          case 1:
+            state->level = 0;
+            sdl_on_key(NULL);
+            sdl_on_mouse(on_mouse_start_menu);
+            create_start_menu(state);
+            break;
+          break;
+          }
+        }
+      }
+      list_free(button_shape);
+    }
+  }
+  list_free(collision_tester);
+}
+
 state_t *emscripten_init() {
   srand(time(NULL));
   vector_t min = VEC_ZERO;
@@ -1686,7 +1755,8 @@ state_t *emscripten_init() {
   state_t *state = malloc(sizeof(state_t));
   state->scene = scene_init();
   state->bike_color = RED;
-  state->button_list = list_init(3, (free_func_t)button_free);
+  state->game_state = MENU;
+  state->button_list = list_init(3, free);
   state->level = 0;
   state->timer_text = (text_input_t){.string = "02:00",
                                      .font_size = FONT_SIZE,
@@ -1702,12 +1772,20 @@ state_t *emscripten_init() {
   sdl_on_mouse((mouse_handler_t)on_mouse_start_menu);
   sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
                 (vector_t){0, WINDOW.y});
+  sound_init();
+  state->sound = IDLE;
+  state->sound_changed = true;
+  state->sound_timer = 0.0;
   create_start_menu(state);
   return state;
 }
 
 void update_timer(state_t *state) {
   if ((int)state->clock != state->past_second) {
+    if (state->clock <= 0.0) {
+      state->game_over = true;
+      return;
+    }
     size_t minutes = state->clock / MIN_TO_SEC;
     size_t seconds = fmod(state->clock, MIN_TO_SEC);
     char timer[TIME_LENGTH] = "";
@@ -1715,14 +1793,11 @@ void update_timer(state_t *state) {
     sprintf(timer, "0%lu", minutes);
     strcat(timer, ":");
     sprintf(sec, "%lu", seconds);
-    // sprintf(state->timer_text.string, "%d", (int)state->clock);
     if (seconds / 10 < 1) {
       sprintf(sec, "0%lu", seconds);
     }
     strcat(timer, sec);
     state->timer_text.string = timer;
-
-    // sdl_remove_text(state->timer_text);
     sdl_clear_text();
     body_t *bike = scene_get_body(state->scene, 0);
     state->timer_text.position = vec_add(body_get_centroid(bike), CENTER);
@@ -1734,7 +1809,7 @@ void update_timer(state_t *state) {
 bool check_track_collision(state_t *state) {
   body_t *bike = scene_get_body(state->scene, 0);
   list_t *bike_triangle = create_triangle(100.0);
-  polygon_translate(bike_triangle, body_get_centroid(bike));
+  polygon_translate(bike_triangle, body_get_pivot(bike));
   assert(scene_bodies(state->scene) > 1);
   for (size_t i = 0; i < scene_bodies(state->scene); i++) {
     body_t *track = scene_get_body(state->scene, i);
@@ -1764,28 +1839,42 @@ void check_loss(state_t *state) {
   double angle = body_get_rotation(bike);
   if (fabs(fmod(angle, 2 * M_PI)) > M_PI / 2 &&
       fabs(fmod(angle, 2 * M_PI)) < 3 * M_PI / 2) {
-    state->lost = true;
+    state->game_over = true;
+    char str[10];
+    sprintf(str, "lost:%.9f", body_get_rotation(bike));
+    puts(str);
   }
-  // char str[10];
-  // sprintf(str, "%.9f", body_get_rotation(bike));
-  // puts(str);
+  char str[10];
+  sprintf(str, "%.9f", body_get_rotation(bike));
+  puts(str);
 }
 
 void emscripten_main(state_t *state) {
   state->dt = time_since_last_tick();
-  // if (state->lost) {
-  //   body_t *bike = scene_get_body(state->scene, 0);
-  //   state->lost = false;
-  //   sdl_on_key(NULL);
-  //   // state->game_state = MENU;
-  //   body_set_centroid(bike, STARTING_POSITION);
-  //   sdl_move_window(STARTING_POSITION);
-  //   body_set_rotation(bike, 0.0);
-  //   body_set_angular_velocity(bike, 0.0);
-  //   body_set_velocity(bike, VEC_ZERO);
-  //   sdl_on_key(on_key);
-  //   // initialize_game(state);
-  // }
+  state->sound_timer -= state->dt;
+  if (state->sound_timer <= 0.0 || state->sound_changed) {
+    sound_play(state->sound);
+    state->sound_changed = false;
+    state->sound_timer = 10.0;
+  }
+  while (state->game_over) {
+    sdl_on_key(NULL);
+    sdl_on_mouse(on_mouse_game_over_menu);
+    create_game_over_menu(state);
+    // emscripten_free(state);
+    // sdl_on_key(NULL);
+    // state = emscripten_init();
+    // body_t *bike = scene_get_body(state->scene, 0);
+    // state->game_over = false;
+    // sdl_on_key(NULL);
+    // body_set_centroid(bike, STARTING_POSITION);
+    // sdl_move_window(STARTING_POSITION);
+    // body_set_rotation(bike, 0.0);
+    // body_set_angular_velocity(bike, 0.0);
+    // body_set_velocity(bike, VEC_ZERO);
+    // sdl_on_key(on_key);
+    // // initialize_game(state);
+  }
   if (state->game_state == TIMER && state->level != 0) {
     state->clock -= state->dt;
     body_t *bike = scene_get_body(state->scene, 0);
@@ -1811,6 +1900,8 @@ void emscripten_main(state_t *state) {
 }
 
 void emscripten_free(state_t *state) {
+  list_free(state->button_list);
+  sdl_clear_text();
   scene_free(state->scene);
   free(state);
 }

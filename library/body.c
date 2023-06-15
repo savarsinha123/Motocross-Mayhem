@@ -195,6 +195,10 @@ void body_set_pivot(body_t *body, vector_t pivot) {
   body->curr_moment_of_inertia = body->moment_of_inertia + (body->mass * d * d);
 }
 
+vector_t body_get_pivot(body_t *body) {
+  return body->curr_pivot_point;
+}
+
 void body_reset_pivot(body_t *body) {
   body_set_pivot(body, body_get_centroid(body));
   body->curr_moment_of_inertia = body->moment_of_inertia;
