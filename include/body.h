@@ -127,7 +127,6 @@ void body_set_velocity(body_t *body, vector_t v);
  */
 void body_set_acceleration(body_t *body, vector_t a);
 
-
 /**
  * Changes a body's orientation in the plane.
  * The body is rotated about its center of mass.

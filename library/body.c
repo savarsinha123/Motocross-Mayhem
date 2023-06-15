@@ -234,7 +234,7 @@ void body_remove(body_t *body) { body->removed = 1; }
 
 bool body_is_removed(body_t *body) { return body->removed; }
 
-void body_set_polygon(body_t *body, list_t *polygon){
+void body_set_polygon(body_t *body, list_t *polygon) {
   list_free(body->polygon);
   body->polygon = polygon;
 }

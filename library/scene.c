@@ -111,11 +111,11 @@ void scene_tick(scene_t *scene, double dt) {
   }
 }
 
-void scene_remove_force(scene_t *scene, force_creator_t force_type){
+void scene_remove_force(scene_t *scene, force_creator_t force_type) {
   list_t *forces = scene->forces;
-  for (int16_t i = list_size(forces) - 1; i >= 0; i--){
+  for (int16_t i = list_size(forces) - 1; i >= 0; i--) {
     force_t *force = list_get(forces, i);
-    if (force->forcer == force_type){
+    if (force->forcer == force_type) {
       list_remove(forces, i);
     }
   }

@@ -77,9 +77,9 @@ void create_drag(scene_t *scene, double gamma, body_t *body);
 /**
  * Force creator that applies drag to bodies.
  *
- * @param aux information needed to calculate drag (i.e. 
+ * @param aux information needed to calculate drag (i.e.
  * drag coefficient, body drag is acting on etc)
- */                     
+ */
 void drag_creator(void *aux);
 
 /**
