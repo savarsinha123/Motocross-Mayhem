@@ -16,6 +16,8 @@ typedef void (*collision_handler_t)(body_t *body1, body_t *body2, vector_t axis,
 
 void create_applied(scene_t *scene, vector_t force, body_t *body);
 
+void applied_force_creator(void *aux);
+
 /**
  * Adds a force creator to a scene that applies gravity between two bodies.
  * The force creator will be called each tick
@@ -73,6 +75,14 @@ void create_spring(scene_t *scene, double k, body_t *body1, body_t *body2);
 void create_drag(scene_t *scene, double gamma, body_t *body);
 
 /**
+ * Force creator that applies drag to bodies.
+ *
+ * @param aux information needed to calculate drag (i.e. 
+ * drag coefficient, body drag is acting on etc)
+ */                     
+void drag_creator(void *aux);
+
+/**
  * Adds a force creator to a scene that calls a given collision handler
  * function each time two bodies collide.
  * This generalizes create_destructive_collision() from last week,
@@ -122,9 +132,5 @@ void create_destructive_collision(scene_t *scene, body_t *body1, body_t *body2);
  */
 void create_physics_collision(scene_t *scene, double elasticity, body_t *body1,
                               body_t *body2);
-
-void create_suspension(scene_t *scene, double suspension_constant,
-                       double eq_dist, body_t *body1, body_t *body2,
-                       vector_t *anchor);
 
 #endif // #ifndef __FORCES_H__
