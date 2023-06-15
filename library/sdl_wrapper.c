@@ -236,6 +236,7 @@ SDL_Rect *create_rect(vector_t position, vector_t dim) {
 
 void sdl_write_text(text_input_t text_input, char *font_style,
                     char *font_type) {
+  TTF_Init();
   // font style
   const size_t FONT_PATH_SIZE = 60;
   char font_path[60] = "assets/";
