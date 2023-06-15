@@ -45,8 +45,8 @@ const rgb_color_t BUTTON_COLOR = (rgb_color_t){0.5, 0.5, 0.5};
   (vector_t) { WINDOW.x / 2.0, BUTTON_DIM.y }
 #define TITLE_POSITION                                                         \
   (vector_t) { WINDOW.x / 4.0, WINDOW.y - BUTTON_DIM.y / 2.0 }
-#define HIGH_SCORE_POSITION                                                         \
-  (vector_t) { WINDOW.x - TITLE_DIMENSIONS.x , TITLE_DIMENSIONS.y }
+#define HIGH_SCORE_POSITION                                                    \
+  (vector_t) { WINDOW.x - TITLE_DIMENSIONS.x, TITLE_DIMENSIONS.y }
 #define RED_POSITION                                                           \
   (vector_t) {                                                                 \
     (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0,                                     \
@@ -1441,10 +1441,10 @@ void create_start_menu(state_t *state) {
               TEXT_COLOR, BUTTON_COLOR);
 
   text_input_t high_score = {.string = "",
-                        .font_size = FONT_SIZE,
-                        .position = HIGH_SCORE_POSITION,
-                        .dim = TITLE_DIMENSIONS,
-                        .color = TEXT_COLOR};
+                             .font_size = FONT_SIZE,
+                             .position = HIGH_SCORE_POSITION,
+                             .dim = TITLE_DIMENSIONS,
+                             .color = TEXT_COLOR};
   sprintf(high_score.string, "HIGH SCORE: %lu", state->high_score);
   sdl_write_text(high_score, "LeagueGothic", "Regular");
 }
