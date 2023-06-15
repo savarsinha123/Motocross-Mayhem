@@ -110,4 +110,6 @@ void scene_add_bodies_force_creator(scene_t *scene, force_creator_t forcer,
  */
 void scene_tick(scene_t *scene, double dt);
 
+void scene_clear_bodies(scene_t *scene);
+
 #endif // #ifndef __SCENE_H__

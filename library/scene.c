@@ -110,3 +110,10 @@ void scene_tick(scene_t *scene, double dt) {
     }
   }
 }
+
+void scene_clear_bodies(scene_t *scene) {
+  list_free(scene->bodies);
+  scene->bodies = list_init(BASE_NUM_BODIES, (free_func_t)body_free);
+  list_free(scene->forces);
+  scene->forces = list_init(BASE_NUM_BODIES, (free_func_t)force_free);
+}

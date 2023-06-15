@@ -81,19 +81,8 @@ void normal_creator(void *aux) {
   list_t *surface_shape = body_get_shape(surface);
   collision_info_t collision = find_collision(body_shape, surface_shape);
   if (collision.collided) {
-    vector_t normal_force =
-        vec_multiply(-vec_scalar_project(body_get_force(body), collision.axis) /
-                         vec_magn(collision.axis),
-                     collision.axis);
-    if (normal_force.y < 0) {
-      normal_force = vec_negate(normal_force);
-    }
-    // body_add_force(body, normal_force);
     double angle_diff =
         2 * M_PI - (body_get_rotation(body) - vec_angle(collision.axis));
-    // char str[10];
-    // sprintf(str, "%.9f", fmod(2 * angle_diff / M_PI, 2.0));
-    // puts(str);
     if (is_close(fmod(2 * fabs(angle_diff) / M_PI, 2), 0.0, 0.1)) {
       body_set_angular_velocity(body, 0.0);
     }
@@ -105,14 +94,6 @@ void normal_creator(void *aux) {
         if (surface_vector.x < 0) {
           surface_vector = vec_negate(surface_vector);
         }
-        vector_t new_velocity = vec_multiply(
-            vec_scalar_project(body_get_velocity(body), surface_vector) /
-                vec_magn(surface_vector),
-            surface_vector);
-        // if (velocity_change.y < 0) {
-        //   velocity_change = vec_negate(velocity_change);
-        // }
-        // body_set_velocity(body, new_velocity);
         break;
       }
     }
