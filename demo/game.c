@@ -45,6 +45,8 @@ const rgb_color_t BUTTON_COLOR = (rgb_color_t){0.5, 0.5, 0.5};
   (vector_t) { WINDOW.x / 2.0, BUTTON_DIM.y }
 #define TITLE_POSITION                                                         \
   (vector_t) { WINDOW.x / 4.0, WINDOW.y - BUTTON_DIM.y / 2.0 }
+#define HIGH_SCORE_POSITION                                                         \
+  (vector_t) { WINDOW.x - TITLE_DIMENSIONS.x , TITLE_DIMENSIONS.y }
 #define RED_POSITION                                                           \
   (vector_t) {                                                                 \
     (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0,                                     \
@@ -638,6 +640,7 @@ typedef struct state {
   double goal;
   bool win;
   size_t score;
+  size_t high_score
 } state_t;
 
 typedef list_t *(*track_t)();
@@ -1270,6 +1273,7 @@ void initialize_game(state_t *state) {
     break;
   case 2:
     track_function = make_track_two;
+    state->goal = 600 * 90.0;
     break;
   case 3:
     track_function = make_track_three;
@@ -1332,7 +1336,6 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
       break;
     case SPACE:
       state->game_over = true;
-      state->win = true;
       break;
     }
   } else if (type == KEY_RELEASED) {
@@ -1436,6 +1439,14 @@ void create_start_menu(state_t *state) {
               TEXT_COLOR, BUTTON_COLOR);
   make_button(state, "SETTINGS", FONT_SIZE, SETTINGS_POSITION, BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
+
+  text_input_t high_score = {.string = "",
+                        .font_size = FONT_SIZE,
+                        .position = HIGH_SCORE_POSITION,
+                        .dim = TITLE_DIMENSIONS,
+                        .color = TEXT_COLOR};
+  sprintf(high_score.string, "HIGH SCORE: %lu", state->high_score);
+  sdl_write_text(high_score, "LeagueGothic", "Regular");
 }
 
 bool color_equals(rgb_color_t color1, rgb_color_t color2) {
@@ -1764,6 +1775,9 @@ void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type,
           switch (i) {
           case 0:
             clear_buttons(state);
+            if (state->high_score < state->score) {
+              state->high_score = state->score;
+            }
             scene_tick(state->scene, 0.0);
             sdl_remove_text(state->title);
             sdl_render_scene(state->scene);
@@ -1826,6 +1840,7 @@ state_t *emscripten_init() {
   state->sound = IDLE;
   state->sound_changed = true;
   state->sound_timer = 0.0;
+  state->high_score = 0;
   create_start_menu(state);
   return state;
 }
