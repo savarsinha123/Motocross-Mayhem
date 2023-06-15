@@ -307,6 +307,14 @@ void sdl_add_image(const char *image_path, vector_t position) {
   list_add(image_list, image);
 }
 
+void sdl_clear_images() {
+  int len = list_size(image_list);
+  for (int i = len - 1; i >= 0; i--) {
+    image_t *image = list_remove(image_list, i);
+    free_image(image);
+  }
+}
+
 const char *idle_path = "assets/MX Idle.wav";
 const char *acc_path = "assets/MX Acceleration.wav";
 const char *dec_path = "assets/MX Deceleration.wav";

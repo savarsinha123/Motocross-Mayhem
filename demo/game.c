@@ -35,7 +35,7 @@ const double BUTTON_MASS = 1.0;
     (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + WINDOW.x / 3.0,                    \
         WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y                                    \
   }
-#define SETTINGS_POSITION                                                      \
+#define HOW_POSITION                                                      \
   (vector_t) {                                                                 \
     (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + 2.0 * WINDOW.x / 3.0,              \
         WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y                                    \
@@ -602,8 +602,10 @@ const rgb_color_t TEXT_COLOR = (rgb_color_t){0.0, 0.0, 0.0};
 // track constants
 const double TRACK_HEIGHT = 20.0;
 const double TRACK_MASS = INFINITY;
-const rgb_color_t TRACK_COLOR = {0.545098039216, 0.270588235294,
+const rgb_color_t TRACK_ONE_COLOR = {0.545098039216, 0.270588235294,
                                  0.0745098039216};
+
+const rgb_color_t TRACK_TWO_COLOR = { 0.0, 0.2, 0.4 };
 
 const double GRAVITATIONAL_ACCELERATION = 100.0;
 const double DRAG = 0.2;
@@ -611,7 +613,7 @@ const double SUSPENSION_CONSTANT = 10000.0;
 const double EQ_DIST = 10.0;
 
 const double AIR_ANGULAR_VELOCITY = 1.0;
-const double BIKE_ACCELERATION = 200.0;
+const double BIKE_ACCELERATION = 140.0;
 
 typedef enum { MENU = 1, TIMER = 2, SCORE = 3 } game_state_t;
 
@@ -622,6 +624,8 @@ typedef struct button {
 
 typedef struct state {
   scene_t *scene;
+  list_t *bodies;
+  list_t *forces;
   double clock;
   double dt;
   text_input_t timer_text;
@@ -1040,7 +1044,7 @@ list_t *make_track_one() {
     body_type_t *type = malloc(sizeof(*type));
     *type = TRACK;
     body_t *body1 =
-        body_init_with_info(new_shape1, TRACK_MASS, TRACK_COLOR, type, free);
+        body_init_with_info(new_shape1, TRACK_MASS, TRACK_ONE_COLOR, type, free);
     body_t *body2 =
         body_init_with_info(new_shape2, TRACK_MASS, GREEN, type, free);
     list_add(bodies, body2);
@@ -1067,9 +1071,9 @@ list_t *make_track_two() {
     body_type_t *type = malloc(sizeof(*type));
     *type = TRACK;
     body_t *body1 =
-        body_init_with_info(new_shape1, TRACK_MASS, TRACK_COLOR, type, free);
+        body_init_with_info(new_shape1, TRACK_MASS, TRACK_TWO_COLOR, type, free);
     body_t *body2 =
-        body_init_with_info(new_shape2, TRACK_MASS, GREEN, type, free);
+        body_init_with_info(new_shape2, TRACK_MASS, BLUE, type, free);
     list_add(bodies, body2);
     list_add(bodies, body1);
   }
@@ -1077,21 +1081,69 @@ list_t *make_track_two() {
 }
 
 list_t *make_track_three() {
-  list_t *bodies1 = make_track_one();
-  list_t *bodies2 = make_track_one();
-  list_t *last_shape =
-      body_get_shape(list_get(bodies1, list_size(bodies1) - 1));
-  double last_x =
-      ((vector_t *)list_get(last_shape, list_size(last_shape) - 1))->x;
-  for (size_t i = 0; i < list_size(bodies2); i++) {
-    body_t *body = list_get(bodies2, i);
-    vector_t centroid = body_get_centroid(body);
-    body_set_centroid(body, (vector_t){centroid.x + 10 * last_x, centroid.y});
+  list_t *bodies = list_init(NUM_BODIES - 4, NULL);
+  size_t i = 0;
+  for (size_t j = 0; j < NUM_BODIES / 2 - 2; j++) {
+    list_t *shape = list_init(4, free);
+    for (size_t k = 0; k < 4; k++) {
+      vector_t *coord = malloc(sizeof(vector_t));
+      *coord = TRACK_ONE_COORDS[i + k];
+      list_add(shape, coord);
+    }
+    list_t *new_shape1 = scale_polygon(90.0, shape);
+    list_t *new_shape2 = scale_polygon(90.0, shape);
+    polygon_translate(new_shape2, (vector_t){0, 30.0});
+    list_free(shape);
+    i += 4;
+    body_type_t *type = malloc(sizeof(*type));
+    *type = TRACK;
+    body_t *body1 =
+        body_init_with_info(new_shape1, TRACK_MASS, TRACK_ONE_COLOR, type, free);
+    body_t *body2 =
+        body_init_with_info(new_shape2, TRACK_MASS, GREEN, type, free);
+    list_add(bodies, body2);
+    list_add(bodies, body1);
   }
-  list_free(last_shape);
-  // list_append(bodies1, bodies2);
-  list_free(bodies1);
-  return bodies2;
+  i = 0;
+  for (size_t j = 0; j < NUM_BODIES2 / 2; j++) {
+    list_t *shape = list_init(4, free);
+    for (size_t k = 0; k < 4; k++) {
+      vector_t *coord = malloc(sizeof(vector_t));
+      *coord = TRACK_TWO_COORDS[i + k];
+      coord->x += 200.0 * 90.0;
+      coord->y -= 20.0;
+      list_add(shape, coord);
+    }
+    list_t *new_shape1 = scale_polygon(45.0, shape);
+    list_t *new_shape2 = scale_polygon(45.0, shape);
+    polygon_translate(new_shape2, (vector_t){0, 30.0});
+    list_free(shape);
+    i += 4;
+    body_type_t *type = malloc(sizeof(*type));
+    *type = TRACK;
+    body_t *body1 =
+        body_init_with_info(new_shape1, TRACK_MASS, TRACK_TWO_COLOR, type, free);
+    body_t *body2 =
+        body_init_with_info(new_shape2, TRACK_MASS, BLUE, type, free);
+    list_add(bodies, body2);
+    list_add(bodies, body1);
+  }
+  return bodies;
+  // list_t *bodies1 = make_track_one();
+  // list_t *bodies2 = make_track_one();
+  // list_t *last_shape =
+  //     body_get_shape(list_get(bodies1, list_size(bodies1) - 1));
+  // double last_x =
+  //     ((vector_t *)list_get(last_shape, list_size(last_shape) - 1))->x;
+  // for (size_t i = 0; i < list_size(bodies2); i++) {
+  //   body_t *body = list_get(bodies2, i);
+  //   vector_t centroid = body_get_centroid(body);
+  //   body_set_centroid(body, (vector_t){centroid.x + 10 * last_x, centroid.y});
+  // }
+  // list_free(last_shape);
+  // // list_append(bodies1, bodies2);
+  // list_free(bodies1);
+  // return bodies2;
 }
 
 body_t *make_bike(rgb_color_t color) {
@@ -1109,7 +1161,7 @@ body_t *make_bike(rgb_color_t color) {
 
 void initialize_body_list(state_t *state, track_t make_track) {
   sdl_clear_text();
-  scene_tick(state->scene, 0.0);
+  // scene_tick(state->scene, 0.0);
   assert(scene_bodies(state->scene) == 0);
   scene_add_body(state->scene, make_bike(state->bike_color));
   list_t *bodies = make_track();
@@ -1231,20 +1283,30 @@ void initialize_game(state_t *state) {
   case 1:
     track_function = make_track_one;
     state->goal = 372.041 * 90.0;
+    sdl_clear_images();
+    sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg", (vector_t){0, WINDOW.y});
+    state->timer_text.color = TEXT_COLOR;
     break;
   case 2:
     track_function = make_track_two;
     state->goal = 600 * 90.0;
+    sdl_clear_images();
+    sdl_add_image("assets/photo-1419242902214-272b3f66ee7a.jpg", (vector_t){0, WINDOW.y});
+    state->timer_text.color = WHITE;
     break;
   case 3:
     track_function = make_track_three;
+    state->goal = (372.041 + 600) * 45.0;
     break;
   }
   sdl_clear_text();
-  scene_clear_bodies(state->scene);
-  scene_tick(state->scene, 0.0);
-  initialize_body_list(state, track_function);
-  initialize_force_list(state);
+  if (scene_bodies(state->scene) == 0) {
+    initialize_body_list(state, track_function);
+    initialize_force_list(state);
+  }
+  else {
+    scene_load_bodies(state->scene, state->bodies, state->forces);
+  }
   if (state->game_state == TIMER) {
     state->clock = START_TIME;
     state->past_second = START_TIME;
@@ -1365,6 +1427,8 @@ void on_mouse_start_menu(state_t *state, char key, key_event_type_t type,
                          double x, double y);
 void on_mouse_color_menu(state_t *state, char key, key_event_type_t type,
                          double x, double y);
+void on_mouse_controls_menu(state_t *state, char key, key_event_type_t type,
+                         double x, double y);
 void on_mouse_game_menu(state_t *state, char key, key_event_type_t type,
                         double x, double y);
 void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
@@ -1386,8 +1450,12 @@ void reset_scene(state_t *state) {
 
 void create_start_menu(state_t *state) {
   clear_buttons(state);
+  sdl_clear_images();
+  sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg", (vector_t){0, WINDOW.y});
+  sdl_move_window(CENTER);
   state->game_state = MENU;
   state->level = 0;
+  state->sound = IDLE;
   scene_tick(state->scene, 0.0);
   text_input_t title = {.string = "MOTOCROSS MAYHEM",
                         .font_size = FONT_SIZE,
@@ -1400,16 +1468,16 @@ void create_start_menu(state_t *state) {
               BUTTON_COLOR);
   make_button(state, "CUSTOMIZE", FONT_SIZE, CUSTOMIZE_POSITION, BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
-  make_button(state, "SETTINGS", FONT_SIZE, SETTINGS_POSITION, BUTTON_DIM,
+  make_button(state, "HOW TO PLAY", FONT_SIZE, HOW_POSITION, BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
 
-  // text_input_t high_score = {.string = "",
-  //                            .font_size = FONT_SIZE,
-  //                            .position = HIGH_SCORE_POSITION,
-  //                            .dim = TITLE_DIMENSIONS,
-  //                            .color = TEXT_COLOR};
-  // sprintf(high_score.string, "HIGH SCORE: %lu", state->high_score);
-  // sdl_write_text(high_score, "LeagueGothic", "Regular");
+  text_input_t high_score = {.string = "",
+                             .font_size = FONT_SIZE,
+                             .position = HIGH_SCORE_POSITION,
+                             .dim = TITLE_DIMENSIONS,
+                             .color = TEXT_COLOR};
+  sprintf(high_score.string, "HIGH SCORE: %lu", state->high_score);
+  sdl_write_text(high_score, "LeagueGothic", "Regular");
 }
 
 bool color_equals(rgb_color_t color1, rgb_color_t color2) {
@@ -1489,8 +1557,8 @@ void create_level_menu(state_t *state) {
               TEXT_COLOR, BUTTON_COLOR);
   make_button(state, "2", FONT_SIZE, PURPLE_POSITION, BACK_BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
-  // make_button(state, "3", FONT_SIZE, SETTINGS_POSITION, BACK_BUTTON_DIM,
-  //             TEXT_COLOR, BUTTON_COLOR);
+  make_button(state, "3", FONT_SIZE, HOW_POSITION, BACK_BUTTON_DIM,
+              TEXT_COLOR, BUTTON_COLOR);
   make_button(state, "<--", FONT_SIZE, BACK_POSITION, BACK_BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
 }
@@ -1553,6 +1621,9 @@ void on_mouse_start_menu(state_t *state, char key, key_event_type_t type,
             sdl_on_mouse((mouse_handler_t)on_mouse_color_menu);
             break;
           case 2:
+            clear_buttons(state);
+            sdl_on_mouse((mouse_handler_t) on_mouse_controls_menu);
+            sdl_add_image("assets/controls.png", (vector_t){0, WINDOW.y});
             break;
           }
           break;
@@ -1695,13 +1766,13 @@ void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
             sdl_on_mouse(NULL);
             initialize_game(state);
             break;
-          // case 2:
-          //   state->level = 3;
-          //   sdl_on_key(on_key);
-          //   sdl_on_mouse(NULL);
-          //   initialize_game(state);
-          //   break;
           case 2:
+            state->level = 3;
+            sdl_on_key(on_key);
+            sdl_on_mouse(NULL);
+            initialize_game(state);
+            break;
+          case 3:
             create_game_menu(state);
             sdl_on_mouse((mouse_handler_t)on_mouse_game_menu);
             break;
@@ -1735,7 +1806,9 @@ void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type,
           switch (i) {
           case 0:
             clear_buttons(state);
+            puts("hi1");
             if (state->high_score < state->score) {
+              puts("hi");
               state->high_score = state->score;
             }
             scene_tick(state->scene, 0.0);
@@ -1748,8 +1821,22 @@ void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type,
             state->clock = START_TIME;
             break;
           case 1:
+            clear_buttons(state);
+            puts("hi1");
+            if (state->high_score < state->score) {
+              puts("hi");
+              state->high_score = state->score;
+            }
+            scene_tick(state->scene, 0.0);
+            sdl_remove_text(state->title);
+            sdl_render_scene(state->scene);
+            state->game_over = false;
+            state->win = false;
+            state->clock = START_TIME;
             sdl_clear_text();
-            exit(0);
+            scene_unload_bodies(state->scene, state->bodies, state->forces);
+            create_start_menu(state);
+            sdl_on_mouse(on_mouse_start_menu);
             break;
           }
         }
@@ -1760,6 +1847,17 @@ void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type,
   list_free(collision_tester);
 }
 
+void on_mouse_controls_menu(state_t *state, char key, key_event_type_t type,
+                             double x, double y) {
+  if (type == MOUSE_BUTTON_RELEASED) {
+    sdl_clear_images();
+    sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
+                (vector_t){0, WINDOW.y});
+    create_start_menu(state);
+    sdl_on_mouse((mouse_handler_t) on_mouse_start_menu);
+  }
+}
+
 state_t *emscripten_init() {
   srand(time(NULL));
   vector_t min = VEC_ZERO;
@@ -1767,6 +1865,8 @@ state_t *emscripten_init() {
   sdl_init(min, max);
   state_t *state = malloc(sizeof(state_t));
   state->scene = scene_init();
+  state->bodies = list_init(1, NULL);
+  state->forces = list_init(1, NULL);
   state->bike_color = RED;
   state->game_state = MENU;
   state->button_list = list_init(3, free);
@@ -1887,7 +1987,6 @@ void emscripten_main(state_t *state) {
   }
   if (state->game_over) {
     state->clock = 0.0;
-    state->score = 0.0;
     sdl_on_key(NULL);
     sdl_on_mouse((mouse_handler_t)on_mouse_game_over_menu);
     sdl_move_window(STARTING_POSITION);
@@ -1917,6 +2016,7 @@ void emscripten_main(state_t *state) {
       } else {
         body_increment_angular_velocity(bike, -AIR_ANGULAR_VELOCITY);
       }
+      body_reset_pivot(bike);
       state->in_air = true;
     } else if (collision_checker) {
       check_loss(state);

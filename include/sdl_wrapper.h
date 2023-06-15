@@ -132,6 +132,8 @@ void sdl_clear_text();
 
 void sdl_add_image(const char *image_path, vector_t position);
 
+void sdl_clear_images();
+
 typedef enum { IDLE = 1, ACC = 2, DEC = 3, FULL_THROTTLE = 4 } sound_t;
 
 void sound_init();

@@ -112,4 +112,8 @@ void scene_tick(scene_t *scene, double dt);
 
 void scene_clear_bodies(scene_t *scene);
 
+void scene_unload_bodies(scene_t *scene, list_t *bodies, list_t *forces);
+
+void scene_load_bodies(scene_t *scene, list_t *bodies, list_t *forces);
+
 #endif // #ifndef __SCENE_H__

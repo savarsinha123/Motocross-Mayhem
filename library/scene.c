@@ -112,8 +112,44 @@ void scene_tick(scene_t *scene, double dt) {
 }
 
 void scene_clear_bodies(scene_t *scene) {
-  list_free(scene->bodies);
-  scene->bodies = list_init(BASE_NUM_BODIES, (free_func_t)body_free);
-  list_free(scene->forces);
-  scene->forces = list_init(BASE_NUM_BODIES, (free_func_t)force_free);
+  size_t force_len = list_size(scene->forces);
+  for (size_t i = 0; i < force_len; i++) {
+    force_t *force = list_remove(scene->forces, 0);
+    // force_free(force);
+  }
+  size_t body_len = list_size(scene->bodies);
+  for (size_t i = 0; i < body_len; i++) {
+    body_t *body = list_remove(scene->bodies, 0);
+    // body_free(body);
+  }
+  // list_free(scene->bodies);
+  // scene->bodies = list_init(BASE_NUM_BODIES, (free_func_t)body_free);
+  // list_free(scene->forces);
+  // scene->forces = list_init(BASE_NUM_BODIES, (free_func_t)force_free);
+}
+
+void scene_unload_bodies(scene_t *scene, list_t *bodies, list_t *forces) {
+  size_t force_len = list_size(scene->forces);
+  for (size_t i = 0; i < force_len; i++) {
+    force_t *force = list_remove(scene->forces, 0);
+    list_add(forces, force);
+  }
+  size_t body_len = list_size(scene->bodies);
+  for (size_t i = 0; i < body_len; i++) {
+    body_t *body = list_remove(scene->bodies, 0);
+    list_add(bodies, body);
+  }
+}
+
+void scene_load_bodies(scene_t *scene, list_t *bodies, list_t *forces) {
+  size_t force_len = list_size(forces);
+  for (size_t i = 0; i < force_len; i++) {
+    force_t *force = list_remove(forces, 0);
+    list_add(scene->forces, force);
+  }
+  size_t body_len = list_size(bodies);
+  for (size_t i = 0; i < body_len; i++) {
+    body_t *body = list_remove(bodies, 0);
+    list_add(scene->bodies, body);
+  }
 }

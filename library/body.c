@@ -73,7 +73,7 @@ void body_free(body_t *body) {
   list_free(body->polygon);
   if (body->info_freer != NULL) {
     body->info_freer(body->info);
-    free(body->reference_pointer);
+    // free(body->reference_pointer);
   }
   free(body);
 }
