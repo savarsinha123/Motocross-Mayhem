@@ -1298,8 +1298,7 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
                        bike);
         state->sound = DEC;
         state->sound_changed = true;
-      }
-      else {
+      } else {
         state->sound_changed = false;
       }
       break;
@@ -1312,8 +1311,7 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
             bike);
         state->sound = ACC;
         state->sound_changed = true;
-      }
-      else {
+      } else {
         state->sound_changed = false;
       }
       break;
@@ -1403,7 +1401,7 @@ void on_mouse_game_menu(state_t *state, char key, key_event_type_t type,
 void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
                          double x, double y);
 void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type,
-                         double x, double y);
+                             double x, double y);
 
 void create_start_menu(state_t *state) {
   clear_buttons(state);
@@ -1514,8 +1512,8 @@ void create_game_over_menu(state_t *state) {
                         .color = TEXT_COLOR};
   state->title = title;
   sdl_write_text(title, "ChunkFive", "Regular");
-  make_button(state, "RESTART", FONT_SIZE, ORANGE_POSITION, BUTTON_DIM, TEXT_COLOR,
-              BUTTON_COLOR);
+  make_button(state, "RESTART", FONT_SIZE, ORANGE_POSITION, BUTTON_DIM,
+              TEXT_COLOR, BUTTON_COLOR);
   make_button(state, "EXIT", FONT_SIZE, PURPLE_POSITION, BUTTON_DIM, TEXT_COLOR,
               BUTTON_COLOR);
 }
@@ -1662,7 +1660,8 @@ void on_mouse_game_menu(state_t *state, char key, key_event_type_t type,
 }
 
 // game menu mouse handler
-void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,double x, double y) {
+void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
+                         double x, double y) {
   list_t *collision_tester = create_collision_triangle();
   polygon_translate(collision_tester, (vector_t){x, y});
   button_t *button;
@@ -1711,7 +1710,8 @@ void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,double 
   list_free(collision_tester);
 }
 
-void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type, double x, double y) {
+void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type,
+                             double x, double y) {
   list_t *collision_tester = create_collision_triangle();
   polygon_translate(collision_tester, (vector_t){x, y});
   button_t *button;
@@ -1737,7 +1737,7 @@ void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type, do
             sdl_on_mouse(on_mouse_start_menu);
             create_start_menu(state);
             break;
-          break;
+            break;
           }
         }
       }

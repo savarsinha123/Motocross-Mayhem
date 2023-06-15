@@ -132,12 +132,11 @@ void sdl_clear_text();
 
 void sdl_add_image(const char *image_path, vector_t position);
 
-typedef enum { IDLE = 1, ACC = 2, DEC = 3, FULL_THROTTLE = 4} sound_t;
+typedef enum { IDLE = 1, ACC = 2, DEC = 3, FULL_THROTTLE = 4 } sound_t;
 
 void sound_init();
 
 void sound_play();
-
 
 /**
  * Clears the screen. Should be called before drawing polygons in each frame.

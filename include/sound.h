@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-typedef enum { IDLE = 1, ACC = 2, DEC = 3, FULL_THROTTLE = 4} sound_t;
+typedef enum { IDLE = 1, ACC = 2, DEC = 3, FULL_THROTTLE = 4 } sound_t;
 
 void sound_init();
 
