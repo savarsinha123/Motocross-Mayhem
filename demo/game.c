@@ -159,6 +159,8 @@ const double PROPORTIONS[NUM_CURVES] = {
     6.0 / 100.0, 2.0 / 100.0, 1.0 / 100.0, 4.5 / 100.0,
 };
 
+const double TRACK_SCALING_FACTOR = 90.0;
+const double TRACK_BUFFER = 30.0;
 const size_t NUM_BODIES = 60;
 #define NUM_COORDS 240
 const vector_t TRACK_ONE_COORDS[NUM_COORDS] = {
@@ -1026,6 +1028,7 @@ list_t *scale_polygon(double scalar, list_t *list) {
   return scaled_polygon;
 }
 
+// track functions
 list_t *make_track_one() {
   list_t *bodies = list_init(NUM_BODIES - 4, NULL);
   size_t i = 0;
@@ -1036,9 +1039,9 @@ list_t *make_track_one() {
       *coord = TRACK_ONE_COORDS[i + k];
       list_add(shape, coord);
     }
-    list_t *new_shape1 = scale_polygon(90.0, shape);
-    list_t *new_shape2 = scale_polygon(90.0, shape);
-    polygon_translate(new_shape2, (vector_t){0, 30.0});
+    list_t *new_shape1 = scale_polygon(TRACK_SCALING_FACTOR, shape);
+    list_t *new_shape2 = scale_polygon(TRACK_SCALING_FACTOR, shape);
+    polygon_translate(new_shape2, (vector_t){0, TRACK_BUFFER});
     list_free(shape);
     i += 4;
     body_type_t *type = malloc(sizeof(*type));
@@ -1063,9 +1066,9 @@ list_t *make_track_two() {
       *coord = TRACK_TWO_COORDS[i + k];
       list_add(shape, coord);
     }
-    list_t *new_shape1 = scale_polygon(90.0, shape);
-    list_t *new_shape2 = scale_polygon(90.0, shape);
-    polygon_translate(new_shape2, (vector_t){0, 30.0});
+    list_t *new_shape1 = scale_polygon(TRACK_SCALING_FACTOR, shape);
+    list_t *new_shape2 = scale_polygon(TRACK_SCALING_FACTOR, shape);
+    polygon_translate(new_shape2, (vector_t){0, TRACK_BUFFER});
     list_free(shape);
     i += 4;
     body_type_t *type = malloc(sizeof(*type));
@@ -1090,9 +1093,9 @@ list_t *make_track_three() {
       *coord = TRACK_ONE_COORDS[i + k];
       list_add(shape, coord);
     }
-    list_t *new_shape1 = scale_polygon(90.0, shape);
-    list_t *new_shape2 = scale_polygon(90.0, shape);
-    polygon_translate(new_shape2, (vector_t){0, 30.0});
+    list_t *new_shape1 = scale_polygon(TRACK_SCALING_FACTOR, shape);
+    list_t *new_shape2 = scale_polygon(TRACK_SCALING_FACTOR, shape);
+    polygon_translate(new_shape2, (vector_t){0, TRACK_BUFFER});
     list_free(shape);
     i += 4;
     body_type_t *type = malloc(sizeof(*type));
@@ -1110,13 +1113,13 @@ list_t *make_track_three() {
     for (size_t k = 0; k < 4; k++) {
       vector_t *coord = malloc(sizeof(vector_t));
       *coord = TRACK_TWO_COORDS[i + k];
-      coord->x += 200.0 * 90.0;
+      coord->x += 200.0 * TRACK_SCALING_FACTOR;
       coord->y -= 20.0;
       list_add(shape, coord);
     }
     list_t *new_shape1 = scale_polygon(45.0, shape);
     list_t *new_shape2 = scale_polygon(45.0, shape);
-    polygon_translate(new_shape2, (vector_t){0, 30.0});
+    polygon_translate(new_shape2, (vector_t){0, TRACK_BUFFER});
     list_free(shape);
     i += 4;
     body_type_t *type = malloc(sizeof(*type));
@@ -1162,7 +1165,6 @@ body_t *make_bike(rgb_color_t color) {
 
 void initialize_body_list(state_t *state, track_t make_track) {
   sdl_clear_text();
-  // scene_tick(state->scene, 0.0);
   assert(scene_bodies(state->scene) == 0);
   scene_add_body(state->scene, make_bike(state->bike_color));
   list_t *bodies = make_track();
@@ -1283,7 +1285,7 @@ void initialize_game(state_t *state) {
   switch (state->level) {
   case 1:
     track_function = make_track_one;
-    state->goal = 372.041 * 90.0;
+    state->goal = 372.041 * TRACK_SCALING_FACTOR;
     sdl_clear_images();
     sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
                   (vector_t){0, WINDOW.y});
@@ -1291,7 +1293,7 @@ void initialize_game(state_t *state) {
     break;
   case 2:
     track_function = make_track_two;
-    state->goal = 600 * 90.0;
+    state->goal = 600 * TRACK_SCALING_FACTOR;
     sdl_clear_images();
     sdl_add_image("assets/photo-1419242902214-272b3f66ee7a.jpg",
                   (vector_t){0, WINDOW.y});
