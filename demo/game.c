@@ -1485,8 +1485,8 @@ void create_level_menu(state_t *state) {
                         .color = TEXT_COLOR};
   state->title = title;
   sdl_write_text(title, "ChunkFive", "Regular");
-  make_button(state, "1", FONT_SIZE, ORANGE_POSITION, BACK_BUTTON_DIM, TEXT_COLOR,
-              BUTTON_COLOR);
+  make_button(state, "1", FONT_SIZE, ORANGE_POSITION, BACK_BUTTON_DIM,
+              TEXT_COLOR, BUTTON_COLOR);
   make_button(state, "2", FONT_SIZE, PURPLE_POSITION, BACK_BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
   // make_button(state, "3", FONT_SIZE, SETTINGS_POSITION, BACK_BUTTON_DIM,
@@ -1506,8 +1506,8 @@ void create_game_over_menu(state_t *state) {
   sdl_write_text(title, "ChunkFive", "Regular");
   make_button(state, "RESTART", FONT_SIZE, ORANGE_POSITION, BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
-  make_button(state, "EXIT GAME", FONT_SIZE, PURPLE_POSITION, BUTTON_DIM, TEXT_COLOR,
-              BUTTON_COLOR);
+  make_button(state, "EXIT GAME", FONT_SIZE, PURPLE_POSITION, BUTTON_DIM,
+              TEXT_COLOR, BUTTON_COLOR);
 }
 
 void create_win_menu(state_t *state) {
@@ -1889,7 +1889,7 @@ void emscripten_main(state_t *state) {
     state->clock = 0.0;
     state->score = 0.0;
     sdl_on_key(NULL);
-    sdl_on_mouse((mouse_handler_t) on_mouse_game_over_menu);
+    sdl_on_mouse((mouse_handler_t)on_mouse_game_over_menu);
     sdl_move_window(STARTING_POSITION);
     body_t *bike = scene_get_body(state->scene, 0);
     body_set_centroid(bike, STARTING_POSITION);
