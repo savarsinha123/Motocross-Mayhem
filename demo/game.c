@@ -1264,17 +1264,20 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
     case LEFT_ARROW:
       if (!state->pushed_down) {
         state->pushed_down = true;
-        create_applied(state->scene,
-                       (vector_t){-BIKE_MASS * state->bike_acceleration * cos(angle),
-                                  -sin(angle)},
-                       bike);
+        create_applied(
+            state->scene,
+            (vector_t){-BIKE_MASS * state->bike_acceleration * cos(angle),
+                       -sin(angle)},
+            bike);
         state->sound = DEC;
         state->sound_changed = true;
       } else {
         state->sound_changed = false;
       }
       if (velocity.x < 0 && vec_magn(velocity) > state->bike_max_speed) {
-        body_set_velocity(bike, vec_multiply(state->bike_max_speed / vec_magn(velocity), velocity));
+        body_set_velocity(
+            bike,
+            vec_multiply(state->bike_max_speed / vec_magn(velocity), velocity));
       }
       break;
     case RIGHT_ARROW:
@@ -1282,7 +1285,8 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
         state->pushed_down = true;
         create_applied(
             state->scene,
-            (vector_t){BIKE_MASS * state->bike_acceleration * cos(angle), sin(angle)},
+            (vector_t){BIKE_MASS * state->bike_acceleration * cos(angle),
+                       sin(angle)},
             bike);
         state->sound = ACC;
         state->sound_changed = true;
@@ -1290,7 +1294,9 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
         state->sound_changed = false;
       }
       if (velocity.x > 0 && vec_magn(velocity) > state->bike_max_speed) {
-        body_set_velocity(bike, vec_multiply(state->bike_max_speed / vec_magn(velocity), velocity));
+        body_set_velocity(
+            bike,
+            vec_multiply(state->bike_max_speed / vec_magn(velocity), velocity));
       }
       break;
     case UP_ARROW:
@@ -1976,9 +1982,9 @@ void emscripten_main(state_t *state) {
       body_set_angular_velocity(bike, 0.0);
       body_reset_pivot(bike);
       scene_add_body(state->scene, make_star(state, 1.0));
-            create_powerup_collision(
-                state, scene_get_body(state->scene, 0),
-                scene_get_body(state->scene, scene_bodies(state->scene) - 1));
+      create_powerup_collision(
+          state, scene_get_body(state->scene, 0),
+          scene_get_body(state->scene, scene_bodies(state->scene) - 1));
     }
     body_t *bike = scene_get_body(state->scene, 0);
     sdl_move_window(body_get_centroid(bike));
@@ -2004,7 +2010,8 @@ void emscripten_main(state_t *state) {
     } else if (state->in_air) {
       state->score += AIRTIME_SCORE;
       double new_angle = body_get_rotation(bike);
-      state->score += fabs(new_angle - state->past_angle) / TWO_PI * ROTATION_SCORE;
+      state->score +=
+          fabs(new_angle - state->past_angle) / TWO_PI * ROTATION_SCORE;
       state->past_angle = new_angle;
     }
     scene_tick(state->scene, state->dt);
