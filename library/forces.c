@@ -174,7 +174,6 @@ void collision_creator(void *aux) {
   list_t *shape2 = body_get_shape(collision_arg->body2);
   collision_info_t collision = find_collision(shape1, shape2);
   if (collision.collided && !collision_arg->has_collided) {
-    // if (collision.collided) {
     collision_arg->handler(collision_arg->body1, collision_arg->body2,
                            collision.axis, collision_arg->aux);
     collision_arg->has_collided = true;
@@ -273,47 +272,3 @@ void create_physics_collision(scene_t *scene, double elasticity, body_t *body1,
   create_collision(scene, body1, body2,
                    (collision_handler_t)physics_collision_handler, aux, free);
 };
-
-typedef struct suspension_args {
-  double suspension_constant;
-  double eq_dist;
-  body_t *body1;
-  body_t *body2;
-  vector_t *anchor;
-} suspension_args_t;
-
-void suspension_creator(void *aux) {
-  suspension_args_t *suspension_args = aux;
-  vector_t displacement = vec_subtract(
-      *suspension_args->anchor, body_get_centroid(suspension_args->body1));
-  // checks if springs are displaced at all
-  if (!is_close(vec_magn(displacement), suspension_args->eq_dist, 1e-5)) {
-    double length_diff = vec_magn(displacement) - suspension_args->eq_dist;
-    double total_force = suspension_args->suspension_constant * length_diff;
-    vector_t force =
-        vec_multiply(total_force / vec_magn(displacement), displacement);
-    body_add_force(suspension_args->body1, force);
-    body_add_force(suspension_args->body2, vec_negate(force));
-    // body_set_pivot(suspension_args->body1,
-    // body_get_centroid(suspension_args->body2));
-    // body_set_angular_velocity(suspension_args->body1, 1.0);
-    // body_set_angular_velocity(suspension_args->body2, 1.0);
-  }
-}
-
-void create_suspension(scene_t *scene, double suspension_constant,
-                       double eq_dist, body_t *body1, body_t *body2,
-                       vector_t *anchor) {
-  suspension_args_t *suspension_args = malloc(sizeof(suspension_args_t));
-  list_t *bodies = list_init(1, NULL);
-  list_add(bodies, body1);
-  list_add(bodies, body2);
-  *suspension_args =
-      (suspension_args_t){.suspension_constant = suspension_constant,
-                          .eq_dist = eq_dist,
-                          .body1 = body1,
-                          .body2 = body2,
-                          .anchor = anchor};
-  scene_add_bodies_force_creator(scene, suspension_creator, suspension_args,
-                                 bodies, NULL);
-}

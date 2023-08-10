@@ -18,7 +18,7 @@
 const vector_t WINDOW = ((vector_t){.x = 2000, .y = 1000});
 #define CENTER vec_multiply(0.5, WINDOW)
 #define STARTING_POSITION                                                      \
-  (vector_t) { WINDOW.x / 2.0, 0.6 * WINDOW.y }
+  (vector_t) { WINDOW.x / 2.0, 0.5 * WINDOW.y }
 
 // button constants
 const double BUTTON_MASS = 1.0;
@@ -35,7 +35,7 @@ const double BUTTON_MASS = 1.0;
     (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + WINDOW.x / 3.0,                    \
         WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y                                    \
   }
-#define SETTINGS_POSITION                                                      \
+#define HOW_POSITION                                                           \
   (vector_t) {                                                                 \
     (WINDOW.x / 3.0 - BUTTON_DIM.x) / 2.0 + 2.0 * WINDOW.x / 3.0,              \
         WINDOW.y / 2.0 + 0.5 * BUTTON_DIM.y                                    \
@@ -91,65 +91,40 @@ const size_t BIKE_NUM_POINTS = 500;
 const double BIKE_MASS = 1.0;
 const double BIKE_MOMENT = 0.75;
 const rgb_color_t BIKE_COLOR = (rgb_color_t){0.5, 0, 0};
-const vector_t START = (vector_t){-1.45, 1.045}; // 1
+const vector_t START = (vector_t){-1.45, 1.045};
+const double BIKE_SCALING_FACTOR = 10.0;
+// 1
 // each section's end point becomes the next section's start point.
 #define NUM_SECTIONS 54
 #define NUM_CURVES 19
 const vector_t COORDS[NUM_SECTIONS] = {
-    (vector_t){-0.6, 1.0249},    // / 0
-    (vector_t){-1.05, 1.191},    // / 1
-    (vector_t){-1.1, 1.412},     // 2 curve
-    (vector_t){-0.8752, 2.7991}, // / 3
-    (vector_t){-0.35, 2.336},    //  / 4
-    (vector_t){0.417, 1.9778},   //  5 curve
-    (vector_t){0.6441, 1.9888},  // / 6
-    (vector_t){0.8, 1.8933},     // / 7
-    (vector_t){0.94, 1.5667},    // 8 curve
-    (vector_t){-1.788, 0.8834},  // 9 curve
-    (vector_t){-8.6, 1.0551},    // 10 curve
-    (vector_t){-4.306, -0.4199}, // / 11
-    (vector_t){-6.58, -1.2912},  // 12 curve
-    (vector_t){-6.42, -1.7088},  // / 13
-    (vector_t){-5.611, -1.3999}, // 14 curve
-    (vector_t){-5.772, -0.9804}, // / 15
-    (vector_t){-5.345, -0.8174}, // 16 curve
-    (vector_t){-5.185, -1.236},  // / 17
-    (vector_t){-3.99, -0.7786},  // 18 curve
-    (vector_t){-3.752, -1.1},    // / 19
-    (vector_t){-1.6274, -1.1},   // 20 curve
-    (vector_t){-0.6476, -1.1},   // / 21
-    (vector_t){0.2912, -1.1},    // 22 curve
-    (vector_t){1.53, 0.1899},    // / 23
-    (vector_t){2.2932, -1.5851}, // 24 curve
-    (vector_t){2.7068, -1.4149}, // / 25
-    (vector_t){2.364, -0.616},   // 26 curve
-    (vector_t){1.9514, 0.7936},  // / 27
-    (vector_t){1.771, -0.3737},  // 28 curve
-    (vector_t){2.184, -0.1961},  // / 29
-    (vector_t){1.9708, 0.3014},  // 30 curve
-    (vector_t){4.5, -0.09585},   // / 31
-    (vector_t){3.5, 0.7268},     // 32 curve
-    (vector_t){1.69, 0.9567},    // / 33
-    (vector_t){1.22, 2.0501},    // / 34
-    (vector_t){0.741, 2.3056},   // 35 curve
-    (vector_t){0.5566, 2.4422},  // / 36
-    (vector_t){-0.2, 2.78},      // / 37
-    (vector_t){-0.83, 3.595},    // / 38
-    (vector_t){-0.86, 3.7},      // / 39
-    (vector_t){-0.9148, 3.748},  // / 40
-    (vector_t){-0.3925, 3.675},  // / 41
-    (vector_t){-0.25, 3.96},     // / 42
-    (vector_t){-0.37, 3.96},     // / 43
-    (vector_t){-0.7, 4.05},      // / 44
-    (vector_t){-0.8, 4.19},      // / 45
-    (vector_t){-0.71, 4.703},    // / 46
-    (vector_t){-0.5529, 4.904},  // / 47
-    (vector_t){0.0861, 4.91},    // / 48
-    (vector_t){-0.4122, 5.228},  // 49 curve
-    (vector_t){-1.701, 3.858},   // / 50
-    (vector_t){-1.587, 3.842},   // 51 curve
-    (vector_t){-2.125, 0.9167},  // / 52
-    (vector_t){-0.5, 0.988},     // / 53
+    (vector_t){-0.6, 1.0249},    (vector_t){-1.05, 1.191},
+    (vector_t){-1.1, 1.412},     (vector_t){-0.8752, 2.7991},
+    (vector_t){-0.35, 2.336},    (vector_t){0.417, 1.9778},
+    (vector_t){0.6441, 1.9888},  (vector_t){0.8, 1.8933},
+    (vector_t){0.94, 1.5667},    (vector_t){-1.788, 0.8834},
+    (vector_t){-8.6, 1.0551},    (vector_t){-4.306, -0.4199},
+    (vector_t){-6.58, -1.2912},  (vector_t){-6.42, -1.7088},
+    (vector_t){-5.611, -1.3999}, (vector_t){-5.772, -0.9804},
+    (vector_t){-5.345, -0.8174}, (vector_t){-5.185, -1.236},
+    (vector_t){-3.99, -0.7786},  (vector_t){-3.752, -1.1},
+    (vector_t){-1.6274, -1.1},   (vector_t){-0.6476, -1.1},
+    (vector_t){0.2912, -1.1},    (vector_t){1.53, 0.1899},
+    (vector_t){2.2932, -1.5851}, (vector_t){2.7068, -1.4149},
+    (vector_t){2.364, -0.616},   (vector_t){1.9514, 0.7936},
+    (vector_t){1.771, -0.3737},  (vector_t){2.184, -0.1961},
+    (vector_t){1.9708, 0.3014},  (vector_t){4.5, -0.09585},
+    (vector_t){3.5, 0.7268},     (vector_t){1.69, 0.9567},
+    (vector_t){1.22, 2.0501},    (vector_t){0.741, 2.3056},
+    (vector_t){0.5566, 2.4422},  (vector_t){-0.2, 2.78},
+    (vector_t){-0.83, 3.595},    (vector_t){-0.86, 3.7},
+    (vector_t){-0.9148, 3.748},  (vector_t){-0.3925, 3.675},
+    (vector_t){-0.25, 3.96},     (vector_t){-0.37, 3.96},
+    (vector_t){-0.7, 4.05},      (vector_t){-0.8, 4.19},
+    (vector_t){-0.71, 4.703},    (vector_t){-0.5529, 4.904},
+    (vector_t){0.0861, 4.91},    (vector_t){-0.4122, 5.228},
+    (vector_t){-1.701, 3.858},   (vector_t){-1.587, 3.842},
+    (vector_t){-2.125, 0.9167},  (vector_t){-0.5, 0.988},
 };
 
 const double PROPORTIONS[NUM_CURVES] = {
@@ -159,422 +134,322 @@ const double PROPORTIONS[NUM_CURVES] = {
     6.0 / 100.0, 2.0 / 100.0, 1.0 / 100.0, 4.5 / 100.0,
 };
 
-const size_t NUM_BODIES = 60;
+const double TRACK_SCALING_FACTOR = 90.0;
+const double TRACK_BUFFER = 30.0;
+const size_t NUM_BODIES1 = 56;
 #define NUM_COORDS 240
 const vector_t TRACK_ONE_COORDS[NUM_COORDS] = {
-    (vector_t){0, 0},        // y = 5  //0
-    (vector_t){0, 5},        // 1
-    (vector_t){84.46, 5},    // 2
-    (vector_t){84.46, 0},    // 3
-    (vector_t){84.46, 0},    // y = 0.06(x-90)+5.334 / 4
-    (vector_t){84.46, 5},    // 5
-    (vector_t){90, 5.332},   // 6
-    (vector_t){90, 0},       // 7
-    (vector_t){90, 0},       // y = 10e^{(-0.001)(x - 30 - 125)^2 + 5.186} // 8
-    (vector_t){90, 5.332},   // 9
-    (vector_t){94, 5.428},   // 10
-    (vector_t){94, 0},       // 11
-    (vector_t){94, 0},       // 12
-    (vector_t){94, 5.428},   // 13
-    (vector_t){96, 5.494},   // 14
-    (vector_t){96, 0},       // 15
-    (vector_t){96, 0},       // 16
-    (vector_t){96, 5.494},   // 17
-    (vector_t){100, 5.672},  // 18
-    (vector_t){100, 0},      // 19
-    (vector_t){100, 0},      // 20
-    (vector_t){100, 5.672},  // 21
-    (vector_t){103, 5.855},  // 22
-    (vector_t){103, 0},      // 23
-    (vector_t){103, 0},      // 24
-    (vector_t){103, 5.855},  // 25
-    (vector_t){105, 6.007},  // 26
-    (vector_t){105, 0},      // 27
-    (vector_t){105, 0},      // 28
-    (vector_t){105, 6.007},  // 29
-    (vector_t){110, 6.506},  // 30
-    (vector_t){110, 0},      // 31
-    (vector_t){110, 0},      // 32
-    (vector_t){110, 6.506},  // 33
-    (vector_t){114, 7.048},  // 34
-    (vector_t){114, 0},      // 35
-    (vector_t){114, 0},      // 36
-    (vector_t){114, 7.048},  // 37
-    (vector_t){118, 7.73},   // 38
-    (vector_t){118, 0},      // 39
-    (vector_t){118, 0},      // 40
-    (vector_t){118, 7.73},   // 41
-    (vector_t){124, 9.011},  // 42
-    (vector_t){124, 0},      // 43
-    (vector_t){124, 0},      // 44
-    (vector_t){124, 9.011},  // 45
-    (vector_t){128, 10.01},  // 46
-    (vector_t){128, 0},      // 47
-    (vector_t){128, 0},      // 48
-    (vector_t){128, 10.01},  // 49
-    (vector_t){134, 11.62},  // 50
-    (vector_t){134, 0},      // 51
-    (vector_t){134, 0},      // 52
-    (vector_t){134, 11.62},  // 53
-    (vector_t){138, 12.670}, // 54
-    (vector_t){138, 0},      // 55
-    (vector_t){138, 0},      // 56
-    (vector_t){138, 12.670}, // 57
-    (vector_t){172, 12.676}, // 58
-    (vector_t){172, 0},      // 59
-    (vector_t){172, 0},      // 60
-    (vector_t){172, 12.676}, // 61
-    (vector_t){176, 11.62},  // 62
-    (vector_t){176, 0},      // 63
-    (vector_t){176, 0},      // 64
-    (vector_t){176, 11.62},  // 65
-    (vector_t){182, 10.01},  // 66
-    (vector_t){182, 0},      // 67
-    (vector_t){182, 0},      // 68
-    (vector_t){182, 10.01},  // 69
-    (vector_t){186, 9.011},  // 70
-    (vector_t){186, 0},      // 71
-    (vector_t){186, 0},      // 72
-    (vector_t){186, 9.011},  // 73
-    (vector_t){192, 7.73},   // 74
-    (vector_t){192, 0},      // 75
-    (vector_t){192, 0},      // 76
-    (vector_t){192, 7.73},   // 77
-    (vector_t){196, 7.048},  // 78
-    (vector_t){196, 0},      // 79
-    (vector_t){196, 0},      // 80
-    (vector_t){196, 7.048},  // 81
-    (vector_t){200, 6.506},  // 82
-    (vector_t){200, 0},      // 83
-    (vector_t){200, 0},      // 84
-    (vector_t){200, 6.506},  // 85
-    (vector_t){205, 6.007},  // 86
-    (vector_t){205, 0},      // 87
-    (vector_t){205, 0},      // 88
-    (vector_t){205, 6.007},  // 89
-    (vector_t){207, 5.855},  // 90
-    (vector_t){207, 0},      // 91
-    (vector_t){207, 0},      // 92
-    (vector_t){207, 5.855},  // 93
-    (vector_t){210, 5.672},  // 94
-    (vector_t){210, 0},      // 95
-    (vector_t){210, 0},      // 96
-    (vector_t){210, 5.672},  // 97
-    (vector_t){214, 5.494},  // 98
-    (vector_t){214, 0},      // 99
-    (vector_t){214, 0},      // 100
-    (vector_t){214, 5.494},  // 101
-    (vector_t){216, 5.428},  // 102
-    (vector_t){216, 0},      // 103
-    (vector_t){216, 0},      // 104
-    (vector_t){216, 5.428},  // 105
-    (vector_t){225, 5.26},   // 106
-    (vector_t){225, 0},      // 107
-    (vector_t){225, 0},      // 108
-    (vector_t){225, 5.26},   // 109
-    (vector_t){240, 5.193},  // 110
-    (vector_t){240, 0},      // 111
-    (vector_t){240, 0},      // y = 10 e^{-0.01(x - 310)^2 + 5.119}  //112
-    (vector_t){240, 5.193},  // 113
-    (vector_t){248, 5.332},  // 114
-    (vector_t){248, 0},      // 115
-    (vector_t){248, 0},      // 116
-    (vector_t){248, 5.332},  // 117
-    (vector_t){251.034, 5.428},  // 118
-    (vector_t){251.034, 0},      // 119
-    (vector_t){251.034, 0},      // 120
-    (vector_t){251.034, 5.428},  // 121
-    (vector_t){252.699, 5.494},  // 122
-    (vector_t){252.699, 0},      // 123
-    (vector_t){252.699, 0},      // 124
-    (vector_t){252.699, 5.494},  // 125
-    (vector_t){256.195, 5.672},  // 126
-    (vector_t){256.195, 0},      // 127
-    (vector_t){256.195, 0},      // 128
-    (vector_t){256.195, 5.672},  // 129
-    (vector_t){258.921, 5.855},  // 130
-    (vector_t){258.921, 0},      // 131
-    (vector_t){258.921, 0},      // 132
-    (vector_t){258.921, 5.855},  // 133
-    (vector_t){260.793, 6.007},  // 134
-    (vector_t){260.793, 0},      // 135
-    (vector_t){260.793, 0},      // 136
-    (vector_t){260.793, 6.007},  // 137
-    (vector_t){265.554, 6.506},  // 138
-    (vector_t){265.554, 0},      // 139
-    (vector_t){265.554, 0},      // 140
-    (vector_t){265.554, 6.506},  // 141
-    (vector_t){269.434, 7.048},  // 142
-    (vector_t){269.434, 0},      // 143
-    (vector_t){269.434, 0},      // 144
-    (vector_t){269.434, 7.048},  // 145
-    (vector_t){273.355, 7.73},   // 146
-    (vector_t){273.355, 0},      // 147
-    (vector_t){273.355, 0},      // 148
-    (vector_t){273.355, 7.73},   // 149
-    (vector_t){279.281, 9.011},  // 150
-    (vector_t){279.281, 0},      // 151
-    (vector_t){279.281, 0},      // 152
-    (vector_t){279.281, 9.011},  // 153
-    (vector_t){283.257, 10.01},  // 154
-    (vector_t){283.257, 0},      // 155
-    (vector_t){283.257, 0},      // 156
-    (vector_t){283.257, 10.01},  // 157
-    (vector_t){289.248, 11.62},  // 158
-    (vector_t){289.248, 0},      // 159
-    (vector_t){289.248, 0},      // 160
-    (vector_t){289.248, 11.62},  // 161
-    (vector_t){293.263, 12.676}, // 162
-    (vector_t){293.263, 0},      // 163
-    (vector_t){293.263, 0},      // 164
-    (vector_t){293.263, 12.676}, // 165
-    (vector_t){326.737, 12.676}, // 166
-    (vector_t){326.737, 0},      // 167
-    (vector_t){326.737, 0},      // 168
-    (vector_t){326.737, 12.676}, // 169
-    (vector_t){330.752, 11.62},  // 170
-    (vector_t){330.752, 0},      // 171
-    (vector_t){330.752, 0},      // 172
-    (vector_t){330.752, 11.62},  // 173
-    (vector_t){336.743, 10.01},  // 174
-    (vector_t){336.743, 0},      // 175
-    (vector_t){336.743, 0},      // 176
-    (vector_t){336.743, 10.01},  // 177
-    (vector_t){340.719, 9.011},  // 178
-    (vector_t){340.719, 0},      // 179
-    (vector_t){340.719, 0},      // 180
-    (vector_t){340.719, 9.011},  // 181
-    (vector_t){346.645, 7.73},   // 182
-    (vector_t){346.645, 0},      // 183
-    (vector_t){346.645, 0},      // 184
-    (vector_t){346.645, 7.73},   // 185
-    // (vector_t) {346.645, 7.73}, //186
-    (vector_t){350.566, 7.048}, // 187
-    (vector_t){350.566, 0},     // 188
-    (vector_t){350.566, 0},     // 189
-    (vector_t){350.566, 7.048}, // 190
-    (vector_t){354.446, 6.506}, // 191
-    (vector_t){354.446, 0},     // 192
-    (vector_t){354.446, 0},     // 193
-    (vector_t){354.446, 6.506}, // 194
-    (vector_t){359.207, 6.007}, // 195
-    (vector_t){359.207, 0},     // 196
-    (vector_t){359.207, 0},     // 197
-    (vector_t){359.207, 6.007}, // 198
-    (vector_t){361.079, 5.855}, // 199
-    (vector_t){361.079, 0},     // 200
-    (vector_t){361.079, 0},     // 201
-    (vector_t){361.079, 5.855}, // 202
-    (vector_t){363.805, 5.672}, // 203
-    (vector_t){363.805, 0},     // 204
-    (vector_t){363.805, 0},     // 205
-    (vector_t){363.805, 5.672}, // 206
-    (vector_t){367.301, 5.494}, // 207
-    (vector_t){367.301, 0},     // 208
-    (vector_t){367.301, 0},     // 209
-    (vector_t){367.301, 5.494}, // 210
-    (vector_t){368.966, 5.428}, // 211
-    (vector_t){368.966, 0},     // 212
-    (vector_t){368.966, 0},     // 213
-    (vector_t){368.966, 5.428}, // 214
-    (vector_t){372.041, 5.332}, // 215
-    (vector_t){372.041, 0},     // 216
-    (vector_t){372.041, 0},     // 217
-    (vector_t){372.041, 5.332}, // 218
-    (vector_t){400, 5.122},     // 219
-    (vector_t){400, 0},         // 220
-    (vector_t){400, 0},         // y = 5.12  /221
-    (vector_t){400, 5.122},     // 222
-    (vector_t){500, 5.12},      // 223
-    (vector_t){500, 0},         // 224
+    (vector_t){0, 0},
+    (vector_t){0, 5},
+    (vector_t){84.46, 5},
+    (vector_t){84.46, 0},
+    (vector_t){84.46, 0},
+    (vector_t){84.46, 5},
+    (vector_t){90, 5.332},
+    (vector_t){90, 0},
+    (vector_t){90, 0},
+    (vector_t){90, 5.332},
+    (vector_t){94, 5.428},
+    (vector_t){94, 0},
+    (vector_t){94, 0},
+    (vector_t){94, 5.428},
+    (vector_t){96, 5.494},
+    (vector_t){96, 0},
+    (vector_t){96, 0},
+    (vector_t){96, 5.494},
+    (vector_t){100, 5.672},
+    (vector_t){100, 0},
+    (vector_t){100, 0},
+    (vector_t){100, 5.672},
+    (vector_t){103, 5.855},
+    (vector_t){103, 0},
+    (vector_t){103, 0},
+    (vector_t){103, 5.855},
+    (vector_t){105, 6.007},
+    (vector_t){105, 0},
+    (vector_t){105, 0},
+    (vector_t){105, 6.007},
+    (vector_t){110, 6.506},
+    (vector_t){110, 0},
+    (vector_t){110, 0},
+    (vector_t){110, 6.506},
+    (vector_t){114, 7.048},
+    (vector_t){114, 0},
+    (vector_t){114, 0},
+    (vector_t){114, 7.048},
+    (vector_t){118, 7.73},
+    (vector_t){118, 0},
+    (vector_t){118, 0},
+    (vector_t){118, 7.73},
+    (vector_t){124, 9.011},
+    (vector_t){124, 0},
+    (vector_t){124, 0},
+    (vector_t){124, 9.011},
+    (vector_t){128, 10.01},
+    (vector_t){128, 0},
+    (vector_t){128, 0},
+    (vector_t){128, 10.01},
+    (vector_t){134, 11.62},
+    (vector_t){134, 0},
+    (vector_t){134, 0},
+    (vector_t){134, 11.62},
+    (vector_t){138, 12.670},
+    (vector_t){138, 0},
+    (vector_t){138, 0},
+    (vector_t){138, 12.670},
+    (vector_t){172, 12.676},
+    (vector_t){172, 0},
+    (vector_t){172, 0},
+    (vector_t){172, 12.676},
+    (vector_t){176, 11.62},
+    (vector_t){176, 0},
+    (vector_t){176, 0},
+    (vector_t){176, 11.62},
+    (vector_t){182, 10.01},
+    (vector_t){182, 0},
+    (vector_t){182, 0},
+    (vector_t){182, 10.01},
+    (vector_t){186, 9.011},
+    (vector_t){186, 0},
+    (vector_t){186, 0},
+    (vector_t){186, 9.011},
+    (vector_t){192, 7.73},
+    (vector_t){192, 0},
+    (vector_t){192, 0},
+    (vector_t){192, 7.73},
+    (vector_t){196, 7.048},
+    (vector_t){196, 0},
+    (vector_t){196, 0},
+    (vector_t){196, 7.048},
+    (vector_t){200, 6.506},
+    (vector_t){200, 0},
+    (vector_t){200, 0},
+    (vector_t){200, 6.506},
+    (vector_t){205, 6.007},
+    (vector_t){205, 0},
+    (vector_t){205, 0},
+    (vector_t){205, 6.007},
+    (vector_t){207, 5.855},
+    (vector_t){207, 0},
+    (vector_t){207, 0},
+    (vector_t){207, 5.855},
+    (vector_t){210, 5.672},
+    (vector_t){210, 0},
+    (vector_t){210, 0},
+    (vector_t){210, 5.672},
+    (vector_t){214, 5.494},
+    (vector_t){214, 0},
+    (vector_t){214, 0},
+    (vector_t){214, 5.494},
+    (vector_t){216, 5.428},
+    (vector_t){216, 0},
+    (vector_t){216, 0},
+    (vector_t){216, 5.428},
+    (vector_t){225, 5.26},
+    (vector_t){225, 0},
+    (vector_t){225, 0},
+    (vector_t){225, 5.26},
+    (vector_t){240, 5.193},
+    (vector_t){240, 0},
+    (vector_t){240, 0},
+    (vector_t){240, 5.193},
+    (vector_t){248, 5.332},
+    (vector_t){248, 0},
+    (vector_t){248, 0},
+    (vector_t){248, 5.332},
+    (vector_t){251.034, 5.428},
+    (vector_t){251.034, 0},
+    (vector_t){251.034, 0},
+    (vector_t){251.034, 5.428},
+    (vector_t){252.699, 5.494},
+    (vector_t){252.699, 0},
+    (vector_t){252.699, 0},
+    (vector_t){252.699, 5.494},
+    (vector_t){256.195, 5.672},
+    (vector_t){256.195, 0},
+    (vector_t){256.195, 0},
+    (vector_t){256.195, 5.672},
+    (vector_t){258.921, 5.855},
+    (vector_t){258.921, 0},
+    (vector_t){258.921, 0},
+    (vector_t){258.921, 5.855},
+    (vector_t){260.793, 6.007},
+    (vector_t){260.793, 0},
+    (vector_t){260.793, 0},
+    (vector_t){260.793, 6.007},
+    (vector_t){265.554, 6.506},
+    (vector_t){265.554, 0},
+    (vector_t){265.554, 0},
+    (vector_t){265.554, 6.506},
+    (vector_t){269.434, 7.048},
+    (vector_t){269.434, 0},
+    (vector_t){269.434, 0},
+    (vector_t){269.434, 7.048},
+    (vector_t){273.355, 7.73},
+    (vector_t){273.355, 0},
+    (vector_t){273.355, 0},
+    (vector_t){273.355, 7.73},
+    (vector_t){279.281, 9.011},
+    (vector_t){279.281, 0},
+    (vector_t){279.281, 0},
+    (vector_t){279.281, 9.011},
+    (vector_t){283.257, 10.01},
+    (vector_t){283.257, 0},
+    (vector_t){283.257, 0},
+    (vector_t){283.257, 10.01},
+    (vector_t){289.248, 11.62},
+    (vector_t){289.248, 0},
+    (vector_t){289.248, 0},
+    (vector_t){289.248, 11.62},
+    (vector_t){293.263, 12.676},
+    (vector_t){293.263, 0},
+    (vector_t){293.263, 0},
+    (vector_t){293.263, 12.676},
+    (vector_t){326.737, 12.676},
+    (vector_t){326.737, 0},
+    (vector_t){326.737, 0},
+    (vector_t){326.737, 12.676},
+    (vector_t){330.752, 11.62},
+    (vector_t){330.752, 0},
+    (vector_t){330.752, 0},
+    (vector_t){330.752, 11.62},
+    (vector_t){336.743, 10.01},
+    (vector_t){336.743, 0},
+    (vector_t){336.743, 0},
+    (vector_t){336.743, 10.01},
+    (vector_t){340.719, 9.011},
+    (vector_t){340.719, 0},
+    (vector_t){340.719, 0},
+    (vector_t){340.719, 9.011},
+    (vector_t){346.645, 7.73},
+    (vector_t){346.645, 0},
+    (vector_t){346.645, 0},
+    (vector_t){346.645, 7.73},
+    (vector_t){350.566, 7.048},
+    (vector_t){350.566, 0},
+    (vector_t){350.566, 0},
+    (vector_t){350.566, 7.048},
+    (vector_t){354.446, 6.506},
+    (vector_t){354.446, 0},
+    (vector_t){354.446, 0},
+    (vector_t){354.446, 6.506},
+    (vector_t){359.207, 6.007},
+    (vector_t){359.207, 0},
+    (vector_t){359.207, 0},
+    (vector_t){359.207, 6.007},
+    (vector_t){361.079, 5.855},
+    (vector_t){361.079, 0},
+    (vector_t){361.079, 0},
+    (vector_t){361.079, 5.855},
+    (vector_t){363.805, 5.672},
+    (vector_t){363.805, 0},
+    (vector_t){363.805, 0},
+    (vector_t){363.805, 5.672},
+    (vector_t){367.301, 5.494},
+    (vector_t){367.301, 0},
+    (vector_t){367.301, 0},
+    (vector_t){367.301, 5.494},
+    (vector_t){368.966, 5.428},
+    (vector_t){368.966, 0},
+    (vector_t){368.966, 0},
+    (vector_t){368.966, 5.428},
+    (vector_t){372.041, 5.332},
+    (vector_t){372.041, 0},
+    (vector_t){372.041, 0},
+    (vector_t){372.041, 5.332},
+    (vector_t){400, 5.122},
+    (vector_t){400, 0},
+    (vector_t){400, 0},
+    (vector_t){400, 5.122},
+    (vector_t){500, 5.12},
+    (vector_t){500, 0},
 };
 
 const size_t NUM_BODIES2 = 60;
 #define NUM_COORDS2 240
 const vector_t TRACK_TWO_COORDS[NUM_COORDS2] = {
-    (vector_t){0, 0},                              // 0 new line
-    (vector_t){0, 5},                              // 1
-    (vector_t){16, 5},                             // 2
-    (vector_t){16, 0},                             // 3
-    (vector_t){16, 0},                             // new curve
-    (vector_t){16, 5},       (vector_t){18, 5.04}, // 4
-    (vector_t){18, 0},                             // 5
-    (vector_t){18, 0},       (vector_t){18, 5.04},
-    (vector_t){20, 5.16}, // 6
-    (vector_t){20, 0},    // 7
-    (vector_t){20, 0},       (vector_t){20, 5.16},
-    (vector_t){22, 5.36}, // 8
-    (vector_t){22, 0},    // 9
-    (vector_t){22, 0},       (vector_t){22, 5.36},
-    (vector_t){23, 5.49}, // 10
-    (vector_t){23, 0},    // 11
-    (vector_t){23, 0},       (vector_t){23, 5.49},
-    (vector_t){24, 5.64}, // 12
-    (vector_t){24, 0},    // 13
-    (vector_t){24, 0},       (vector_t){24, 5.64},
-    (vector_t){25, 5.81}, // 14
-    (vector_t){25, 0},    // 15
-    (vector_t){25, 0},       (vector_t){25, 5.81},
-    (vector_t){26, 6}, // 16
-    (vector_t){26, 0}, // 17
-    (vector_t){26, 0},       (vector_t){26, 6},
-    (vector_t){29, 6.69}, // 18
-    (vector_t){29, 0},    // 19
-    (vector_t){29, 0},       (vector_t){29, 6.69},
-    (vector_t){32, 7.56}, // 20
-    (vector_t){32, 0},    // 21
-    (vector_t){32, 0},       (vector_t){32, 7.56},
-    (vector_t){36, 9}, // 22
-    (vector_t){36, 0}, // 23
-    (vector_t){36, 0},       (vector_t){36, 9},
-    (vector_t){40, 10.76}, // 24
-    (vector_t){40, 0},     // 25
-    (vector_t){40, 0},       (vector_t){40, 10.76},
-    (vector_t){44, 12.84}, // 26
-    (vector_t){44, 0},     // 27
-    (vector_t){44, 0},       (vector_t){44, 12.84},
-    (vector_t){47, 14.61}, // 28
-    (vector_t){47, 0},     // 29
-    (vector_t){47, 0},       (vector_t){47, 14.61},
-    (vector_t){50, 16.56},                           // 30
-    (vector_t){50, 0},                               // 31
-    (vector_t){50, 0},                               // new curve
-    (vector_t){50, 16.56},   (vector_t){60, 23.36},  // 32
-    (vector_t){60, 0},                               // 33
-    (vector_t){60, 0},                               // new curve
-    (vector_t){60, 23.36},   (vector_t){65, 25.61},  // 34
-    (vector_t){65, 0},                               // 35
-    (vector_t){65, 0},                               // new curve
-    (vector_t){65, 25.61},   (vector_t){70, 26.86},  // 36
-    (vector_t){70, 0},                               // 37
-    (vector_t){70, 0},                               // new curve
-    (vector_t){70, 26.86},   (vector_t){75, 27.61},  // 38
-    (vector_t){75, 0},                               // 39
-    (vector_t){75, 0},                               // new line
-    (vector_t){75, 27.61},   (vector_t){100, 27.61}, // 40
-    (vector_t){100, 0},                              // 41
-    (vector_t){100, 0},                              // new curve
-    (vector_t){100, 27.61},  (vector_t){105, 26.86}, // 42
-    (vector_t){105, 0},                              // 43
-    (vector_t){105, 0},                              // new curve
-    (vector_t){105, 26.86},  (vector_t){110, 25.61}, // 44
-    (vector_t){110, 0},                              // 45
-    (vector_t){110, 0},                              // new curve
-    (vector_t){110, 25.61},  (vector_t){115, 23.36}, // 46
-    (vector_t){115, 0},                              // 47
-    (vector_t){115, 0},                              // new curve
-    (vector_t){115, 23.36},  (vector_t){125, 16.56}, // 48
-    (vector_t){125, 0},                              // 49
-    (vector_t){125, 0},                              // new curve
-    (vector_t){125, 16.56},  (vector_t){128, 14.61}, // 50
-    (vector_t){128, 0},                              // 51
-    (vector_t){128, 0},      (vector_t){128, 14.61},
-    (vector_t){131, 12.84}, // 52
-    (vector_t){131, 0},     // 53
-    (vector_t){131, 0},      (vector_t){131, 12.84},
-    (vector_t){135, 10.76}, // 54
-    (vector_t){135, 0},     // 55
-    (vector_t){135, 0},      (vector_t){135, 10.76},
-    (vector_t){139, 9}, // 56
-    (vector_t){139, 0}, // 57
-    (vector_t){139, 0},      (vector_t){139, 9},
-    (vector_t){143, 7.56}, // 58
-    (vector_t){143, 0},    // 59
-    (vector_t){143, 0},      (vector_t){143, 7.56},
-    (vector_t){146, 6.69}, // 60
-    (vector_t){146, 0},    // 61
-    (vector_t){146, 0},      (vector_t){146, 6.69},
-    (vector_t){149, 6}, // 62
-    (vector_t){149, 0}, // 63
-    (vector_t){149, 0},      (vector_t){149, 6},
-    (vector_t){150, 5.81}, // 64
-    (vector_t){150, 0},    // 65
-    (vector_t){150, 0},      (vector_t){150, 5.81},
-    (vector_t){151, 5.64}, // 66
-    (vector_t){151, 0},    // 67
-    (vector_t){151, 0},      (vector_t){151, 5.64},
-    (vector_t){153, 5.36}, // 68
-    (vector_t){153, 0},    // 69
-    (vector_t){153, 0},      (vector_t){153, 5.36},
-    (vector_t){155, 5.16}, // 70
-    (vector_t){155, 0},    // 71
-    (vector_t){155, 0},      (vector_t){155, 5.16},
-    (vector_t){157, 5.04}, // 72
-    (vector_t){157, 0},    // 73
-    (vector_t){157, 0},      (vector_t){157, 5.04},
-    (vector_t){159, 5},                             // 74
-    (vector_t){159, 0},                             // 75
-    (vector_t){159, 0},                             // line
-    (vector_t){159, 5},      (vector_t){200, 5},    // 76
-    (vector_t){200, 0},                             // 77
-    (vector_t){200, 0},                             // curve
-    (vector_t){200, 5},      (vector_t){202, 5.02}, // 78
-    (vector_t){202, 0},                             // 79
-    (vector_t){202, 0},      (vector_t){202, 5.02},
-    (vector_t){204, 5.08}, // 80
-    (vector_t){204, 0},    // 81
-    (vector_t){204, 0},      (vector_t){204, 5.08},
-    (vector_t){206, 5.18}, // 82
-    (vector_t){206, 0},    // 83
-    (vector_t){206, 0},      (vector_t){206, 5.18},
-    (vector_t){209, 5.405}, // 84
-    (vector_t){209, 0},     // 85
-    (vector_t){209, 0},      (vector_t){209, 5.405},
-    (vector_t){212, 5.72}, // 86
-    (vector_t){212, 0},    // 87
-    (vector_t){212, 0},      (vector_t){212, 5.72},
-    (vector_t){216, 6.28}, // 88
-    (vector_t){216, 0},    // 89
-    (vector_t){216, 0},      (vector_t){216, 6.28},
-    (vector_t){220, 7}, // 90
-    (vector_t){220, 0}, // 91
-    (vector_t){220, 0},      (vector_t){220, 7},
-    (vector_t){226, 8.38}, // 92
-    (vector_t){226, 0},    // 93
-    (vector_t){226, 0},      (vector_t){226, 8.38},
-    (vector_t){230, 9.5}, // 94
-    (vector_t){230, 0},   // 95
-    (vector_t){230, 0},      (vector_t){230, 9.5},
-    (vector_t){235, 11.125}, // 96
-    (vector_t){235, 0},      // 97
-    (vector_t){235, 0},      (vector_t){235, 11.125},
-    (vector_t){240, 13}, // 98
-    (vector_t){240, 0},  // 99
-    (vector_t){240, 0},      (vector_t){240, 13},
-    (vector_t){244, 14.68}, // 100
-    (vector_t){244, 0},     // 101
-    (vector_t){244, 0},      (vector_t){244, 14.68},
-    (vector_t){250, 17.5}, // 102
-    (vector_t){250, 0},    // 103
-    (vector_t){250, 0},      (vector_t){250, 17.5},
-    (vector_t){255, 20.125}, // 104
-    (vector_t){255, 0},      // 105
-    (vector_t){255, 0},      (vector_t){255, 20.125},
-    (vector_t){262, 24.22}, // 106
-    (vector_t){262, 0},     // 107
-    (vector_t){262, 0},      (vector_t){262, 24.22},
-    (vector_t){265, 26.125},                          // 108
-    (vector_t){265, 0},                               // 109
-    (vector_t){265, 0},                               // new curve
-    (vector_t){265, 26.125}, (vector_t){320, 61.875}, // 110
-    (vector_t){320, 0},                               // 111
+    (vector_t){0, 0},       (vector_t){0, 5},        (vector_t){16, 5},
+    (vector_t){16, 0},      (vector_t){16, 0},       (vector_t){16, 5},
+    (vector_t){18, 5.04},   (vector_t){18, 0},       (vector_t){18, 0},
+    (vector_t){18, 5.04},   (vector_t){20, 5.16},    (vector_t){20, 0},
+    (vector_t){20, 0},      (vector_t){20, 5.16},    (vector_t){22, 5.36},
+    (vector_t){22, 0},      (vector_t){22, 0},       (vector_t){22, 5.36},
+    (vector_t){23, 5.49},   (vector_t){23, 0},       (vector_t){23, 0},
+    (vector_t){23, 5.49},   (vector_t){24, 5.64},    (vector_t){24, 0},
+    (vector_t){24, 0},      (vector_t){24, 5.64},    (vector_t){25, 5.81},
+    (vector_t){25, 0},      (vector_t){25, 0},       (vector_t){25, 5.81},
+    (vector_t){26, 6},      (vector_t){26, 0},       (vector_t){26, 0},
+    (vector_t){26, 6},      (vector_t){29, 6.69},    (vector_t){29, 0},
+    (vector_t){29, 0},      (vector_t){29, 6.69},    (vector_t){32, 7.56},
+    (vector_t){32, 0},      (vector_t){32, 0},       (vector_t){32, 7.56},
+    (vector_t){36, 9},      (vector_t){36, 0},       (vector_t){36, 0},
+    (vector_t){36, 9},      (vector_t){40, 10.76},   (vector_t){40, 0},
+    (vector_t){40, 0},      (vector_t){40, 10.76},   (vector_t){44, 12.84},
+    (vector_t){44, 0},      (vector_t){44, 0},       (vector_t){44, 12.84},
+    (vector_t){47, 14.61},  (vector_t){47, 0},       (vector_t){47, 0},
+    (vector_t){47, 14.61},  (vector_t){50, 16.56},   (vector_t){50, 0},
+    (vector_t){50, 0},      (vector_t){50, 16.56},   (vector_t){60, 23.36},
+    (vector_t){60, 0},      (vector_t){60, 0},       (vector_t){60, 23.36},
+    (vector_t){65, 25.61},  (vector_t){65, 0},       (vector_t){65, 0},
+    (vector_t){65, 25.61},  (vector_t){70, 26.86},   (vector_t){70, 0},
+    (vector_t){70, 0},      (vector_t){70, 26.86},   (vector_t){75, 27.61},
+    (vector_t){75, 0},      (vector_t){75, 0},       (vector_t){75, 27.61},
+    (vector_t){100, 27.61}, (vector_t){100, 0},      (vector_t){100, 0},
+    (vector_t){100, 27.61}, (vector_t){105, 26.86},  (vector_t){105, 0},
+    (vector_t){105, 0},     (vector_t){105, 26.86},  (vector_t){110, 25.61},
+    (vector_t){110, 0},     (vector_t){110, 0},      (vector_t){110, 25.61},
+    (vector_t){115, 23.36}, (vector_t){115, 0},      (vector_t){115, 0},
+    (vector_t){115, 23.36}, (vector_t){125, 16.56},  (vector_t){125, 0},
+    (vector_t){125, 0},     (vector_t){125, 16.56},  (vector_t){128, 14.61},
+    (vector_t){128, 0},     (vector_t){128, 0},      (vector_t){128, 14.61},
+    (vector_t){131, 12.84}, (vector_t){131, 0},      (vector_t){131, 0},
+    (vector_t){131, 12.84}, (vector_t){135, 10.76},  (vector_t){135, 0},
+    (vector_t){135, 0},     (vector_t){135, 10.76},  (vector_t){139, 9},
+    (vector_t){139, 0},     (vector_t){139, 0},      (vector_t){139, 9},
+    (vector_t){143, 7.56},  (vector_t){143, 0},      (vector_t){143, 0},
+    (vector_t){143, 7.56},  (vector_t){146, 6.69},   (vector_t){146, 0},
+    (vector_t){146, 0},     (vector_t){146, 6.69},   (vector_t){149, 6},
+    (vector_t){149, 0},     (vector_t){149, 0},      (vector_t){149, 6},
+    (vector_t){150, 5.81},  (vector_t){150, 0},      (vector_t){150, 0},
+    (vector_t){150, 5.81},  (vector_t){151, 5.64},   (vector_t){151, 0},
+    (vector_t){151, 0},     (vector_t){151, 5.64},   (vector_t){153, 5.36},
+    (vector_t){153, 0},     (vector_t){153, 0},      (vector_t){153, 5.36},
+    (vector_t){155, 5.16},  (vector_t){155, 0},      (vector_t){155, 0},
+    (vector_t){155, 5.16},  (vector_t){157, 5.04},   (vector_t){157, 0},
+    (vector_t){157, 0},     (vector_t){157, 5.04},   (vector_t){159, 5},
+    (vector_t){159, 0},     (vector_t){159, 0},      (vector_t){159, 5},
+    (vector_t){200, 5},     (vector_t){200, 0},      (vector_t){200, 0},
+    (vector_t){200, 5},     (vector_t){202, 5.02},   (vector_t){202, 0},
+    (vector_t){202, 0},     (vector_t){202, 5.02},   (vector_t){204, 5.08},
+    (vector_t){204, 0},     (vector_t){204, 0},      (vector_t){204, 5.08},
+    (vector_t){206, 5.18},  (vector_t){206, 0},      (vector_t){206, 0},
+    (vector_t){206, 5.18},  (vector_t){209, 5.405},  (vector_t){209, 0},
+    (vector_t){209, 0},     (vector_t){209, 5.405},  (vector_t){212, 5.72},
+    (vector_t){212, 0},     (vector_t){212, 0},      (vector_t){212, 5.72},
+    (vector_t){216, 6.28},  (vector_t){216, 0},      (vector_t){216, 0},
+    (vector_t){216, 6.28},  (vector_t){220, 7},      (vector_t){220, 0},
+    (vector_t){220, 0},     (vector_t){220, 7},      (vector_t){226, 8.38},
+    (vector_t){226, 0},     (vector_t){226, 0},      (vector_t){226, 8.38},
+    (vector_t){230, 9.5},   (vector_t){230, 0},      (vector_t){230, 0},
+    (vector_t){230, 9.5},   (vector_t){235, 11.125}, (vector_t){235, 0},
+    (vector_t){235, 0},     (vector_t){235, 11.125}, (vector_t){240, 13},
+    (vector_t){240, 0},     (vector_t){240, 0},      (vector_t){240, 13},
+    (vector_t){244, 14.68}, (vector_t){244, 0},      (vector_t){244, 0},
+    (vector_t){244, 14.68}, (vector_t){250, 17.5},   (vector_t){250, 0},
+    (vector_t){250, 0},     (vector_t){250, 17.5},   (vector_t){255, 20.125},
+    (vector_t){255, 0},     (vector_t){255, 0},      (vector_t){255, 20.125},
+    (vector_t){262, 24.22}, (vector_t){262, 0},      (vector_t){262, 0},
+    (vector_t){262, 24.22}, (vector_t){265, 26.125}, (vector_t){265, 0},
+    (vector_t){265, 0},     (vector_t){265, 26.125}, (vector_t){320, 61.875},
+    (vector_t){320, 0},
 
-    (vector_t){400, 0},                             // new curve // 112
-    (vector_t){400, 25},                            // 113
-    (vector_t){420, 18},                            // 114
-    (vector_t){420, 0},                             // 115
-    (vector_t){420, 0},                             // new curve
-    (vector_t){420, 18},     (vector_t){422, 17.4}, // 116
-    (vector_t){422, 0},                             // 117
-    (vector_t){422, 0},                             // new curve
-    (vector_t){422, 17.4},   (vector_t){440, 12.9}, // 118
-    (vector_t){440, 0},                             // 119
-    (vector_t){440, 0},                             // new curve
-    (vector_t){440, 12.9},   (vector_t){492.7, 5},  // 120
-    (vector_t){492.7, 0},                           // 121
-    (vector_t){492.7, 0},                           // new line
-    (vector_t){492.7, 5},    (vector_t){600, 5},    // 122
-    (vector_t){600, 0},                             // 123
+    (vector_t){400, 0},     (vector_t){400, 25},     (vector_t){420, 18},
+    (vector_t){420, 0},     (vector_t){420, 0},      (vector_t){420, 18},
+    (vector_t){422, 17.4},  (vector_t){422, 0},      (vector_t){422, 0},
+    (vector_t){422, 17.4},  (vector_t){440, 12.9},   (vector_t){440, 0},
+    (vector_t){440, 0},     (vector_t){440, 12.9},   (vector_t){492.7, 5},
+    (vector_t){492.7, 0},   (vector_t){492.7, 0},    (vector_t){492.7, 5},
+    (vector_t){600, 5},     (vector_t){600, 0},
 };
 
 const size_t WHEEL_NUM_POINTS = 250;
@@ -588,6 +463,11 @@ const double x_back = 12 * 10;
 const double x_front = 20.5 * 10;
 const double y = 22 / 10.0;
 
+// math constants
+const double PI_HALF = M_PI / 2;
+const double THREE_PI_HALF = 3 * M_PI / 2;
+const double TWO_PI = 2.0 * M_PI;
+
 // timer constants
 #define TIME_LENGTH 10
 const double MIN_TO_SEC = 60;
@@ -599,19 +479,46 @@ const size_t FONT_SIZE = 96;
   (vector_t) { WINDOW.x - TIMER_DIMENSIONS.x, WINDOW.y }
 const rgb_color_t TEXT_COLOR = (rgb_color_t){0.0, 0.0, 0.0};
 
+// score constants
+const size_t AIRTIME_SCORE = 10;
+const size_t ROTATION_SCORE = 100;
+const size_t POWERUP_SCORE = 1000;
+
 // track constants
 const double TRACK_HEIGHT = 20.0;
 const double TRACK_MASS = INFINITY;
-const rgb_color_t TRACK_COLOR = {0.545098039216, 0.270588235294,
-                                 0.0745098039216};
+const rgb_color_t TRACK_ONE_COLOR = {0.545098039216, 0.270588235294,
+                                     0.0745098039216};
+const rgb_color_t TRACK_TWO_COLOR = {0.0, 0.2, 0.4};
+#define FINISH_WIDTH WINDOW.y / 3.0
+#define FINISH_HEIGHT WINDOW.y
 
+// physics constants
 const double GRAVITATIONAL_ACCELERATION = 100.0;
 const double DRAG = 0.2;
-const double SUSPENSION_CONSTANT = 10000.0;
-const double EQ_DIST = 10.0;
-
+const double MAX_SPEED = 400;
+const double GROUND_ANGULAR_VELOCITY = 0.2;
 const double AIR_ANGULAR_VELOCITY = 1.0;
-const double BIKE_ACCELERATION = 200.0;
+const double BIKE_ACCELERATION = 140.0;
+const double ACCELERATION_FACTOR = 10.0;
+const double STAR_ANGULAR_VELOCITY = -2.0;
+const double STAR_INNER_RAD = 10.0;
+const double STAR_OUTER_RAD = 20.0;
+
+// power up constants
+const size_t STAR_NUM_POINTS = 5;
+const double STAR_MASS = 0.00005;
+const rgb_color_t STAR_COLOR = (rgb_color_t){1, 1, 0};
+const vector_t STAR_POSITION_TRACK_1 = (vector_t){1550, 500};
+const vector_t STAR_POSITION_TRACK_2 = (vector_t){5600, 2250};
+const double NORMAL_SCALE = 10.0;
+const double POWERUP_SCALE = 2.0;
+const double VERTICAL_SHIFT = 100.0;
+const double POWERUP_TIME = 10.0;
+
+typedef list_t *(*track_t)();
+
+typedef enum { BIKE = 1, TRACK = 2, STAR = 3, FINISH = 4 } body_type_t;
 
 typedef enum { MENU = 1, TIMER = 2, SCORE = 3 } game_state_t;
 
@@ -622,30 +529,33 @@ typedef struct button {
 
 typedef struct state {
   scene_t *scene;
+  list_t *bodies;
+  list_t *forces;
   double clock;
   double dt;
   text_input_t timer_text;
   bool pushed_down;
   bool in_air;
+  bool win;
   bool game_over;
   game_state_t game_state;
   list_t *button_list;
   text_input_t title;
   rgb_color_t bike_color;
-  int16_t past_second;
   size_t level;
   sound_t sound;
   bool sound_changed;
   double sound_timer;
   double goal;
-  bool win;
   size_t score;
   size_t high_score;
+  double powerup_timer;
+  body_type_t powerup;
+  bool has_powerup;
+  double bike_acceleration;
+  double bike_max_speed;
+  double past_angle;
 } state_t;
-
-typedef list_t *(*track_t)();
-
-typedef enum { BIKE = 1, TRACK = 2 } body_type_t;
 
 // helper functions
 void button_free(button_t *button) {
@@ -938,6 +848,16 @@ void section_fifty_one(list_t *shape, vector_t start, vector_t end,
   }
 }
 
+list_t *scale_polygon(double scalar, list_t *list) {
+  list_t *scaled_polygon = list_init(list_size(list), free);
+  for (size_t i = 0; i < list_size(list); i++) {
+    vector_t *new_vector = malloc(sizeof(vector_t));
+    *new_vector = vec_multiply(scalar, *(vector_t *)list_get(list, i));
+    list_add(scaled_polygon, new_vector);
+  }
+  return scaled_polygon;
+}
+
 list_t *make_bike_shape() {
   list_t *shape = list_init(BIKE_NUM_POINTS, free);
   size_t j = 0;
@@ -1012,35 +932,26 @@ list_t *make_bike_shape() {
   return shape;
 }
 
-list_t *scale_polygon(double scalar, list_t *list) {
-  list_t *scaled_polygon = list_init(list_size(list), free);
-  for (size_t i = 0; i < list_size(list); i++) {
-    vector_t *new_vector = malloc(sizeof(vector_t));
-    *new_vector = vec_multiply(scalar, *(vector_t *)list_get(list, i));
-    list_add(scaled_polygon, new_vector);
-  }
-  return scaled_polygon;
-}
-
+// track functions
 list_t *make_track_one() {
-  list_t *bodies = list_init(NUM_BODIES - 4, NULL);
+  list_t *bodies = list_init(NUM_BODIES1, NULL);
   size_t i = 0;
-  for (size_t j = 0; j < NUM_BODIES - 4; j++) {
+  for (size_t j = 0; j < NUM_BODIES1; j++) {
     list_t *shape = list_init(4, free);
     for (size_t k = 0; k < 4; k++) {
       vector_t *coord = malloc(sizeof(vector_t));
       *coord = TRACK_ONE_COORDS[i + k];
       list_add(shape, coord);
     }
-    list_t *new_shape1 = scale_polygon(90.0, shape);
-    list_t *new_shape2 = scale_polygon(90.0, shape);
-    polygon_translate(new_shape2, (vector_t){0, 30.0});
+    list_t *new_shape1 = scale_polygon(TRACK_SCALING_FACTOR, shape);
+    list_t *new_shape2 = scale_polygon(TRACK_SCALING_FACTOR, shape);
+    polygon_translate(new_shape2, (vector_t){0, TRACK_BUFFER});
     list_free(shape);
     i += 4;
     body_type_t *type = malloc(sizeof(*type));
     *type = TRACK;
-    body_t *body1 =
-        body_init_with_info(new_shape1, TRACK_MASS, TRACK_COLOR, type, free);
+    body_t *body1 = body_init_with_info(new_shape1, TRACK_MASS, TRACK_ONE_COLOR,
+                                        type, free);
     body_t *body2 =
         body_init_with_info(new_shape2, TRACK_MASS, GREEN, type, free);
     list_add(bodies, body2);
@@ -1059,39 +970,21 @@ list_t *make_track_two() {
       *coord = TRACK_TWO_COORDS[i + k];
       list_add(shape, coord);
     }
-    list_t *new_shape1 = scale_polygon(90.0, shape);
-    list_t *new_shape2 = scale_polygon(90.0, shape);
-    polygon_translate(new_shape2, (vector_t){0, 30.0});
+    list_t *new_shape1 = scale_polygon(TRACK_SCALING_FACTOR, shape);
+    list_t *new_shape2 = scale_polygon(TRACK_SCALING_FACTOR, shape);
+    polygon_translate(new_shape2, (vector_t){0, TRACK_BUFFER});
     list_free(shape);
     i += 4;
     body_type_t *type = malloc(sizeof(*type));
     *type = TRACK;
-    body_t *body1 =
-        body_init_with_info(new_shape1, TRACK_MASS, TRACK_COLOR, type, free);
+    body_t *body1 = body_init_with_info(new_shape1, TRACK_MASS, TRACK_TWO_COLOR,
+                                        type, free);
     body_t *body2 =
-        body_init_with_info(new_shape2, TRACK_MASS, GREEN, type, free);
+        body_init_with_info(new_shape2, TRACK_MASS, BLUE, type, free);
     list_add(bodies, body2);
     list_add(bodies, body1);
   }
   return bodies;
-}
-
-list_t *make_track_three() {
-  list_t *bodies1 = make_track_one();
-  list_t *bodies2 = make_track_one();
-  list_t *last_shape =
-      body_get_shape(list_get(bodies1, list_size(bodies1) - 1));
-  double last_x =
-      ((vector_t *)list_get(last_shape, list_size(last_shape) - 1))->x;
-  for (size_t i = 0; i < list_size(bodies2); i++) {
-    body_t *body = list_get(bodies2, i);
-    vector_t centroid = body_get_centroid(body);
-    body_set_centroid(body, (vector_t){centroid.x + 10 * last_x, centroid.y});
-  }
-  list_free(last_shape);
-  // list_append(bodies1, bodies2);
-  list_free(bodies1);
-  return bodies2;
 }
 
 body_t *make_bike(rgb_color_t color) {
@@ -1107,9 +1000,79 @@ body_t *make_bike(rgb_color_t color) {
   return bike;
 }
 
+list_t *make_star_shape(size_t inner_radius, size_t outer_radius,
+                        size_t num_points, double scale_factor) {
+  list_t *shape = list_init(2 * num_points, free);
+  for (size_t i = 0; i < num_points; i++) {
+    // creates outer vertices of star
+    vector_t *outer_vector = malloc(sizeof(vector_t));
+    *outer_vector = (vector_t){0, outer_radius};
+    double outer_angle = i * (TWO_PI / num_points);
+    *outer_vector = vec_rotate(*outer_vector, outer_angle);
+    *outer_vector = vec_add(*outer_vector, CENTER);
+    list_add(shape, outer_vector);
+
+    // creates inner vertices of star
+    vector_t *inner_vector = malloc(sizeof(vector_t));
+    *inner_vector = (vector_t){0, inner_radius};
+    double inner_angle = (2 * i + 1) * (M_PI / num_points);
+    *inner_vector = vec_rotate(*inner_vector, inner_angle);
+    *inner_vector = vec_add(*inner_vector, CENTER);
+    list_add(shape, inner_vector);
+  }
+  list_t *scaled_shape = scale_polygon(scale_factor, shape);
+  list_free(shape);
+  return scaled_shape;
+}
+
+double rand_double(double lower_bound, double upper_bound) {
+  double num_generated = rand();
+  double return_num =
+      num_generated / RAND_MAX * (upper_bound - lower_bound) + lower_bound;
+  return return_num;
+}
+
+body_t *make_star(state_t *state, double scale_factor) {
+  list_t *shape = make_star_shape(STAR_INNER_RAD, STAR_OUTER_RAD,
+                                  STAR_NUM_POINTS, scale_factor);
+  body_type_t *type = malloc(sizeof(*type));
+  *type = STAR;
+  body_t *star = body_init_with_info(shape, STAR_MASS, STAR_COLOR, type, free);
+  if (state->level == 1) {
+    body_set_centroid(star, STAR_POSITION_TRACK_1);
+  } else {
+    body_set_centroid(star, STAR_POSITION_TRACK_2);
+  }
+  body_set_angular_velocity(star, STAR_ANGULAR_VELOCITY);
+  return star;
+}
+
+body_t *make_rectangle_with_info(double width, double height, rgb_color_t color,
+                                 void *info, free_func_t freer) {
+  vector_t *bottom_left = malloc(sizeof(vector_t));
+  *bottom_left = (vector_t){0, 0};
+  vector_t *top_left = malloc(sizeof(vector_t));
+  *top_left = (vector_t){0, height};
+  vector_t *bottom_right = malloc(sizeof(vector_t));
+  *bottom_right = (vector_t){width, 0};
+  vector_t *top_right = malloc(sizeof(vector_t));
+  *top_right = (vector_t){width, height};
+  list_t *rectangle_shape = list_init(4, free);
+  list_add(rectangle_shape, bottom_left);
+  list_add(rectangle_shape, top_left);
+  list_add(rectangle_shape, top_right);
+  list_add(rectangle_shape, bottom_right);
+  body_t *rectangle =
+      body_init_with_info(rectangle_shape, BUTTON_MASS, color, info, freer);
+  return rectangle;
+}
+
+body_t *make_rectangle(double width, double height, rgb_color_t color) {
+  return make_rectangle_with_info(width, height, color, NULL, NULL);
+}
+
 void initialize_body_list(state_t *state, track_t make_track) {
   sdl_clear_text();
-  scene_tick(state->scene, 0.0);
   assert(scene_bodies(state->scene) == 0);
   scene_add_body(state->scene, make_bike(state->bike_color));
   list_t *bodies = make_track();
@@ -1118,6 +1081,16 @@ void initialize_body_list(state_t *state, track_t make_track) {
     scene_add_body(state->scene, body);
   }
   list_free(bodies);
+  body_type_t *finish_type = malloc(sizeof(body_type_t));
+  *finish_type = FINISH;
+  body_t *finish = make_rectangle_with_info(FINISH_WIDTH, FINISH_HEIGHT, WHITE,
+                                            finish_type, free);
+  vector_t centroid =
+      (vector_t){state->goal + 0.5 * FINISH_WIDTH, 0.5 * FINISH_HEIGHT};
+  body_set_centroid(finish, centroid);
+  scene_add_body(state->scene, finish);
+  body_t *star = make_star(state, 1.0);
+  scene_add_body(state->scene, star);
 }
 
 bool double_is_close(double a, double b, double threshold) {
@@ -1160,33 +1133,58 @@ vector_t find_colliding_point(body_t *body1, body_t *body2) {
 }
 
 void ground_collision(body_t *body, body_t *ground, vector_t axis, void *aux) {
+  const double COLLISION_ERROR = 1e-5;
+  const double ANGULAR_ERROR = 0.04;
   list_t *wheel_shape = body_get_shape(body);
   list_t *track_shape = body_get_shape(ground);
   double angle_diff = body_get_rotation(body) - vec_angle(axis);
-  if (!double_is_close(fabs(angle_diff), M_PI / 2, 0.02) &&
-      !double_is_close(fabs(angle_diff), 3 * M_PI / 2, 0.02)) {
+  if (!double_is_close(fabs(angle_diff), PI_HALF, ANGULAR_ERROR) &&
+      !double_is_close(fabs(angle_diff), THREE_PI_HALF, ANGULAR_ERROR)) {
     vector_t intersect = find_colliding_point(body, ground);
-    if (!double_is_close(intersect.x, -WINDOW.x, 1e-5)) {
+    if (!double_is_close(intersect.x, -WINDOW.x, COLLISION_ERROR)) {
       body_set_pivot(body, intersect);
-      if (angle_diff > -M_PI / 2) {
-        body_set_angular_velocity(body, -0.2);
-      } else if (angle_diff < M_PI / 2) {
-        body_set_angular_velocity(body, 0.2);
+      if (angle_diff > -PI_HALF) {
+        body_set_angular_velocity(body, -GROUND_ANGULAR_VELOCITY);
+      } else if (angle_diff < PI_HALF) {
+        body_set_angular_velocity(body, GROUND_ANGULAR_VELOCITY);
       } else {
-        body_set_angular_velocity(body, -0.2);
+        body_set_angular_velocity(body, 0.0);
       }
     } else {
       body_set_angular_velocity(body, 0.0);
     }
-  } else {
-    body_set_angular_velocity(body, 0.0);
+    list_free(wheel_shape);
+    list_free(track_shape);
   }
-  list_free(wheel_shape);
-  list_free(track_shape);
 }
 
 void create_ground_collision(state_t *state, body_t *body, body_t *ground) {
   create_collision(state->scene, body, ground, ground_collision, state, free);
+}
+
+void collect_powerup(body_t *bike, body_t *star, vector_t axis, void *aux) {
+  state_t *state = aux;
+  state->powerup_timer = POWERUP_TIME;
+  state->powerup = STAR;
+  state->has_powerup = true;
+  state->bike_acceleration *= 2.0;
+  state->bike_max_speed *= 2.0;
+  body_remove(star);
+  if (state->game_state == SCORE) {
+    state->score += POWERUP_SCORE;
+  }
+}
+
+void create_powerup_collision(state_t *state, body_t *bike, body_t *star) {
+  create_collision(state->scene, bike, star, collect_powerup, state, NULL);
+}
+
+void kill_powerup(state_t *state) {
+  body_type_t power = state->powerup;
+  assert(power != 0);
+  state->bike_acceleration = BIKE_ACCELERATION;
+  state->bike_max_speed = MAX_SPEED;
+  state->has_powerup = false;
 }
 
 void initialize_force_list(state_t *state) {
@@ -1195,10 +1193,16 @@ void initialize_force_list(state_t *state) {
   create_downwards_gravity(state->scene, GRAVITATIONAL_ACCELERATION, bike);
   create_drag(state->scene, DRAG, bike);
   for (size_t i = 1; i < scene_bodies(state->scene); i++) {
-    create_ground_collision(state, bike, scene_get_body(state->scene, i));
-    create_physics_collision(state->scene, 0.0, bike,
-                             scene_get_body(state->scene, i));
-    create_normal(state->scene, bike, scene_get_body(state->scene, i));
+    body_t *body = scene_get_body(state->scene, i);
+    body_type_t *type = body_get_info(body);
+    if (*type == TRACK) {
+      create_ground_collision(state, bike, body);
+      create_physics_collision(state->scene, 0.0, bike, body);
+      create_normal(state->scene, bike, body);
+    }
+    if (*type == STAR) {
+      create_powerup_collision(state, bike, body);
+    }
   }
 }
 
@@ -1211,15 +1215,6 @@ void clear_buttons(state_t *state) {
   scene_tick(state->scene, 0.0);
 }
 
-void clear_scene(state_t *state) {
-  for (size_t i = 0; i < scene_bodies(state->scene); i++) {
-    body_t *body = scene_get_body(state->scene, i);
-    body_remove(body);
-  }
-  scene_tick(state->scene, 0.0);
-  free(state->timer_text.string);
-}
-
 void initialize_game(state_t *state) {
   clear_buttons(state);
   state->pushed_down = false;
@@ -1230,45 +1225,59 @@ void initialize_game(state_t *state) {
   switch (state->level) {
   case 1:
     track_function = make_track_one;
-    state->goal = 372.041 * 90.0;
+    state->goal = 372.041 * TRACK_SCALING_FACTOR;
+    sdl_clear_images();
+    sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
+                  (vector_t){0, WINDOW.y});
+    state->timer_text.color = TEXT_COLOR;
     break;
   case 2:
     track_function = make_track_two;
-    state->goal = 600 * 90.0;
-    break;
-  case 3:
-    track_function = make_track_three;
+    state->goal = 600 * TRACK_SCALING_FACTOR;
+    sdl_clear_images();
+    sdl_add_image("assets/photo-1419242902214-272b3f66ee7a.jpg",
+                  (vector_t){0, WINDOW.y});
+    state->timer_text.color = WHITE;
     break;
   }
   sdl_clear_text();
-  scene_clear_bodies(state->scene);
-  scene_tick(state->scene, 0.0);
-  initialize_body_list(state, track_function);
-  initialize_force_list(state);
+  if (scene_bodies(state->scene) == 0) {
+    initialize_body_list(state, track_function);
+    initialize_force_list(state);
+  } else {
+    scene_load_bodies(state->scene, state->bodies, state->forces);
+  }
   if (state->game_state == TIMER) {
     state->clock = START_TIME;
-    state->past_second = START_TIME;
   } else if (state->game_state == SCORE) {
     state->score = 0;
   }
 }
 
+// keyboard controls for bike
 void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
   body_t *bike = scene_get_body(state->scene, 0);
   double angle = body_get_rotation(bike);
+  vector_t velocity = body_get_velocity(bike);
   if (type == KEY_PRESSED) {
     switch (key) {
     case LEFT_ARROW:
       if (!state->pushed_down) {
         state->pushed_down = true;
-        create_applied(state->scene,
-                       (vector_t){-BIKE_MASS * BIKE_ACCELERATION * cos(angle),
-                                  -sin(angle)},
-                       bike);
+        create_applied(
+            state->scene,
+            (vector_t){-BIKE_MASS * state->bike_acceleration * cos(angle),
+                       -sin(angle)},
+            bike);
         state->sound = DEC;
         state->sound_changed = true;
       } else {
         state->sound_changed = false;
+      }
+      if (velocity.x < 0 && vec_magn(velocity) > state->bike_max_speed) {
+        body_set_velocity(
+            bike,
+            vec_multiply(state->bike_max_speed / vec_magn(velocity), velocity));
       }
       break;
     case RIGHT_ARROW:
@@ -1276,12 +1285,18 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
         state->pushed_down = true;
         create_applied(
             state->scene,
-            (vector_t){BIKE_MASS * BIKE_ACCELERATION * cos(angle), sin(angle)},
+            (vector_t){BIKE_MASS * state->bike_acceleration * cos(angle),
+                       sin(angle)},
             bike);
         state->sound = ACC;
         state->sound_changed = true;
       } else {
         state->sound_changed = false;
+      }
+      if (velocity.x > 0 && vec_magn(velocity) > state->bike_max_speed) {
+        body_set_velocity(
+            bike,
+            vec_multiply(state->bike_max_speed / vec_magn(velocity), velocity));
       }
       break;
     case UP_ARROW:
@@ -1302,19 +1317,13 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
     switch (key) {
     case LEFT_ARROW:
       state->pushed_down = false;
-      create_applied(
-          state->scene,
-          (vector_t){BIKE_MASS * BIKE_ACCELERATION * cos(angle), sin(angle)},
-          bike);
+      scene_remove_force(state->scene, (force_creator_t)applied_force_creator);
       state->sound = IDLE;
       state->sound_changed = true;
       break;
     case RIGHT_ARROW:
       state->pushed_down = false;
-      create_applied(
-          state->scene,
-          (vector_t){-BIKE_MASS * BIKE_ACCELERATION * cos(angle), -sin(angle)},
-          bike);
+      scene_remove_force(state->scene, (force_creator_t)applied_force_creator);
       state->sound = IDLE;
       state->sound_changed = true;
       break;
@@ -1322,36 +1331,22 @@ void on_key(state_t *state, char key, key_event_type_t type, double held_time) {
   }
 }
 
-body_t *make_rectangle(double width, double height, rgb_color_t color) {
-  vector_t *bottom_left = malloc(sizeof(vector_t));
-  *bottom_left = (vector_t){0, 0};
-  vector_t *top_left = malloc(sizeof(vector_t));
-  *top_left = (vector_t){0, height};
-  vector_t *bottom_right = malloc(sizeof(vector_t));
-  *bottom_right = (vector_t){width, 0};
-  vector_t *top_right = malloc(sizeof(vector_t));
-  *top_right = (vector_t){width, height};
-  list_t *rectangle_shape = list_init(4, free);
-  list_add(rectangle_shape, bottom_left);
-  list_add(rectangle_shape, top_left);
-  list_add(rectangle_shape, top_right);
-  list_add(rectangle_shape, bottom_right);
-  body_t *rectangle = body_init(rectangle_shape, BUTTON_MASS, color);
-  return rectangle;
-}
-
+// making buttons
 void make_button(state_t *state, char *string, size_t font_size,
                  vector_t position, vector_t dim, rgb_color_t text_color,
                  rgb_color_t button_color) {
+  const double BUTTON_SCALING_FACTOR = 1.5;
+  const double CENTROID_SCALING_FACTOR = 2.0;
   text_input_t text_input = {.string = string,
                              .font_size = font_size,
                              .position = position,
                              .dim = dim,
                              .color = text_color};
   sdl_write_text(text_input, "Montserrat", "SemiBold");
-  body_t *button = make_rectangle(1.5 * dim.x, 1.5 * dim.y, button_color);
-  vector_t centroid =
-      (vector_t){position.x + dim.x / 2.0, position.y - dim.y / 2.0};
+  body_t *button = make_rectangle(BUTTON_SCALING_FACTOR * dim.x,
+                                  BUTTON_SCALING_FACTOR * dim.y, button_color);
+  vector_t centroid = (vector_t){position.x + dim.x / CENTROID_SCALING_FACTOR,
+                                 position.y - dim.y / CENTROID_SCALING_FACTOR};
   body_set_centroid(button, centroid);
   scene_add_body(state->scene, button);
   button_t *button_struct = malloc(sizeof(button_t));
@@ -1360,11 +1355,13 @@ void make_button(state_t *state, char *string, size_t font_size,
   list_add(state->button_list, button_struct);
 }
 
-// mouse handlers
+// mouse handlers and menus
 void on_mouse_start_menu(state_t *state, char key, key_event_type_t type,
                          double x, double y);
 void on_mouse_color_menu(state_t *state, char key, key_event_type_t type,
                          double x, double y);
+void on_mouse_controls_menu(state_t *state, char key, key_event_type_t type,
+                            double x, double y);
 void on_mouse_game_menu(state_t *state, char key, key_event_type_t type,
                         double x, double y);
 void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
@@ -1386,8 +1383,14 @@ void reset_scene(state_t *state) {
 
 void create_start_menu(state_t *state) {
   clear_buttons(state);
+  sdl_clear_images();
+  sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
+                (vector_t){0, WINDOW.y});
+  sdl_move_window(CENTER);
   state->game_state = MENU;
   state->level = 0;
+  state->sound = IDLE;
+  sound_play(state->sound);
   scene_tick(state->scene, 0.0);
   text_input_t title = {.string = "MOTOCROSS MAYHEM",
                         .font_size = FONT_SIZE,
@@ -1400,16 +1403,16 @@ void create_start_menu(state_t *state) {
               BUTTON_COLOR);
   make_button(state, "CUSTOMIZE", FONT_SIZE, CUSTOMIZE_POSITION, BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
-  make_button(state, "SETTINGS", FONT_SIZE, SETTINGS_POSITION, BUTTON_DIM,
+  make_button(state, "HOW TO PLAY", FONT_SIZE, HOW_POSITION, BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
 
-  // text_input_t high_score = {.string = "",
-  //                            .font_size = FONT_SIZE,
-  //                            .position = HIGH_SCORE_POSITION,
-  //                            .dim = TITLE_DIMENSIONS,
-  //                            .color = TEXT_COLOR};
-  // sprintf(high_score.string, "HIGH SCORE: %lu", state->high_score);
-  // sdl_write_text(high_score, "LeagueGothic", "Regular");
+  text_input_t high_score = {.string = "",
+                             .font_size = FONT_SIZE,
+                             .position = HIGH_SCORE_POSITION,
+                             .dim = TITLE_DIMENSIONS,
+                             .color = TEXT_COLOR};
+  sprintf(high_score.string, "HIGH SCORE: %lu", state->high_score);
+  sdl_write_text(high_score, "LeagueGothic", "Regular");
 }
 
 bool color_equals(rgb_color_t color1, rgb_color_t color2) {
@@ -1485,12 +1488,10 @@ void create_level_menu(state_t *state) {
                         .color = TEXT_COLOR};
   state->title = title;
   sdl_write_text(title, "ChunkFive", "Regular");
-  make_button(state, "1", FONT_SIZE, ORANGE_POSITION, BACK_BUTTON_DIM,
+  make_button(state, "Level 1", FONT_SIZE, ORANGE_POSITION, BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
-  make_button(state, "2", FONT_SIZE, PURPLE_POSITION, BACK_BUTTON_DIM,
+  make_button(state, "Level 2", FONT_SIZE, PURPLE_POSITION, BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
-  // make_button(state, "3", FONT_SIZE, SETTINGS_POSITION, BACK_BUTTON_DIM,
-  //             TEXT_COLOR, BUTTON_COLOR);
   make_button(state, "<--", FONT_SIZE, BACK_POSITION, BACK_BUTTON_DIM,
               TEXT_COLOR, BUTTON_COLOR);
 }
@@ -1553,6 +1554,9 @@ void on_mouse_start_menu(state_t *state, char key, key_event_type_t type,
             sdl_on_mouse((mouse_handler_t)on_mouse_color_menu);
             break;
           case 2:
+            clear_buttons(state);
+            sdl_on_mouse((mouse_handler_t)on_mouse_controls_menu);
+            sdl_add_image("assets/controls.png", (vector_t){0, WINDOW.y});
             break;
           }
           break;
@@ -1695,12 +1699,6 @@ void on_mouse_level_menu(state_t *state, char key, key_event_type_t type,
             sdl_on_mouse(NULL);
             initialize_game(state);
             break;
-          // case 2:
-          //   state->level = 3;
-          //   sdl_on_key(on_key);
-          //   sdl_on_mouse(NULL);
-          //   initialize_game(state);
-          //   break;
           case 2:
             create_game_menu(state);
             sdl_on_mouse((mouse_handler_t)on_mouse_game_menu);
@@ -1738,18 +1736,35 @@ void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type,
             if (state->high_score < state->score) {
               state->high_score = state->score;
             }
+            state->score = 0.0;
             scene_tick(state->scene, 0.0);
             sdl_remove_text(state->title);
             sdl_render_scene(state->scene);
             state->game_over = false;
             state->win = false;
+            scene_add_body(state->scene, make_star(state, 1.0));
+            create_powerup_collision(
+                state, scene_get_body(state->scene, 0),
+                scene_get_body(state->scene, scene_bodies(state->scene) - 1));
             sdl_on_key(on_key);
             sdl_on_mouse(NULL);
             state->clock = START_TIME;
             break;
           case 1:
+            clear_buttons(state);
+            if (state->high_score < state->score) {
+              state->high_score = state->score;
+            }
+            scene_tick(state->scene, 0.0);
+            sdl_remove_text(state->title);
+            sdl_render_scene(state->scene);
+            state->game_over = false;
+            state->win = false;
+            state->clock = START_TIME;
             sdl_clear_text();
-            exit(0);
+            scene_unload_bodies(state->scene, state->bodies, state->forces);
+            create_start_menu(state);
+            sdl_on_mouse((mouse_handler_t)on_mouse_start_menu);
             break;
           }
         }
@@ -1760,6 +1775,17 @@ void on_mouse_game_over_menu(state_t *state, char key, key_event_type_t type,
   list_free(collision_tester);
 }
 
+void on_mouse_controls_menu(state_t *state, char key, key_event_type_t type,
+                            double x, double y) {
+  if (type == MOUSE_BUTTON_RELEASED) {
+    sdl_clear_images();
+    sdl_add_image("assets/windows-xp-wallpaper-bliss-1024x576.jpg",
+                  (vector_t){0, WINDOW.y});
+    create_start_menu(state);
+    sdl_on_mouse((mouse_handler_t)on_mouse_start_menu);
+  }
+}
+
 state_t *emscripten_init() {
   srand(time(NULL));
   vector_t min = VEC_ZERO;
@@ -1767,10 +1793,15 @@ state_t *emscripten_init() {
   sdl_init(min, max);
   state_t *state = malloc(sizeof(state_t));
   state->scene = scene_init();
+  state->bodies = list_init(1, NULL);
+  state->forces = list_init(1, NULL);
   state->bike_color = RED;
   state->game_state = MENU;
   state->button_list = list_init(3, free);
   state->level = 0;
+  state->past_angle = 0.0;
+  state->bike_acceleration = BIKE_ACCELERATION;
+  state->bike_max_speed = MAX_SPEED;
   state->timer_text = (text_input_t){.string = "02:00",
                                      .font_size = FONT_SIZE,
                                      .position = TIMER_POSITION,
@@ -1795,29 +1826,27 @@ state_t *emscripten_init() {
 }
 
 void update_timer(state_t *state) {
-  if ((int)state->clock != state->past_second) {
-    if (state->clock <= 0.0) {
-      state->game_over = true;
-      return;
-    }
-    size_t minutes = state->clock / MIN_TO_SEC;
-    size_t seconds = fmod(state->clock, MIN_TO_SEC);
-    char timer[TIME_LENGTH] = "";
-    char sec[TIME_LENGTH] = "";
-    sprintf(timer, "0%lu", minutes);
-    strcat(timer, ":");
-    sprintf(sec, "%lu", seconds);
-    if (seconds / 10 < 1) {
-      sprintf(sec, "0%lu", seconds);
-    }
-    strcat(timer, sec);
-    state->timer_text.string = timer;
-    sdl_clear_text();
-    body_t *bike = scene_get_body(state->scene, 0);
-    state->timer_text.position = vec_add(body_get_centroid(bike), CENTER);
-    state->timer_text.position.x -= state->timer_text.dim.x;
-    sdl_write_text(state->timer_text, "LeagueGothic", "Regular");
+  if (state->clock <= 0.0) {
+    state->game_over = true;
+    return;
   }
+  size_t minutes = state->clock / MIN_TO_SEC;
+  size_t seconds = fmod(state->clock, MIN_TO_SEC);
+  char timer[TIME_LENGTH] = "";
+  char sec[TIME_LENGTH] = "";
+  sprintf(timer, "0%lu", minutes);
+  strcat(timer, ":");
+  sprintf(sec, "%lu", seconds);
+  if (seconds / 10 < 1) {
+    sprintf(sec, "0%lu", seconds);
+  }
+  strcat(timer, sec);
+  state->timer_text.string = timer;
+  sdl_clear_text();
+  body_t *bike = scene_get_body(state->scene, 0);
+  state->timer_text.position = vec_add(body_get_centroid(bike), CENTER);
+  state->timer_text.position.x -= state->timer_text.dim.x;
+  sdl_write_text(state->timer_text, "LeagueGothic", "Regular");
 }
 
 void update_score(state_t *state) {
@@ -1834,8 +1863,9 @@ void update_score(state_t *state) {
 }
 
 bool check_track_collision(state_t *state) {
+  const double COLLISION_TEST_SIZE = 100.0;
   body_t *bike = scene_get_body(state->scene, 0);
-  list_t *bike_triangle = create_triangle(100.0);
+  list_t *bike_triangle = create_triangle(COLLISION_TEST_SIZE);
   polygon_translate(bike_triangle, body_get_pivot(bike));
   assert(scene_bodies(state->scene) > 1);
   for (size_t i = 0; i < scene_bodies(state->scene); i++) {
@@ -1858,8 +1888,8 @@ bool check_track_collision(state_t *state) {
 void check_loss(state_t *state) {
   body_t *bike = scene_get_body(state->scene, 0);
   double angle = body_get_rotation(bike);
-  if (fabs(fmod(angle, 2 * M_PI)) > M_PI / 2 &&
-      fabs(fmod(angle, 2 * M_PI)) < 3 * M_PI / 2) {
+  if (fabs(fmod(angle, TWO_PI)) > PI_HALF &&
+      fabs(fmod(angle, TWO_PI)) < THREE_PI_HALF) {
     state->game_over = true;
   }
   if (body_get_centroid(bike).y < -50.0) {
@@ -1880,14 +1910,17 @@ bool check_win(state_t *state) {
 void emscripten_main(state_t *state) {
   state->dt = time_since_last_tick();
   state->sound_timer -= state->dt;
+
+  // sound
   if (state->sound_timer <= 0.0 || state->sound_changed) {
     sound_play(state->sound);
     state->sound_changed = false;
     state->sound_timer = 10.0;
   }
+
+  // steps if game is over
   if (state->game_over) {
     state->clock = 0.0;
-    state->score = 0.0;
     sdl_on_key(NULL);
     sdl_on_mouse((mouse_handler_t)on_mouse_game_over_menu);
     sdl_move_window(STARTING_POSITION);
@@ -1895,21 +1928,33 @@ void emscripten_main(state_t *state) {
     body_set_centroid(bike, STARTING_POSITION);
     body_set_rotation(bike, 0.0);
     body_set_velocity(bike, VEC_ZERO);
+    body_set_acceleration(bike, VEC_ZERO);
     body_set_angular_velocity(bike, 0.0);
+    body_reset_pivot(bike);
+    scene_remove_force(state->scene, (force_creator_t)applied_force_creator);
     if (state->win) {
       create_win_menu(state);
     } else {
       create_game_over_menu(state);
     }
   }
+
+  // timer mode
   if (state->game_state == TIMER && state->level != 0) {
+    body_t *bike = scene_get_body(state->scene, 0);
     if (!state->win) {
       state->win = check_win(state);
     }
     state->clock -= state->dt;
-    body_t *bike = scene_get_body(state->scene, 0);
     sdl_move_window(body_get_centroid(bike));
     update_timer(state);
+    state->powerup_timer -= state->dt;
+    if (state->powerup_timer < 0.0 && state->has_powerup) {
+      kill_powerup(state);
+    }
+    if (double_is_close(vec_magn(body_get_velocity(bike)), 0.0, 50.0)) {
+      scene_remove_force(state->scene, (force_creator_t)drag_creator);
+    }
     bool collision_checker = check_track_collision(state);
     if (!state->in_air && !collision_checker) {
       if (body_get_velocity(bike).x > 0) {
@@ -1917,19 +1962,40 @@ void emscripten_main(state_t *state) {
       } else {
         body_increment_angular_velocity(bike, -AIR_ANGULAR_VELOCITY);
       }
+      body_reset_pivot(bike);
       state->in_air = true;
     } else if (collision_checker) {
       check_loss(state);
       state->in_air = false;
     }
     scene_tick(state->scene, state->dt);
+    // score mode
   } else if (state->game_state == SCORE && state->level != 0) {
-    if (!state->win) {
-      state->win = check_win(state);
+    if (check_win(state)) {
+      // put player back at beginning
+      state->game_over = false;
+      sdl_move_window(STARTING_POSITION);
+      body_t *bike = scene_get_body(state->scene, 0);
+      body_set_centroid(bike, STARTING_POSITION);
+      body_set_rotation(bike, 0.0);
+      body_set_velocity(bike, VEC_ZERO);
+      body_set_angular_velocity(bike, 0.0);
+      body_reset_pivot(bike);
+      scene_add_body(state->scene, make_star(state, 1.0));
+      create_powerup_collision(
+          state, scene_get_body(state->scene, 0),
+          scene_get_body(state->scene, scene_bodies(state->scene) - 1));
     }
     body_t *bike = scene_get_body(state->scene, 0);
     sdl_move_window(body_get_centroid(bike));
     update_score(state);
+    state->powerup_timer -= state->dt;
+    if (state->powerup_timer < 0.0 && state->has_powerup) {
+      kill_powerup(state);
+    }
+    if (double_is_close(vec_magn(body_get_velocity(bike)), 0.0, 50.0)) {
+      scene_remove_force(state->scene, (force_creator_t)drag_creator);
+    }
     bool collision_checker = check_track_collision(state);
     if (!state->in_air && !collision_checker) {
       if (body_get_velocity(bike).x > 0) {
@@ -1942,7 +2008,11 @@ void emscripten_main(state_t *state) {
       check_loss(state);
       state->in_air = false;
     } else if (state->in_air) {
-      state->score += 10;
+      state->score += AIRTIME_SCORE;
+      double new_angle = body_get_rotation(bike);
+      state->score +=
+          fabs(new_angle - state->past_angle) / TWO_PI * ROTATION_SCORE;
+      state->past_angle = new_angle;
     }
     scene_tick(state->scene, state->dt);
   }

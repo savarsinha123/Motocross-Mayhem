@@ -120,6 +120,14 @@ void body_set_centroid(body_t *body, vector_t x);
 void body_set_velocity(body_t *body, vector_t v);
 
 /**
+ * Changes the acceleration of a body.
+ *
+ * @param body a pointer to a body returned from body_init()
+ * @return the body's new acceleration vector
+ */
+void body_set_acceleration(body_t *body, vector_t a);
+
+/**
  * Changes a body's orientation in the plane.
  * The body is rotated about its center of mass.
  * Note that the angle is *absolute*, not relative to the current orientation.
@@ -279,5 +287,13 @@ void body_remove(body_t *body);
  * @return whether body_remove() has been called on the body
  */
 bool body_is_removed(body_t *body);
+
+/**
+ * Sets the polygon field of a body
+ *
+ * @param body a pointer to the body to update
+ * @param polygon the polygon to set field to
+ */
+void body_set_polygon(body_t *body, list_t *polygon);
 
 #endif // #ifndef __BODY_H__

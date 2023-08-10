@@ -73,7 +73,6 @@ void body_free(body_t *body) {
   list_free(body->polygon);
   if (body->info_freer != NULL) {
     body->info_freer(body->info);
-    free(body->reference_pointer);
   }
   free(body);
 }
@@ -112,6 +111,8 @@ void body_set_centroid(body_t *body, vector_t x) {
 }
 
 void body_set_velocity(body_t *body, vector_t v) { body->velocity = v; }
+
+void body_set_acceleration(body_t *body, vector_t a) { body->acceleration = a; }
 
 void body_set_rotation(body_t *body, double angle) {
   double angle_diff = angle - body->angle;
@@ -232,3 +233,8 @@ void body_tick(body_t *body, double dt) {
 void body_remove(body_t *body) { body->removed = 1; }
 
 bool body_is_removed(body_t *body) { return body->removed; }
+
+void body_set_polygon(body_t *body, list_t *polygon) {
+  list_free(body->polygon);
+  body->polygon = polygon;
+}

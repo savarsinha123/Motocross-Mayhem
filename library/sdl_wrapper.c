@@ -58,6 +58,7 @@ clock_t last_clock = 0;
 
 list_t *text_list;
 list_t *image_list;
+#define FONT_PATH_SIZE 60
 
 /** Computes the center of the window in pixel coordinates */
 vector_t get_window_center(void) {
@@ -238,8 +239,7 @@ void sdl_write_text(text_input_t text_input, char *font_style,
                     char *font_type) {
   TTF_Init();
   // font style
-  const size_t FONT_PATH_SIZE = 60;
-  char font_path[60] = "assets/";
+  char font_path[FONT_PATH_SIZE] = "assets/";
   strcat(font_path, font_style);
   strcat(font_path, "-");
   strcat(font_path, font_type);
@@ -305,6 +305,14 @@ void sdl_add_image(const char *image_path, vector_t position) {
   image->img = img;
   image->texr = texr;
   list_add(image_list, image);
+}
+
+void sdl_clear_images() {
+  int len = list_size(image_list);
+  for (int i = len - 1; i >= 0; i--) {
+    image_t *image = list_remove(image_list, i);
+    free_image(image);
+  }
 }
 
 const char *idle_path = "assets/MX Idle.wav";

@@ -110,6 +110,30 @@ void scene_add_bodies_force_creator(scene_t *scene, force_creator_t forcer,
  */
 void scene_tick(scene_t *scene, double dt);
 
-void scene_clear_bodies(scene_t *scene);
+/**
+ * Removes a particular type of force from a given scene
+ *
+ * @param scene a pointer to a scene returned from scene_init()
+ * @param force_type the type of force to remove from the scene
+ */
+void scene_remove_force(scene_t *scene, force_creator_t force_type);
+
+/**
+ * Unloads all bodies and forces onto given lists
+ *
+ * @param scene a pointer to a scene returned from scene_init()
+ * @param bodies the list to store the bodies
+ * @param forces the list to store the forces
+ */
+void scene_unload_bodies(scene_t *scene, list_t *bodies, list_t *forces);
+
+/**
+ * Loads all bodies and forces from given lists into scene
+ *
+ * @param scene a pointer to a scene returned from scene_init()
+ * @param bodies the list with the bodies to import
+ * @param forces the list with the forces to import
+ */
+void scene_load_bodies(scene_t *scene, list_t *bodies, list_t *forces);
 
 #endif // #ifndef __SCENE_H__
